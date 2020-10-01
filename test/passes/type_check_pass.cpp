@@ -86,11 +86,15 @@ TEST(TypeCheckPassTast, FunctionReturnTypeValueMismatch) {
         )
     );
 
-    /**
-     * When the return instruction is visited, a
-     */
-    EXPECT_THROW(
-        typeCheckPass->visitReturnInst(returnInst),
-        std::runtime_error
+	typeCheckPass->visitReturnInst(returnInst);
+
+	EXPECT_EQ(passContext->diagnostics->getSize(), 1);
+
+	ionshared::Diagnostic functionReturnValueTypeMismatchDiagnostic =
+		(*passContext->diagnostics.get())[0];
+
+	EXPECT_EQ(
+        functionReturnValueTypeMismatchDiagnostic.code.value(),
+        diagnostic::functionReturnValueTypeMismatch.code.value()
     );
 }
