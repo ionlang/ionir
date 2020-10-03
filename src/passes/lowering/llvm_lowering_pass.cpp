@@ -1,27 +1,27 @@
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/BasicBlock.h>
-#include <ionir/passes/codegen/llvm_codegen_pass.h>
+#include <ionir/passes/lowering/llvm_lowering_pass.h>
 
 #include <iostream>
 
 namespace ionir {
-    ionshared::LlvmStack<llvm::Value> LlvmCodegenPass::getValueStack() const noexcept {
+    ionshared::LlvmStack<llvm::Value> LlvmLoweringPass::getValueStack() const noexcept {
         return this->valueStack;
     }
 
-    ionshared::LlvmStack<llvm::Type> LlvmCodegenPass::getTypeStack() const noexcept {
+    ionshared::LlvmStack<llvm::Type> LlvmLoweringPass::getTypeStack() const noexcept {
         return this->typeStack;
     }
 
-    ionshared::Ptr<ionshared::SymbolTable<llvm::Module *>> LlvmCodegenPass::getModules() const {
+    ionshared::Ptr<ionshared::SymbolTable<llvm::Module *>> LlvmLoweringPass::getModules() const {
         return this->modules;
     }
 
-    std::optional<llvm::Module *> LlvmCodegenPass::getModuleBuffer() const {
+    std::optional<llvm::Module *> LlvmLoweringPass::getModuleBuffer() const {
         return this->buffers.llvmModule;
     }
 
-    bool LlvmCodegenPass::setModuleBuffer(const std::string &id) {
+    bool LlvmLoweringPass::setModuleBuffer(const std::string &id) {
         if (this->modules->contains(id)) {
             this->buffers.llvmModule = this->modules->lookup(id);
             this->buffers.llvmContext = &(*this->buffers.llvmModule)->getContext();
@@ -32,7 +32,7 @@ namespace ionir {
         return false;
     }
 
-    void LlvmCodegenPass::requireBuilder() {
+    void LlvmLoweringPass::requireBuilder() {
         // Builder must be instantiated.
         if (!this->buffers.llvmBasicBlock.has_value()) {
             // Otherwise, throw a runtime error.
@@ -40,32 +40,32 @@ namespace ionir {
         }
     }
 
-    void LlvmCodegenPass::requireFunction() {
+    void LlvmLoweringPass::requireFunction() {
         if (!ionshared::util::hasValue(this->buffers.llvmFunction)) {
             throw std::runtime_error("Expected the function buffer to be set, but was null");
         }
     }
 
-    void LlvmCodegenPass::requireModule() {
+    void LlvmLoweringPass::requireModule() {
         if (!ionshared::util::hasValue(this->buffers.llvmModule)) {
             throw std::runtime_error("Expected the module buffer to be set, but was null");
         }
     }
 
-    void LlvmCodegenPass::requireContext() {
+    void LlvmLoweringPass::requireContext() {
         if (!ionshared::util::hasValue(this->buffers.llvmContext)) {
             throw std::runtime_error("Expected the context buffer to be set, but was null");
         }
     }
 
-    void LlvmCodegenPass::lockBuffers(const std::function<void()> &callback) {
+    void LlvmLoweringPass::lockBuffers(const std::function<void()> &callback) {
         Buffers buffersBackup = this->buffers;
 
         callback();
         this->buffers = buffersBackup;
     }
 
-    std::optional<llvm::IRBuilder<>> LlvmCodegenPass::getLlvmBuilder() noexcept {
+    std::optional<llvm::IRBuilder<>> LlvmLoweringPass::getLlvmBuilder() noexcept {
         if (!ionshared::util::hasValue(this->buffers.llvmBasicBlock)) {
             return std::nullopt;
         }
@@ -73,7 +73,7 @@ namespace ionir {
         return llvm::IRBuilder<>(*this->buffers.llvmBasicBlock);
     }
 
-    llvm::Type *LlvmCodegenPass::processTypeQualifiers(const ionshared::Ptr<TypeQualifiers> &qualifiers, llvm::Type *type) {
+    llvm::Type *LlvmLoweringPass::processTypeQualifiers(const ionshared::Ptr<TypeQualifiers> &qualifiers, llvm::Type *type) {
         // TODO: This should be last? Or const?
         if (qualifiers->contains(TypeQualifier::Pointer)) {
             // TODO: Address space correct?
@@ -85,7 +85,7 @@ namespace ionir {
         return type;
     }
 
-    LlvmCodegenPass::LlvmCodegenPass(
+    LlvmLoweringPass::LlvmLoweringPass(
         ionshared::Ptr<ionshared::PassContext> context,
         ionshared::Ptr<ionshared::SymbolTable<llvm::Module *>> modules
     ) :
@@ -103,12 +103,12 @@ namespace ionir {
         //
     }
 
-    LlvmCodegenPass::~LlvmCodegenPass() {
+    LlvmLoweringPass::~LlvmLoweringPass() {
         this->typeStack.clear();
         this->valueStack.clear();
     }
 
-    void LlvmCodegenPass::visitScopeAnchor(ionshared::Ptr<ScopeAnchor<>> node) {
+    void LlvmLoweringPass::visitScopeAnchor(ionshared::Ptr<ScopeAnchor<>> node) {
         Pass::visitScopeAnchor(node);
 
         /**
@@ -119,7 +119,7 @@ namespace ionir {
         this->buffers.context->appendScope(node->getSymbolTable());
     }
 
-    void LlvmCodegenPass::visitBasicBlock(ionshared::Ptr<BasicBlock> node) {
+    void LlvmLoweringPass::visitBasicBlock(ionshared::Ptr<BasicBlock> node) {
         // TODO: This is a temporary fix? The other option is to place the block beforehand and emit it, but isn't it the same thing? Investigate.
         // Node was already emitted.
         if (this->symbolTable.contains(node)) {
@@ -158,7 +158,7 @@ namespace ionir {
         this->buffers.context->popScope();
     }
 
-    void LlvmCodegenPass::visitFunctionBody(ionshared::Ptr<FunctionBody> node) {
+    void LlvmLoweringPass::visitFunctionBody(ionshared::Ptr<FunctionBody> node) {
         // Verify the block before continuing.
         if (!node->verify()) {
             throw std::runtime_error("Block failed to be verified");
@@ -202,7 +202,7 @@ namespace ionir {
         this->buffers.context->popScope();
     }
 
-    void LlvmCodegenPass::visitGlobal(ionshared::Ptr<Global> node) {
+    void LlvmLoweringPass::visitGlobal(ionshared::Ptr<Global> node) {
         this->requireModule();
         node->type->accept(*this);
 
@@ -233,7 +233,7 @@ namespace ionir {
         // TODO: Apply LLVM entity to the node.
     }
 
-    void LlvmCodegenPass::visitIntegerType(ionshared::Ptr<IntegerType> node) {
+    void LlvmLoweringPass::visitIntegerType(ionshared::Ptr<IntegerType> node) {
         this->requireContext();
 
         std::optional<llvm::IntegerType *> type;
@@ -289,7 +289,7 @@ namespace ionir {
         ));
     }
 
-    void LlvmCodegenPass::visitBooleanType(ionshared::Ptr<BooleanType> node) {
+    void LlvmLoweringPass::visitBooleanType(ionshared::Ptr<BooleanType> node) {
         this->requireContext();
 
         this->typeStack.push(this->processTypeQualifiers(
@@ -298,7 +298,7 @@ namespace ionir {
         ));
     }
 
-    void LlvmCodegenPass::visitVoidType(ionshared::Ptr<VoidType> node) {
+    void LlvmLoweringPass::visitVoidType(ionshared::Ptr<VoidType> node) {
         this->requireContext();
 
         this->typeStack.push(this->processTypeQualifiers(
@@ -307,7 +307,7 @@ namespace ionir {
         ));
     }
 
-    void LlvmCodegenPass::visitModule(ionshared::Ptr<Module> node) {
+    void LlvmLoweringPass::visitModule(ionshared::Ptr<Module> node) {
         this->buffers.llvmContext = new llvm::LLVMContext();
         this->buffers.llvmModule = new llvm::Module(**node->identifier, **this->buffers.llvmContext);
 
@@ -332,7 +332,7 @@ namespace ionir {
         }
     }
 
-    void LlvmCodegenPass::visitStruct(ionshared::Ptr<Struct> node) {
+    void LlvmLoweringPass::visitStruct(ionshared::Ptr<Struct> node) {
         this->requireModule();
         this->requireContext();
 

@@ -3,7 +3,7 @@
 #include <iostream>
 #include <array>
 #include <string>
-#include <ionir/passes/codegen/llvm_codegen_pass.h>
+#include <ionir/passes/codegen/llvm_lowering_pass.h>
 #include "util.h"
 #include "../../../test/pch.h"
 

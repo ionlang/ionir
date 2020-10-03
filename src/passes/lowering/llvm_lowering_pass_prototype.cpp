@@ -2,10 +2,10 @@
 #include <llvm/IR/DerivedTypes.h>
 #include <ionir/construct/value.h>
 #include <ionir/diagnostics/diagnostic.h>
-#include <ionir/passes/codegen/llvm_codegen_pass.h>
+#include <ionir/passes/lowering/llvm_lowering_pass.h>
 
 namespace ionir {
-    void LlvmCodegenPass::visit(ionshared::Ptr<Construct> node) {
+    void LlvmLoweringPass::visit(ionshared::Ptr<Construct> node) {
         /**
          * Only instruct the node to visit this instance and not
          * its children, since they're already manually visited by
@@ -14,7 +14,7 @@ namespace ionir {
         node->accept(*this);
     }
 
-    void LlvmCodegenPass::visitExtern(ionshared::Ptr<Extern> node) {
+    void LlvmLoweringPass::visitExtern(ionshared::Ptr<Extern> node) {
         if (this->symbolTable.contains(node)) {
             return;
         }
@@ -43,7 +43,7 @@ namespace ionir {
         this->valueStack.push(llvmExtern);
     }
 
-    void LlvmCodegenPass::visitPrototype(ionshared::Ptr<Prototype> node) {
+    void LlvmLoweringPass::visitPrototype(ionshared::Ptr<Prototype> node) {
         this->requireModule();
         this->requireContext();
 
@@ -130,7 +130,7 @@ namespace ionir {
         this->valueStack.push(llvmFunction);
     }
 
-    void LlvmCodegenPass::visitFunction(ionshared::Ptr<Function> node) {
+    void LlvmLoweringPass::visitFunction(ionshared::Ptr<Function> node) {
         if (this->symbolTable.contains(node)) {
             return;
         }

@@ -28,7 +28,7 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    class LlvmCodegenPass : public Pass {
+    class LlvmLoweringPass : public Pass {
     private:
         struct Buffers {
             /**
@@ -83,14 +83,14 @@ namespace ionir {
     public:
         IONSHARED_PASS_ID;
 
-        explicit LlvmCodegenPass(
+        explicit LlvmLoweringPass(
             ionshared::Ptr<ionshared::PassContext> context,
 
             ionshared::Ptr<ionshared::SymbolTable<llvm::Module *>> modules =
                 std::make_shared<ionshared::SymbolTable<llvm::Module *>>()
         );
 
-        ~LlvmCodegenPass();
+        ~LlvmLoweringPass();
 
         [[nodiscard]] ionshared::Ptr<ionshared::SymbolTable<llvm::Module *>> getModules() const;
 

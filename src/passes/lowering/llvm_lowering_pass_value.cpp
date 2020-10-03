@@ -2,10 +2,10 @@
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Constant.h>
 #include <ionir/construct/value.h>
-#include <ionir/passes/codegen/llvm_codegen_pass.h>
+#include <ionir/passes/lowering/llvm_lowering_pass.h>
 
 namespace ionir {
-    void LlvmCodegenPass::visitIntegerLiteral(ionshared::Ptr<IntegerLiteral> node) {
+    void LlvmLoweringPass::visitIntegerLiteral(ionshared::Ptr<IntegerLiteral> node) {
         /**
          * Create the APInt (Arbitrary-precision integer)
          * to provide. Acts sort of an LLVM integer value
@@ -34,7 +34,7 @@ namespace ionir {
 //        this->addToScope(node, value);
     }
 
-    void LlvmCodegenPass::visitCharLiteral(ionshared::Ptr<CharLiteral> node) {
+    void LlvmLoweringPass::visitCharLiteral(ionshared::Ptr<CharLiteral> node) {
         this->requireContext();
         this->requireBuilder();
 
@@ -45,7 +45,7 @@ namespace ionir {
 //        this->addToScope(node, value);
     }
 
-    void LlvmCodegenPass::visitStringLiteral(ionshared::Ptr<StringLiteral> node) {
+    void LlvmLoweringPass::visitStringLiteral(ionshared::Ptr<StringLiteral> node) {
         this->requireBuilder();
 
         this->valueStack.push(
@@ -54,7 +54,7 @@ namespace ionir {
 //        this->addToScope(node, value);
     }
 
-    void LlvmCodegenPass::visitBooleanLiteral(ionshared::Ptr<BooleanLiteral> node) {
+    void LlvmLoweringPass::visitBooleanLiteral(ionshared::Ptr<BooleanLiteral> node) {
         this->requireContext();
 
         // Create the boolean type along with the LLVM value.

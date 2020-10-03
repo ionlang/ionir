@@ -3,7 +3,7 @@
 #include <vector>
 #include <ionshared/llvm/llvm_module.h>
 #include <ionir/construct/inst.h>
-#include <ionir/passes/codegen/llvm_codegen_pass.h>
+#include <ionir/passes/codegen/llvm_lowering_pass.h>
 #include "util.h"
 
 namespace ionir::test::bootstrap {

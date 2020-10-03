@@ -1,10 +1,10 @@
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/BasicBlock.h>
 #include <ionir/construct/value.h>
-#include <ionir/passes/codegen/llvm_codegen_pass.h>
+#include <ionir/passes/lowering/llvm_lowering_pass.h>
 
 namespace ionir {
-    void LlvmCodegenPass::visitAllocaInst(ionshared::Ptr<AllocaInst> node) {
+    void LlvmLoweringPass::visitAllocaInst(ionshared::Ptr<AllocaInst> node) {
         this->requireBuilder();
         node->type->accept(*this);
 
@@ -21,7 +21,7 @@ namespace ionir {
         this->symbolTable.set(node, llvmAllocaInst);
     }
 
-    void LlvmCodegenPass::visitReturnInst(ionshared::Ptr<ReturnInst> node) {
+    void LlvmLoweringPass::visitReturnInst(ionshared::Ptr<ReturnInst> node) {
         this->requireBuilder();
 
         ionshared::OptPtr<Construct> returnInstValue = node->value;
@@ -75,7 +75,7 @@ namespace ionir {
 //        this->addToScope(node, llvmReturnInst);
     }
 
-    void LlvmCodegenPass::visitBranchInst(ionshared::Ptr<BranchInst> node) {
+    void LlvmLoweringPass::visitBranchInst(ionshared::Ptr<BranchInst> node) {
         this->requireBuilder();
         this->visit(node->condition);
 
@@ -116,7 +116,7 @@ namespace ionir {
 //        this->addToScope(node, llvmBranchInst);
     }
 
-    void LlvmCodegenPass::visitCallInst(ionshared::Ptr<CallInst> node) {
+    void LlvmLoweringPass::visitCallInst(ionshared::Ptr<CallInst> node) {
         this->requireModule();
         this->requireBuilder();
 
@@ -179,7 +179,7 @@ namespace ionir {
 //        this->addToScope(node, callInst);
     }
 
-    void LlvmCodegenPass::visitStoreInst(ionshared::Ptr<StoreInst> node) {
+    void LlvmLoweringPass::visitStoreInst(ionshared::Ptr<StoreInst> node) {
         this->requireFunction();
         this->requireBuilder();
 
@@ -203,7 +203,7 @@ namespace ionir {
 //        this->addToScope(node, llvmStoreInst);
     }
 
-    void LlvmCodegenPass::visitJumpInst(ionshared::Ptr<JumpInst> node) {
+    void LlvmLoweringPass::visitJumpInst(ionshared::Ptr<JumpInst> node) {
         // TODO: Check everything thoroughly. Was just left there uncompleted!
         // ------------------------------------------------------------------
         // ------------------------------------------------------------------

@@ -1,5 +1,5 @@
 #include <vector>
-#include <ionir/passes/codegen/llvm_codegen_pass.h>
+#include <ionir/passes/codegen/llvm_lowering_pass.h>
 #include <ionir/const/const.h>
 #include <ionir/test/bootstrap.h>
 #include <ionir/test/comparison.h>
