@@ -3,7 +3,7 @@
 #include <vector>
 #include <ionshared/llvm/llvm_module.h>
 #include <ionir/construct/inst.h>
-#include <ionir/passes/codegen/llvm_lowering_pass.h>
+#include <ionir/passes/lowering/llvm_lowering_pass.h>
 #include "util.h"
 
 namespace ionir::test::bootstrap {
@@ -11,7 +11,7 @@ namespace ionir::test::bootstrap {
         const std::string &identifier = "test"
     );
 
-    [[nodiscard]] ionshared::Ptr<LlvmCodegenPass> llvmCodegenPass(
+    [[nodiscard]] ionshared::Ptr<LlvmLoweringPass> llvmLoweringPass(
         const ionshared::Ptr<ionshared::LlvmModule> &module = llvmModule()
     );
 

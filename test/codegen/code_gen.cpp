@@ -1,5 +1,5 @@
 #include <vector>
-#include <ionir/passes/codegen/llvm_lowering_pass.h>
+#include <ionir/passes/lowering/llvm_lowering_pass.h>
 #include <ionir/const/const.h>
 #include <ionir/test/bootstrap.h>
 #include <ionir/test/comparison.h>
@@ -8,7 +8,7 @@
 using namespace ionir;
 
 TEST(CodeGenTest, VisitExtern) {
-    ionshared::Ptr<LlvmCodegenPass> llvmCodegenPass = test::bootstrap::llvmCodegenPass();
+    ionshared::Ptr<LlvmLoweringPass> llvmLoweringPass = test::bootstrap::llvmLoweringPass();
     ionshared::Ptr<VoidType> returnType = TypeFactory::typeVoid();
     ionshared::Ptr<Args> args = std::make_shared<Args>();
 
@@ -18,13 +18,13 @@ TEST(CodeGenTest, VisitExtern) {
     // TODO: Nullptr parent.
     ionshared::Ptr<Extern> externConstruct = std::make_shared<Extern>(nullptr, prototype);
 
-    llvmCodegenPass->visitExtern(externConstruct);
+    llvmLoweringPass->visitExtern(externConstruct);
 
-    EXPECT_TRUE(test::comparison::ir(llvmCodegenPass, "extern_simple"));
+    EXPECT_TRUE(test::comparison::ir(llvmLoweringPass, "extern_simple"));
 }
 
 TEST(CodeGenTest, VisitEmptyFunction) {
-    ionshared::Ptr<LlvmCodegenPass> llvmCodegenPass = test::bootstrap::llvmCodegenPass();
+    ionshared::Ptr<LlvmLoweringPass> llvmLoweringPass = test::bootstrap::llvmLoweringPass();
     ionshared::Ptr<VoidType> returnType = TypeFactory::typeVoid();
 
     ionshared::Ptr<Prototype> prototype =
@@ -57,23 +57,23 @@ TEST(CodeGenTest, VisitEmptyFunction) {
     ionshared::Ptr<Function> function = std::make_shared<Function>(prototype, body);
 
     body->parent = function;
-    llvmCodegenPass->visitFunction(function);
+    llvmLoweringPass->visitFunction(function);
 
-    EXPECT_TRUE(test::comparison::ir(llvmCodegenPass, "function_empty"));
+    EXPECT_TRUE(test::comparison::ir(llvmLoweringPass, "function_empty"));
 }
 
 TEST(CodeGenTest, VisitEmptyGlobal) {
-    ionshared::Ptr<LlvmCodegenPass> llvmCodegenPass = test::bootstrap::llvmCodegenPass();
+    ionshared::Ptr<LlvmLoweringPass> llvmLoweringPass = test::bootstrap::llvmLoweringPass();
     ionshared::Ptr<IntegerType> type = TypeFactory::typeInteger(IntegerKind::Int32);
     ionshared::Ptr<Global> globalVar = std::make_shared<Global>(type, test::constant::foobar);
 
-    llvmCodegenPass->visitGlobal(globalVar);
+    llvmLoweringPass->visitGlobal(globalVar);
 
-    EXPECT_TRUE(test::comparison::ir(llvmCodegenPass, "global_empty"));
+    EXPECT_TRUE(test::comparison::ir(llvmLoweringPass, "global_empty"));
 }
 
 TEST(CodeGenTest, VisitGlobalWithValue) {
-    ionshared::Ptr<LlvmCodegenPass> llvmCodegenPass = test::bootstrap::llvmCodegenPass();
+    ionshared::Ptr<LlvmLoweringPass> llvmLoweringPass = test::bootstrap::llvmLoweringPass();
     ionshared::Ptr<IntegerType> type = TypeFactory::typeInteger(IntegerKind::Int32);
 
     ionshared::Ptr<Global> globalVar = std::make_shared<Global>(
@@ -82,13 +82,13 @@ TEST(CodeGenTest, VisitGlobalWithValue) {
         std::make_shared<IntegerLiteral>(type, 123)->staticCast<Value<>>()
     );
 
-    llvmCodegenPass->visitGlobal(globalVar);
+    llvmLoweringPass->visitGlobal(globalVar);
 
-    EXPECT_TRUE(test::comparison::ir(llvmCodegenPass, "global_init"));
+    EXPECT_TRUE(test::comparison::ir(llvmLoweringPass, "global_init"));
 }
 
 TEST(CodeGenTest, VisitAllocaInst) {
-    ionshared::Ptr<LlvmCodegenPass> llvmCodegenPass = test::bootstrap::llvmCodegenPass();
+    ionshared::Ptr<LlvmLoweringPass> llvmLoweringPass = test::bootstrap::llvmLoweringPass();
 
     std::vector<ionshared::Ptr<Inst>> insts = {
         std::make_shared<AllocaInst>(AllocaInstOpts{
@@ -100,13 +100,13 @@ TEST(CodeGenTest, VisitAllocaInst) {
 
     ionshared::Ptr<Function> function = test::bootstrap::emptyFunction(insts);
 
-    llvmCodegenPass->visitFunction(function);
+    llvmLoweringPass->visitFunction(function);
 
-    EXPECT_TRUE(test::comparison::ir(llvmCodegenPass, "inst_alloca"));
+    EXPECT_TRUE(test::comparison::ir(llvmLoweringPass, "inst_alloca"));
 }
 
 TEST(CodeGenTest, VisitReturnInst) {
-    ionshared::Ptr<LlvmCodegenPass> llvmCodegenPass = test::bootstrap::llvmCodegenPass();
+    ionshared::Ptr<LlvmLoweringPass> llvmLoweringPass = test::bootstrap::llvmLoweringPass();
 
     std::vector<ionshared::Ptr<Inst>> insts = {
         std::make_shared<ReturnInst>(ReturnInstOpts{
@@ -117,9 +117,9 @@ TEST(CodeGenTest, VisitReturnInst) {
 
     ionshared::Ptr<Function> function = test::bootstrap::emptyFunction(insts);
 
-    llvmCodegenPass->visitFunction(function);
+    llvmLoweringPass->visitFunction(function);
 
-    EXPECT_TRUE(test::comparison::ir(llvmCodegenPass, "inst_return_i32"));
+    EXPECT_TRUE(test::comparison::ir(llvmLoweringPass, "inst_return_i32"));
 }
 
 // TODO: Migrated NameResolutionPass.

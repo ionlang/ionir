@@ -3,7 +3,7 @@
 #include <iostream>
 #include <array>
 #include <string>
-#include <ionir/passes/codegen/llvm_lowering_pass.h>
+#include <ionir/passes/lowering/llvm_lowering_pass.h>
 #include "util.h"
 #include "../../../test/pch.h"
 
@@ -22,7 +22,7 @@ namespace ionir::test::comparison {
     [[nodiscard]] bool ir(std::string output, const std::string &fileName);
 
     [[nodiscard]] bool ir(
-        const ionshared::Ptr<LlvmCodegenPass> &llvmCodegenPass,
+        const ionshared::Ptr<LlvmLoweringPass> &llvmLoweringPass,
         const std::string &fileName
     );
 }

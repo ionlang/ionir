@@ -29,8 +29,8 @@ namespace ionir::test::comparison {
         return util::trim(std::move(output)) == util::trim(*contents);
     }
 
-    bool ir(const ionshared::Ptr<LlvmCodegenPass> &llvmCodegenPass, const std::string &fileName) {
-        std::optional<llvm::Module *> llvmModuleBuffer = llvmCodegenPass->getModuleBuffer();
+    bool ir(const ionshared::Ptr<LlvmLoweringPass> &llvmLoweringPass, const std::string &fileName) {
+        std::optional<llvm::Module *> llvmModuleBuffer = llvmLoweringPass->getModuleBuffer();
 
         if (!ionshared::util::hasValue(llvmModuleBuffer)) {
             throw std::runtime_error("Module buffer in LlvmCodegenPass is not set");

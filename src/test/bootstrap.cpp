@@ -10,22 +10,22 @@ namespace ionir::test::bootstrap {
         return std::make_shared<ionshared::LlvmModule>(llvmModule);
     }
 
-    ionshared::Ptr<LlvmCodegenPass> llvmCodegenPass(const ionshared::Ptr<ionshared::LlvmModule> &module) {
+    ionshared::Ptr<LlvmLoweringPass> llvmLoweringPass(const ionshared::Ptr<ionshared::LlvmModule> &module) {
         ionshared::Ptr<ionshared::SymbolTable<llvm::Module *>> modules = std::make_shared<ionshared::SymbolTable<llvm::Module *>>(ionshared::SymbolTable<llvm::Module *>({
             {module->getId(), module->unwrap()}
         }));
 
         // TODO: PassContext isn't associated with the calling scope/function in any way.
-        ionshared::Ptr<LlvmCodegenPass> llvmCodegenPass = std::make_shared<LlvmCodegenPass>(
+        ionshared::Ptr<LlvmLoweringPass> llvmLoweringPass = std::make_shared<LlvmLoweringPass>(
             std::make_shared<ionshared::PassContext>(),
             modules
         );
 
-        if (!llvmCodegenPass->setModuleBuffer(module->getId())) {
+        if (!llvmLoweringPass->setModuleBuffer(module->getId())) {
             throw std::runtime_error("Could not set active module buffer during bootstrap process");
         }
 
-        return llvmCodegenPass;
+        return llvmLoweringPass;
     }
 
     ionshared::Ptr<Function> emptyFunction(std::vector<ionshared::Ptr<Inst>> insts) {
