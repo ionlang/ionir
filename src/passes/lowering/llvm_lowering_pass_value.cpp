@@ -7,11 +7,10 @@
 namespace ionir {
     void LlvmLoweringPass::visitIntegerLiteral(ionshared::Ptr<IntegerLiteral> node) {
         /**
-         * Create the APInt (Arbitrary-precision integer)
-         * to provide. Acts sort of an LLVM integer value
-         * wrapper.
+         * Create the APInt (Arbitrary-precision integer) to provide.
+         * Acts sort of an LLVM integer value wrapper.
          */
-        llvm::APInt apInt = llvm::APInt(
+        llvm::APInt apInt(
             (unsigned)node->type->integerKind,
             node->value,
             node->type->isSigned
@@ -59,7 +58,11 @@ namespace ionir {
 
         // Create the boolean type along with the LLVM value.
         llvm::IntegerType *type = llvm::Type::getInt1Ty(**this->buffers.llvmContext);
-        llvm::Constant *value = llvm::ConstantInt::get(type, llvm::APInt(1, node->value, false));
+
+        llvm::Constant *value = llvm::ConstantInt::get(
+            type,
+            llvm::APInt(1, node->value, false)
+        );
 
         this->valueStack.push(value);
 //        this->addToScope(node, value);

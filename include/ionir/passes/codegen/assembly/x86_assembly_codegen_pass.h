@@ -4,7 +4,7 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    struct x86AssemblyCodegenPass : Pass {
+    class x86AssemblyCodegenPass : public Pass {
     private:
         x86AssemblyBuilder builder;
 

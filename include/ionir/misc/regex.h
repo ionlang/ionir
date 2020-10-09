@@ -3,8 +3,7 @@
 #include <regex>
 
 namespace ionir {
-    class Regex {
-    public:
+    struct Regex {
         const static std::regex identifier;
 
         const static std::regex string;

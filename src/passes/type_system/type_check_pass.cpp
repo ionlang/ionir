@@ -8,9 +8,11 @@ namespace ionir {
         //
     }
 
-    void TypeCheckPass::initialize(ionshared::PassInfo &info) {
+    bool TypeCheckPass::initialize(ionshared::PassInfo &info) {
         // TODO: Technically, we don't NEED to check for an entry point during type-check.
 //        info.addRequirement<EntryPointCheckPass>();
+
+        return true;
     }
 
     void TypeCheckPass::visitFunction(ionshared::Ptr<Function> node) {

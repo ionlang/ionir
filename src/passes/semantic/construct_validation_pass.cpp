@@ -3,7 +3,7 @@
 namespace ionir {
     ConstructValidationPass::ConstructValidationPass(
         ionshared::Ptr<ionshared::PassContext> context
-    ) :
+    ) noexcept :
         Pass(std::move(context)) {
         //
     }

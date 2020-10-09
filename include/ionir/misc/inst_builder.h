@@ -15,11 +15,13 @@ namespace ionir {
         ionshared::Ptr<BasicBlock> basicBlock;
 
     public:
-        explicit InstBuilder(ionshared::Ptr<BasicBlock> basicBlock);
+        explicit InstBuilder(
+            ionshared::Ptr<BasicBlock> basicBlock
+        ) noexcept;
 
         [[nodiscard]] ionshared::Ptr<BasicBlock> getBasicBlock() const;
 
-        void appendInst(const ionshared::Ptr<Inst> &inst);
+        void appendInst(const ionshared::Ptr<Inst>& inst);
 
         template<class TInst, typename... TArgs>
             requires std::derived_from<TInst, Inst>
@@ -34,7 +36,7 @@ namespace ionir {
         }
 
         ionshared::Ptr<AllocaInst> createAlloca(
-            const std::string &id,
+            const std::string& id,
             ionshared::Ptr<Type> type
         );
 
@@ -45,21 +47,21 @@ namespace ionir {
 
         ionshared::Ptr<BranchInst> createBranch(
             ionshared::Ptr<Construct> condition,
-            const ionshared::Ptr<BasicBlock> &consequentBasicBlock,
-            const ionshared::Ptr<BasicBlock> &alternativeBasicBlock
+            const ionshared::Ptr<BasicBlock>& consequentBasicBlock,
+            const ionshared::Ptr<BasicBlock>& alternativeBasicBlock
         );
 
         ionshared::Ptr<ReturnInst> createReturn(
-            const ionshared::OptPtr<Construct> &value = std::nullopt
+            const ionshared::OptPtr<Construct>& value = std::nullopt
         );
 
         ionshared::Ptr<CallInst> createCall(
-            const ionshared::Ptr<Construct> &callee,
-            const std::vector<ionshared::Ptr<Construct>> &args = {}
+            const ionshared::Ptr<Construct>& callee,
+            const std::vector<ionshared::Ptr<Construct>>& args = {}
         );
 
         ionshared::Ptr<JumpInst> createJump(
-            const ionshared::Ptr<BasicBlock> &basicBlock
+            const ionshared::Ptr<BasicBlock>& basicBlock
         );
     };
 }

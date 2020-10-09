@@ -26,6 +26,7 @@ namespace ionir {
                     return castResult;
                 }
 
+                // TODO: Should be internal error diagnostic.
                 throw std::runtime_error("LLVM value cast failed");
             }
 

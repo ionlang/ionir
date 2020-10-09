@@ -39,7 +39,7 @@
 
 namespace ionir {
     struct Pass : ionshared::BasePass<Construct> {
-        explicit Pass(ionshared::Ptr<ionshared::PassContext> context);
+        explicit Pass(ionshared::Ptr<ionshared::PassContext> context) noexcept;
 
         void visit(ionshared::Ptr<Construct> node) override;
 

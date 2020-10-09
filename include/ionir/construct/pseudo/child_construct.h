@@ -13,6 +13,7 @@ namespace ionir {
 
         ionshared::Ptr<T> getUnboxedParent() {
             if (!ionshared::util::hasValue(this->parent)) {
+                // TODO: Should be internal error diagnostic.
                 throw std::runtime_error("Parent is nullptr");
             }
 

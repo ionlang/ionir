@@ -13,7 +13,7 @@ namespace ionir {
 
         explicit EntryPointCheckPass(
             ionshared::Ptr<ionshared::PassContext> context
-        );
+        ) noexcept;
 
         void finish() override;
 

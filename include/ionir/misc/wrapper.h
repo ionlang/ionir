@@ -7,7 +7,7 @@ namespace ionir {
         T value;
 
     public:
-        explicit Wrapper(T value) :
+        explicit Wrapper(T value) noexcept :
             value(value) {
             //
         }

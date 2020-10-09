@@ -142,7 +142,7 @@ namespace ionir {
             this->valueStack.tryPop();
         }
 
-        ionshared::Ptr<Prototype> calleePrototype;
+        ionshared::Ptr<Prototype> calleePrototype = nullptr;
 
         if (calleeConstructKind == ConstructKind::Function) {
             calleePrototype = callee->dynamicCast<Function>()->prototype;

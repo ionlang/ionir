@@ -37,7 +37,7 @@ namespace ionir {
         // Visit the prototype.
         this->visitPrototype(node->prototype);
 
-        llvm::Function *llvmExtern = this->valueStack.popAs<llvm::Function>();
+        auto *llvmExtern = this->valueStack.popAs<llvm::Function>();
 
         this->symbolTable.set(node, llvmExtern);
         this->valueStack.push(llvmExtern);
@@ -151,7 +151,7 @@ namespace ionir {
         this->visitPrototype(node->prototype);
 
         // Retrieve the resulting function off the stack.
-        llvm::Function *llvmFunction = this->valueStack.popAs<llvm::Function>();
+        auto *llvmFunction = this->valueStack.popAs<llvm::Function>();
 
         // Set the function buffer.
         this->buffers.llvmFunction = llvmFunction;

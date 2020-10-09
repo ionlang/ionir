@@ -5,7 +5,7 @@
 namespace ionir {
     EntryPointCheckPass::EntryPointCheckPass(
         ionshared::Ptr<ionshared::PassContext> context
-    ) :
+    ) noexcept :
         Pass(std::move(context)) {
         //
     }

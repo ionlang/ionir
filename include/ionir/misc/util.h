@@ -27,11 +27,11 @@ namespace ionir::util {
 
     [[nodiscard]] std::string resolveIntegerKindName(IntegerKind kind);
 
-    [[nodiscard]] TypeKind resolveTypeKind(const std::string &id);
+    [[nodiscard]] TypeKind resolveTypeKind(const std::string& id);
 
-    [[nodiscard]] std::optional<std::string> findConstructId(const ionshared::Ptr<Construct> &construct);
+    [[nodiscard]] std::optional<std::string> findConstructId(const ionshared::Ptr<Construct>& construct);
 
-    [[nodiscard]] std::optional<std::string> findInstId(const ionshared::Ptr<ionir::Inst> &inst) noexcept;
+    [[nodiscard]] std::optional<std::string> findInstId(const ionshared::Ptr<ionir::Inst>& inst) noexcept;
 
     [[nodiscard]] std::optional<IntegerKind> findIntegerKindFromBitLength(uint32_t bitLength) noexcept;
 }

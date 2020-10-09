@@ -23,6 +23,8 @@ namespace ionir {
             this->buffer
                 << "."
                 << name;
+
+            return this->shared_from_this();
         }
 
         virtual ionshared::Ptr<T> makeInst(

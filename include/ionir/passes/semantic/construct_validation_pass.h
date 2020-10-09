@@ -8,7 +8,7 @@ namespace ionir {
 
         explicit ConstructValidationPass(
             ionshared::Ptr<ionshared::PassContext> context
-        );
+        ) noexcept;
 
         void visit(ionshared::Ptr<Construct> node) override;
     };

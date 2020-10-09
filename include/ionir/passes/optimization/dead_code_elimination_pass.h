@@ -3,12 +3,12 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    struct DeadCodeEliminationPass : public Pass {
+    struct DeadCodeEliminationPass : Pass {
         IONSHARED_PASS_ID;
 
         explicit DeadCodeEliminationPass(
             ionshared::Ptr<ionshared::PassContext> context
-        );
+        ) noexcept;
 
         void visitBasicBlock(ionshared::Ptr<BasicBlock> node) override;
 

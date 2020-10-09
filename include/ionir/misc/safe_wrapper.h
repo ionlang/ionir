@@ -5,12 +5,11 @@
 
 namespace ionir {
     template<typename T>
-    class SafeWrapper : public Wrapper<T> {
-    public:
+    struct SafeWrapper : Wrapper<T> {
         explicit SafeWrapper(T value) :
             Wrapper<T>(value) {
             if (value == nullptr) {
-                throw std::runtime_error("Cannot construct LLVM entity wrapper with a null value");
+                throw std::runtime_error("Cannot construct with nullptr value");
             }
         }
     };

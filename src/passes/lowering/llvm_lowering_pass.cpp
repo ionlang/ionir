@@ -5,6 +5,21 @@
 #include <iostream>
 
 namespace ionir {
+    llvm::Type *LlvmLoweringPass::processTypeQualifiers(
+        const ionshared::Ptr<TypeQualifiers> &qualifiers,
+        llvm::Type *type
+    ) {
+        // TODO: This should be last? Or const?
+        if (qualifiers->contains(TypeQualifier::Pointer)) {
+            // TODO: Address space correct?
+            type = llvm::PointerType::get(type, 0);
+        }
+
+        // TODO: Process other qualifiers.
+
+        return type;
+    }
+
     ionshared::LlvmStack<llvm::Value> LlvmLoweringPass::getValueStack() const noexcept {
         return this->valueStack;
     }
@@ -32,7 +47,7 @@ namespace ionir {
         return false;
     }
 
-    void LlvmLoweringPass::requireBuilder() {
+    void LlvmLoweringPass::requireBuilder() const {
         // Builder must be instantiated.
         if (!this->buffers.llvmBasicBlock.has_value()) {
             // Otherwise, throw a runtime error.
@@ -40,19 +55,19 @@ namespace ionir {
         }
     }
 
-    void LlvmLoweringPass::requireFunction() {
+    void LlvmLoweringPass::requireFunction() const {
         if (!ionshared::util::hasValue(this->buffers.llvmFunction)) {
             throw std::runtime_error("Expected the function buffer to be set, but was null");
         }
     }
 
-    void LlvmLoweringPass::requireModule() {
+    void LlvmLoweringPass::requireModule() const {
         if (!ionshared::util::hasValue(this->buffers.llvmModule)) {
             throw std::runtime_error("Expected the module buffer to be set, but was null");
         }
     }
 
-    void LlvmLoweringPass::requireContext() {
+    void LlvmLoweringPass::requireContext() const {
         if (!ionshared::util::hasValue(this->buffers.llvmContext)) {
             throw std::runtime_error("Expected the context buffer to be set, but was null");
         }
@@ -73,22 +88,10 @@ namespace ionir {
         return llvm::IRBuilder<>(*this->buffers.llvmBasicBlock);
     }
 
-    llvm::Type *LlvmLoweringPass::processTypeQualifiers(const ionshared::Ptr<TypeQualifiers> &qualifiers, llvm::Type *type) {
-        // TODO: This should be last? Or const?
-        if (qualifiers->contains(TypeQualifier::Pointer)) {
-            // TODO: Address space correct?
-            type = llvm::PointerType::get(type, 0);
-        }
-
-        // TODO: Process other qualifiers.
-
-        return type;
-    }
-
     LlvmLoweringPass::LlvmLoweringPass(
         ionshared::Ptr<ionshared::PassContext> context,
         ionshared::Ptr<ionshared::SymbolTable<llvm::Module *>> modules
-    ) :
+    ) noexcept :
         Pass(std::move(context)),
         modules(std::move(modules)),
         valueStack(),
@@ -208,7 +211,7 @@ namespace ionir {
 
         llvm::Type *type = this->typeStack.pop();
 
-        llvm::GlobalVariable *globalVar =
+        auto *globalVar =
             llvm::dyn_cast<llvm::GlobalVariable>(
                 (*this->buffers.llvmModule)->getOrInsertGlobal(node->name, type)
             );
@@ -236,7 +239,7 @@ namespace ionir {
     void LlvmLoweringPass::visitIntegerType(ionshared::Ptr<IntegerType> node) {
         this->requireContext();
 
-        std::optional<llvm::IntegerType *> type;
+        std::optional<llvm::IntegerType *> type = std::nullopt;
 
         /**
          * Create the corresponding LLVM integer type based off the
@@ -309,7 +312,11 @@ namespace ionir {
 
     void LlvmLoweringPass::visitModule(ionshared::Ptr<Module> node) {
         this->buffers.llvmContext = new llvm::LLVMContext();
-        this->buffers.llvmModule = new llvm::Module(**node->identifier, **this->buffers.llvmContext);
+
+        this->buffers.llvmModule = new llvm::Module(
+            **node->identifier,
+            **this->buffers.llvmContext
+        );
 
         // Set the module on the modules symbol table.
         this->modules->set(**node->identifier, *this->buffers.llvmModule);

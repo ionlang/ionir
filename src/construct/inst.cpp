@@ -17,11 +17,12 @@ namespace ionir {
             || this->instKind == InstKind::Branch;
     }
 
-    uint32_t Inst::getOrder() {
+    size_t Inst::getOrder() {
         std::optional<uint32_t> order =
             this->getUnboxedParent()->locate(this->dynamicCast<Inst>());
 
         if (!order.has_value()) {
+            // TODO: Should be internal error diagnostic.
             throw std::runtime_error("Could not locate instruction in parent");
         }
 

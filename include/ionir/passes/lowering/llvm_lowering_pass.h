@@ -38,16 +38,21 @@ namespace ionir {
              */
             ionshared::Ptr<Context> context;
 
-            std::optional<llvm::LLVMContext *> llvmContext = std::nullopt;
+            std::optional<llvm::LLVMContext*> llvmContext = std::nullopt;
 
-            std::optional<llvm::Module *> llvmModule = std::nullopt;
+            std::optional<llvm::Module*> llvmModule = std::nullopt;
 
-            std::optional<llvm::Function *> llvmFunction = std::nullopt;
+            std::optional<llvm::Function*> llvmFunction = std::nullopt;
 
-            std::optional<llvm::BasicBlock *> llvmBasicBlock = std::nullopt;
+            std::optional<llvm::BasicBlock*> llvmBasicBlock = std::nullopt;
         };
 
-        ionshared::Ptr<ionshared::SymbolTable<llvm::Module *>> modules;
+        static llvm::Type* processTypeQualifiers(
+            const ionshared::Ptr<TypeQualifiers>& qualifiers,
+            llvm::Type* type
+        );
+
+        ionshared::Ptr<ionshared::SymbolTable<llvm::Module*>> modules;
 
         ionshared::LlvmStack<llvm::Value> valueStack;
 
@@ -55,7 +60,7 @@ namespace ionir {
 
         Buffers buffers;
 
-        std::map<std::string, llvm::Value *> namedValues;
+        std::map<std::string, llvm::Value*> namedValues;
 
         LlvmEmittedEntities symbolTable;
 
@@ -63,22 +68,17 @@ namespace ionir {
          * Ensure that the builder is instantiated, otherwise throws
          * a runtime error.
          */
-        void requireBuilder();
+        void requireBuilder() const;
 
-        void requireFunction();
+        void requireFunction() const;
 
-        void requireModule();
+        void requireModule() const;
 
-        void requireContext();
+        void requireContext() const;
 
-        void lockBuffers(const std::function<void()> &callback);
+        void lockBuffers(const std::function<void()>& callback);
 
         std::optional<llvm::IRBuilder<>> getLlvmBuilder() noexcept;
-
-        llvm::Type *processTypeQualifiers(
-            const ionshared::Ptr<TypeQualifiers> &qualifiers,
-            llvm::Type *type
-        );
 
     public:
         IONSHARED_PASS_ID;
@@ -86,21 +86,21 @@ namespace ionir {
         explicit LlvmLoweringPass(
             ionshared::Ptr<ionshared::PassContext> context,
 
-            ionshared::Ptr<ionshared::SymbolTable<llvm::Module *>> modules =
-                std::make_shared<ionshared::SymbolTable<llvm::Module *>>()
-        );
+            ionshared::Ptr<ionshared::SymbolTable<llvm::Module*>> modules =
+                std::make_shared<ionshared::SymbolTable<llvm::Module*>>()
+        ) noexcept;
 
         ~LlvmLoweringPass();
 
-        [[nodiscard]] ionshared::Ptr<ionshared::SymbolTable<llvm::Module *>> getModules() const;
+        [[nodiscard]] ionshared::Ptr<ionshared::SymbolTable<llvm::Module*>> getModules() const;
 
         [[nodiscard]] ionshared::LlvmStack<llvm::Value> getValueStack() const noexcept;
 
         [[nodiscard]] ionshared::LlvmStack<llvm::Type> getTypeStack() const noexcept;
 
-        [[nodiscard]] std::optional<llvm::Module *> getModuleBuffer() const;
+        [[nodiscard]] std::optional<llvm::Module*> getModuleBuffer() const;
 
-        bool setModuleBuffer(const std::string &id);
+        bool setModuleBuffer(const std::string& id);
 
         void visit(ionshared::Ptr<Construct> node) override;
 

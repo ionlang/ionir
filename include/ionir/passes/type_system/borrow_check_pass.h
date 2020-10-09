@@ -9,6 +9,6 @@ namespace ionir {
 
         explicit BorrowCheckPass(
             ionshared::Ptr<ionshared::PassContext> context
-        );
+        ) noexcept;
     };
 }

@@ -9,8 +9,7 @@
 #include "util.h"
 
 namespace ionir {
-    class TypeFactory {
-    public:
+    struct TypeFactory {
         [[nodiscard]] static ionshared::Ptr<IntegerType> typeInteger(IntegerKind integerKind, bool isSigned = true);
 
         [[nodiscard]] static ionshared::Ptr<BooleanType> typeBoolean();
