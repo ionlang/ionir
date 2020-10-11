@@ -30,7 +30,7 @@ namespace ionir::util {
         }
     }
 
-    TypeKind resolveTypeKind(const std::string &id) {
+    TypeKind resolveTypeKind(const std::string& id) {
         // TODO: CRITICAL: Add support new/missing types.
 
         if (id == ConstName::typeInt8) {
@@ -55,7 +55,7 @@ namespace ionir::util {
         return TypeKind::UserDefined;
     }
 
-    std::optional<std::string> findConstructId(const ionshared::Ptr<Construct> &construct) {
+    std::optional<std::string> findConstructId(const ionshared::Ptr<Construct>& construct) {
         switch (construct->constructKind) {
             case ConstructKind::Function: {
                 return construct->dynamicCast<Function>()->prototype->name;
@@ -79,7 +79,7 @@ namespace ionir::util {
         }
     }
 
-    std::optional<std::string> findInstId(const ionshared::Ptr<ionir::Inst> &inst) noexcept {
+    std::optional<std::string> findInstId(const ionshared::Ptr<ionir::Inst>& inst) noexcept {
         switch (inst->getInstKind()) {
             // TODO: Implement.
 
