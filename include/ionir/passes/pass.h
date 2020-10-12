@@ -14,6 +14,7 @@
 #include <ionir/construct/inst/store.h>
 #include <ionir/construct/inst/call.h>
 #include <ionir/construct/inst/jump.h>
+#include <ionir/construct/inst/operation.h>
 #include <ionir/construct/type/struct_decl.h>
 #include <ionir/construct/type/integer_type.h>
 #include <ionir/construct/type/void_type.h>
@@ -76,6 +77,8 @@ namespace ionir {
         virtual void visitStoreInst(ionshared::Ptr<StoreInst> node);
 
         virtual void visitJumpInst(ionshared::Ptr<JumpInst> node);
+
+        virtual void visitOperationInst(ionshared::Ptr<OperationInst> node);
 
         virtual void visitGlobal(ionshared::Ptr<Global> node);
 

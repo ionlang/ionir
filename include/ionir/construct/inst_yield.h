@@ -6,12 +6,12 @@
 
 namespace ionir {
     struct InstYieldOpts : InstOpts {
-        std::string yieldId;
+        std::string yieldName;
     };
 
     struct InstYield {
-        std::string yieldId;
+        std::string yieldName;
 
-        explicit InstYield(std::string yieldId);
+        explicit InstYield(std::string yieldName) noexcept;
     };
 }

@@ -89,6 +89,10 @@ namespace ionir {
         //
     }
 
+    void Pass::visitOperationInst(ionshared::Ptr<OperationInst> node) {
+        //
+    }
+
     void Pass::visitGlobal(ionshared::Ptr<Global> node) {
         //
     }

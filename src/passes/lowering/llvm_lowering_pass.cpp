@@ -5,9 +5,9 @@
 #include <iostream>
 
 namespace ionir {
-    llvm::Type *LlvmLoweringPass::processTypeQualifiers(
-        const ionshared::Ptr<TypeQualifiers> &qualifiers,
-        llvm::Type *type
+    llvm::Type* LlvmLoweringPass::processTypeQualifiers(
+        const ionshared::Ptr<TypeQualifiers>& qualifiers,
+        llvm::Type* type
     ) {
         // TODO: This should be last? Or const?
         if (qualifiers->contains(TypeQualifier::Pointer)) {
@@ -28,15 +28,15 @@ namespace ionir {
         return this->typeStack;
     }
 
-    ionshared::Ptr<ionshared::SymbolTable<llvm::Module *>> LlvmLoweringPass::getModules() const {
+    ionshared::Ptr<ionshared::SymbolTable<llvm::Module*>> LlvmLoweringPass::getModules() const {
         return this->modules;
     }
 
-    std::optional<llvm::Module *> LlvmLoweringPass::getModuleBuffer() const {
+    std::optional<llvm::Module*> LlvmLoweringPass::getModuleBuffer() const {
         return this->buffers.llvmModule;
     }
 
-    bool LlvmLoweringPass::setModuleBuffer(const std::string &id) {
+    bool LlvmLoweringPass::setModuleBuffer(const std::string& id) {
         if (this->modules->contains(id)) {
             this->buffers.llvmModule = this->modules->lookup(id);
             this->buffers.llvmContext = &(*this->buffers.llvmModule)->getContext();
@@ -47,12 +47,14 @@ namespace ionir {
         return false;
     }
 
-    void LlvmLoweringPass::requireBuilder() const {
+    llvm::IRBuilder<> LlvmLoweringPass::requireBuilder() {
         // Builder must be instantiated.
         if (!this->buffers.llvmBasicBlock.has_value()) {
             // Otherwise, throw a runtime error.
             throw std::runtime_error("Expected builder to be instantiated");
         }
+
+        return *this->makeLlvmBuilder();
     }
 
     void LlvmLoweringPass::requireFunction() const {
@@ -73,14 +75,14 @@ namespace ionir {
         }
     }
 
-    void LlvmLoweringPass::lockBuffers(const std::function<void()> &callback) {
+    void LlvmLoweringPass::lockBuffers(const std::function<void()>& callback) {
         Buffers buffersBackup = this->buffers;
 
         callback();
         this->buffers = buffersBackup;
     }
 
-    std::optional<llvm::IRBuilder<>> LlvmLoweringPass::getLlvmBuilder() noexcept {
+    std::optional<llvm::IRBuilder<>> LlvmLoweringPass::makeLlvmBuilder() noexcept {
         if (!ionshared::util::hasValue(this->buffers.llvmBasicBlock)) {
             return std::nullopt;
         }
@@ -90,7 +92,7 @@ namespace ionir {
 
     LlvmLoweringPass::LlvmLoweringPass(
         ionshared::Ptr<ionshared::PassContext> context,
-        ionshared::Ptr<ionshared::SymbolTable<llvm::Module *>> modules
+        ionshared::Ptr<ionshared::SymbolTable<llvm::Module*>> modules
     ) noexcept :
         Pass(std::move(context)),
         modules(std::move(modules)),

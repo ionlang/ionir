@@ -48,7 +48,7 @@ namespace ionir {
         this->requireBuilder();
 
         this->valueStack.push(
-            this->getLlvmBuilder()->CreateGlobalStringPtr(node->value)
+            this->makeLlvmBuilder()->CreateGlobalStringPtr(node->value)
         );
 //        this->addToScope(node, value);
     }

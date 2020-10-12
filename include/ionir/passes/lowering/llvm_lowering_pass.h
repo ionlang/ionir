@@ -68,7 +68,7 @@ namespace ionir {
          * Ensure that the builder is instantiated, otherwise throws
          * a runtime error.
          */
-        void requireBuilder() const;
+        llvm::IRBuilder<> requireBuilder();
 
         void requireFunction() const;
 
@@ -78,7 +78,7 @@ namespace ionir {
 
         void lockBuffers(const std::function<void()>& callback);
 
-        std::optional<llvm::IRBuilder<>> getLlvmBuilder() noexcept;
+        std::optional<llvm::IRBuilder<>> makeLlvmBuilder() noexcept;
 
     public:
         IONSHARED_PASS_ID;
@@ -135,6 +135,8 @@ namespace ionir {
         void visitStoreInst(ionshared::Ptr<StoreInst> node) override;
 
         void visitJumpInst(ionshared::Ptr<JumpInst> node) override;
+
+        void visitOperationInst(ionshared::Ptr<OperationInst> node) override;
 
         void visitGlobal(ionshared::Ptr<Global> node) override;
 

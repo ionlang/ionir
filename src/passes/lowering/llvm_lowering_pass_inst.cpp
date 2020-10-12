@@ -8,14 +8,14 @@ namespace ionir {
         this->requireBuilder();
         node->type->accept(*this);
 
-        llvm::Type *type = this->typeStack.pop();
+        llvm::Type* type = this->typeStack.pop();
 
         /**
          * Create the LLVM-equivalent alloca instruction
          * using the buffered builder.
          */
-        llvm::AllocaInst *llvmAllocaInst =
-            this->getLlvmBuilder()->CreateAlloca(type, (llvm::Value *)nullptr, node->yieldId);
+        llvm::AllocaInst* llvmAllocaInst =
+            this->makeLlvmBuilder()->CreateAlloca(type, (llvm::Value*)nullptr, node->yieldName);
 
         this->valueStack.push(llvmAllocaInst);
         this->symbolTable.set(node, llvmAllocaInst);
@@ -25,10 +25,10 @@ namespace ionir {
         this->requireBuilder();
 
         ionshared::OptPtr<Construct> returnInstValue = node->value;
-        llvm::ReturnInst *llvmReturnInst = nullptr;
+        llvm::ReturnInst* llvmReturnInst = nullptr;
 
         if (ionshared::util::hasValue(returnInstValue)) {
-            llvm::Value *llvmValue = nullptr;
+            llvm::Value* llvmValue = nullptr;
 
             // TODO: Hotfix. Clean up messy code.
             // Process the value if applicable.
@@ -64,11 +64,11 @@ namespace ionir {
              * Create the LLVM equivalent return instruction
              * using the buffered builder.
              */
-            llvmReturnInst = this->getLlvmBuilder()->CreateRet(llvmValue);
+            llvmReturnInst = this->makeLlvmBuilder()->CreateRet(llvmValue);
         }
         // No value was specified. Simply return void.
         else {
-            llvmReturnInst = this->getLlvmBuilder()->CreateRetVoid();
+            llvmReturnInst = this->makeLlvmBuilder()->CreateRetVoid();
         }
 
         this->valueStack.push(llvmReturnInst);
@@ -106,7 +106,7 @@ namespace ionir {
         }
 
         // Create the LLVM conditional branch instruction.
-        llvm::BranchInst *llvmBranchInst = this->getLlvmBuilder()->CreateCondBr(
+        llvm::BranchInst *llvmBranchInst = this->makeLlvmBuilder()->CreateCondBr(
             condition,
             *llvmConsequentBasicBlock,
             *llvmAlternativeBasicBlock
@@ -173,7 +173,7 @@ namespace ionir {
 
         // Otherwise, create the LLVM call instruction.
         llvm::CallInst *callInst =
-            this->getLlvmBuilder()->CreateCall(llvmCallee, llvmArgs);
+            this->makeLlvmBuilder()->CreateCall(llvmCallee, llvmArgs);
 
         this->valueStack.push(callInst);
 //        this->addToScope(node, callInst);
@@ -197,7 +197,7 @@ namespace ionir {
         llvm::Value *llvmValue = this->valueStack.pop();
 
         llvm::StoreInst *llvmStoreInst =
-            this->getLlvmBuilder()->CreateStore(llvmValue, *llvmTargetAlloca);
+            this->makeLlvmBuilder()->CreateStore(llvmValue, *llvmTargetAlloca);
 
         this->valueStack.push(llvmStoreInst);
 //        this->addToScope(node, llvmStoreInst);
@@ -239,7 +239,7 @@ namespace ionir {
 
         // Create the LLVM branch instruction (with no condition).
         llvm::BranchInst *llvmBranchInst =
-            this->getLlvmBuilder()->CreateBr(*llvmBasicBlockResult);
+            this->makeLlvmBuilder()->CreateBr(*llvmBasicBlockResult);
 
         this->valueStack.push(llvmBranchInst);
 //        this->addToScope(node, llvmBranchInst);
@@ -251,5 +251,108 @@ namespace ionir {
         // ------------------------------------------------------------------
         // ------------------------------------------------------------------
 
+    }
+
+    void LlvmLoweringPass::visitOperationInst(ionshared::Ptr<OperationInst> node) {
+        llvm::IRBuilder<> llvmBuilder = this->requireBuilder();
+        std::optional<llvm::Value*> llvmRightSideValue = std::nullopt;
+        bool isInteger = node->leftSideValue->type->typeKind == TypeKind::Integer;
+
+        /**
+         * NOTE: During lowering it is assumed that both types are
+         * compatible (equal), since there is no implicit conversions
+         * done by the compiler. This assurance comes from the type-checking
+         * pass, which must occur prior to lowering.
+         */
+        if (!isInteger && node->leftSideValue->type->typeKind != TypeKind::Decimal) {
+            // TODO: Internal error?
+            throw std::runtime_error("Value type of operation must be numerical");
+        }
+
+        auto requireRightSide = [&]{
+            if (!ionshared::util::hasValue(node->rightSideValue)) {
+                throw std::runtime_error("Right side must have a value for this operation");
+            }
+        };
+
+        this->visit(node->leftSideValue);
+
+        llvm::Value* llvmLeftSideValue = this->valueStack.pop();
+        llvm::Value* result;
+        llvm::Instruction::BinaryOps llvmBinaryOperator;
+        llvm::Instruction::UnaryOps llvmUnaryOperator;
+
+        switch (node->operatorKind) {
+            case OperatorKind::Addition: {
+                requireRightSide();
+
+                llvmBinaryOperator = isInteger
+                    ? llvm::Instruction::BinaryOps::Add
+                    : llvm::Instruction::BinaryOps::FAdd;
+
+                break;
+            }
+
+            case OperatorKind::Multiplication: {
+                requireRightSide();
+
+                llvmBinaryOperator = isInteger
+                    ? llvm::Instruction::BinaryOps::Mul
+                    : llvm::Instruction::BinaryOps::FMul;
+
+                break;
+            }
+
+            case OperatorKind::Subtraction: {
+                if (ionshared::util::hasValue(node->rightSideValue)) {
+                    llvmBinaryOperator = isInteger
+                        ? llvm::Instruction::BinaryOps::Sub
+                        : llvm::Instruction::BinaryOps::FSub;
+
+                    break;
+                }
+
+                // TODO: Implement lowering of integer neg. operator (via 0 - value?).
+                llvmUnaryOperator = isInteger
+                    ? throw std::runtime_error("Not yet implemented")
+                    : llvm::Instruction::UnaryOps::FNeg;
+
+                break;
+            }
+
+            case OperatorKind::And: {
+                llvmBinaryOperator = llvm::Instruction::BinaryOps::And;
+
+                break;
+            }
+
+            case OperatorKind::Or: {
+                llvmBinaryOperator = llvm::Instruction::BinaryOps::Or;
+
+                break;
+            }
+
+            // TODO: Add support for missing operators.
+
+            default: {
+                throw std::runtime_error("Unsupported operator kind");
+            }
+        }
+
+        if (ionshared::util::hasValue(node->rightSideValue)) {
+            result = llvmBuilder.CreateBinOp(
+                llvmBinaryOperator,
+                llvmLeftSideValue,
+                *llvmRightSideValue
+            );
+        }
+        else {
+            result = llvmBuilder.CreateUnOp(
+                llvmUnaryOperator,
+                llvmLeftSideValue
+            );
+        }
+
+        this->valueStack.push(result);
     }
 }

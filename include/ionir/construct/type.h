@@ -28,6 +28,8 @@ namespace ionir {
 
         Integer,
 
+        Decimal,
+
         String,
 
         Boolean,
