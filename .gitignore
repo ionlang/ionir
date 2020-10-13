@@ -21,8 +21,6 @@ Testing/
 Makefile
 test/IonIrTests
 lib/
-libs/
-googletest/
 *.a
 index
 *.log
