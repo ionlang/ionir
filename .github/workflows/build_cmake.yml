@@ -62,8 +62,7 @@ jobs:
       #           cached: ${{ steps.cache-llvm.outputs.cache-hit }}
 
       - name: Checkout Git submodules
-        #       run: git submodule update --init --recursive
-        run: git submodule add --force https://github.com/google/googletest libs/googletest && git submodule add --force https://github.com/ionlang/llvm-c libs/llvm-c
+        run: git submodule update --init --recursive
 
       - name: Configure
         shell: cmake -P {0}
