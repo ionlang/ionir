@@ -2,6 +2,3 @@
 	path = libs/googletest
 	url = https://github.com/google/googletest
 	ignore = dirty
-[submodule "libs/llvm-c"]
-	path = libs/llvm-c
-	url = https://github.com/ionlang/llvm-c
