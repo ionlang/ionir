@@ -6,14 +6,14 @@ namespace ionir {
     FunctionBody::FunctionBody(
         ionshared::Ptr<Function> parent,
         PtrSymbolTable<BasicBlock> symbolTable
-    ) :
+    ) noexcept :
         ConstructWithParent(std::move(parent),
         ConstructKind::FunctionBody),
         ScopeAnchor<BasicBlock>(std::move(symbolTable)) {
         //
     }
 
-    void FunctionBody::accept(Pass &visitor) {
+    void FunctionBody::accept(Pass& visitor) {
         // TODO: CRITICAL: Cast error.
 //        visitor.visitScopeAnchor(this->staticCast<ScopeAnchor<Section>>());
         visitor.visitFunctionBody(this->staticCast<FunctionBody>());
@@ -35,7 +35,7 @@ namespace ionir {
         return ionshared::util::hasValue(this->findEntryBasicBlock());
     }
 
-    void FunctionBody::insertBasicBlock(const ionshared::Ptr<BasicBlock> &basicBlock) {
+    void FunctionBody::insertBasicBlock(const ionshared::Ptr<BasicBlock>& basicBlock) {
         // TODO: Check if section exists first?
         this->getSymbolTable()->set(basicBlock->name, basicBlock);
 

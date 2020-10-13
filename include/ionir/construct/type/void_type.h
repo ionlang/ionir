@@ -3,12 +3,11 @@
 #include <ionir/construct/type.h>
 
 namespace ionir {
-    class Pass;
+    struct Pass;
 
-    class VoidType : public Type {
-    public:
-        VoidType();
+    struct VoidType : Type {
+        VoidType() noexcept;
 
-        void accept(Pass &pass) override;
+        void accept(Pass& pass) override;
     };
 }

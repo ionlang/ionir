@@ -1,13 +1,13 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    JumpInst::JumpInst(const JumpInstOpts &opts) :
+    JumpInst::JumpInst(const JumpInstOpts& opts) :
         Inst(opts.parent, InstKind::Jump),
         basicBlockTarget(opts.basicBlockTarget) {
         //
     }
 
-    void JumpInst::accept(Pass &visitor) {
+    void JumpInst::accept(Pass& visitor) {
         visitor.visitJumpInst(this->dynamicCast<JumpInst>());
     }
 

@@ -7,7 +7,7 @@
 #include "function_body.h"
 
 namespace ionir {
-    class Pass;
+    struct Pass;
 
     struct Function : Construct {
         ionshared::Ptr<Prototype> prototype;
@@ -19,7 +19,7 @@ namespace ionir {
             ionshared::Ptr<FunctionBody> body
         );
 
-        void accept(Pass &visitor) override;
+        void accept(Pass& visitor) override;
 
         [[nodiscard]] Ast getChildrenNodes() override;
 

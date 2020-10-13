@@ -3,13 +3,13 @@
 #include <ionir/construct/value.h>
 
 namespace ionir {
-    class Pass;
+    struct Pass;
 
     struct CharLiteral : Value<> {
         char value;
 
-        explicit CharLiteral(char value);
+        explicit CharLiteral(char value) noexcept;
 
-        void accept(Pass &visitor) override;
+        void accept(Pass& visitor) override;
     };
 }

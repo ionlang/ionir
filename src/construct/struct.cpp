@@ -1,14 +1,14 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    Struct::Struct(std::string name, Fields fields) :
+    Struct::Struct(std::string name, Fields fields) noexcept :
         Construct(ConstructKind::Struct),
         ionshared::Named{std::move(name)},
         fields(std::move(fields)) {
         //
     }
 
-    void Struct::accept(Pass &visitor) {
+    void Struct::accept(Pass& visitor) {
         visitor.visitStruct(this->dynamicCast<Struct>());
     }
 

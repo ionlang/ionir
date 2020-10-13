@@ -45,10 +45,6 @@ namespace ionir {
         //
     }
 
-    void Pass::visitVarReference(ionshared::Ptr<VariableRef> node) {
-        //
-    }
-
     void Pass::visitIntegerLiteral(ionshared::Ptr<IntegerLiteral> node) {
         //
     }

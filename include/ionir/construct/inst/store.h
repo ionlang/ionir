@@ -5,7 +5,7 @@
 #include <ionir/construct/pseudo/child_construct.h>
 
 namespace ionir {
-    class Pass;
+    struct Pass;
 
     struct StoreInstOpts : InstOpts {
         ionshared::Ptr<Value<>> value;
@@ -18,9 +18,9 @@ namespace ionir {
 
         ionshared::Ptr<AllocaInst> target;
 
-        explicit StoreInst(const StoreInstOpts &opts);
+        explicit StoreInst(const StoreInstOpts& opts);
 
-        void accept(Pass &visitor) override;
+        void accept(Pass& visitor) override;
 
         [[nodiscard]] Ast getChildrenNodes() override;
     };

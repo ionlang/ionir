@@ -12,13 +12,13 @@
 #include "type.h"
 
 namespace ionir {
-    class Pass;
+    struct Pass;
 
-    class FunctionBody;
+    struct FunctionBody;
 
-    class InstBuilder;
+    struct InstBuilder;
 
-    class JumpInst;
+    struct JumpInst;
 
     enum class BasicBlockKind {
         /**

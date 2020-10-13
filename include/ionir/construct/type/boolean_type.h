@@ -3,12 +3,11 @@
 #include <ionir/construct/type.h>
 
 namespace ionir {
-    class Pass;
+    struct Pass;
 
-    class BooleanType : public Type {
-    public:
+    struct BooleanType : Type {
         BooleanType();
 
-        void accept(Pass &pass) override;
+        void accept(Pass& pass) override;
     };
 }

@@ -3,9 +3,9 @@
 #include <optional>
 
 namespace ionir {
-    class Pass;
+    struct Pass;
 
-    class BasicBlock;
+    struct BasicBlock;
 
     struct BranchInstOpts : InstOpts {
         ionshared::Ptr<Construct> condition;
@@ -22,9 +22,9 @@ namespace ionir {
 
         ionshared::Ptr<BasicBlock> alternativeBasicBlock;
 
-        explicit BranchInst(const BranchInstOpts &opts);
+        explicit BranchInst(const BranchInstOpts& opts);
 
-        void accept(Pass &visitor) override;
+        void accept(Pass& visitor) override;
 
         [[nodiscard]] Ast getChildrenNodes() override;
     };

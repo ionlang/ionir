@@ -7,7 +7,7 @@ namespace ionir {
         //
     }
 
-    void BooleanLiteral::accept(Pass &visitor) {
+    void BooleanLiteral::accept(Pass& visitor) {
         visitor.visitBooleanLiteral(this->dynamicCast<BooleanLiteral>());
     }
 }

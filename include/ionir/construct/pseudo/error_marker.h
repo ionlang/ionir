@@ -6,19 +6,13 @@
 
 namespace ionir {
     // TODO: What if 'pass.h' is never included?
-    class Pass;
+    struct Pass;
 
-    class ErrorMarker : public Construct {
-    private:
+    struct ErrorMarker : Construct {
         std::string message;
 
-    public:
         explicit ErrorMarker(std::string message);
 
-        void accept(Pass &visitor) override;
-
-        [[nodiscard]] std::string getMessage() const noexcept;
-
-        void setMessage(std::string message) noexcept;
+        void accept(Pass& visitor) override;
     };
 }

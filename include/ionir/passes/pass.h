@@ -23,7 +23,6 @@
 #include <ionir/construct/pseudo/directive.h>
 #include <ionir/construct/pseudo/error_marker.h>
 #include <ionir/construct/function.h>
-#include <ionir/construct/variable_ref.h>
 #include <ionir/construct/prototype.h>
 #include <ionir/construct/extern.h>
 #include <ionir/construct/function_body.h>
@@ -55,8 +54,6 @@ namespace ionir {
         virtual void visitFunctionBody(ionshared::Ptr<FunctionBody> node);
 
         virtual void visitPrototype(ionshared::Ptr<Prototype> node);
-
-        virtual void visitVarReference(ionshared::Ptr<VariableRef> node);
 
         virtual void visitIntegerLiteral(ionshared::Ptr<IntegerLiteral> node);
 

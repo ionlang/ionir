@@ -5,7 +5,7 @@ namespace ionir {
         ionshared::Ptr<Type> type,
         std::string id,
         ionshared::OptPtr<Value<>> value
-    ) :
+    ) noexcept :
         Construct(ConstructKind::Global),
         Named{std::move(id)},
         type(std::move(type)),
@@ -13,7 +13,7 @@ namespace ionir {
         //
     }
 
-    void Global::accept(Pass &visitor) {
+    void Global::accept(Pass& visitor) {
         visitor.visitGlobal(this->dynamicCast<Global>());
     }
 

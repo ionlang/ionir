@@ -4,15 +4,15 @@
 #include <ionir/construct/pseudo/child_construct.h>
 
 namespace ionir {
-    class Pass;
+    struct Pass;
 
-    class BasicBlock;
+    struct BasicBlock;
 
     struct InstOpts {
         const ionshared::Ptr<BasicBlock> parent;
     };
 
-    enum class InstKind {
+    enum struct InstKind {
         Alloca,
 
         Store,
@@ -33,9 +33,9 @@ namespace ionir {
     struct Inst : ConstructWithParent<BasicBlock> {
         const InstKind instKind;
 
-        Inst(ionshared::Ptr<BasicBlock> parent, InstKind kind);
+        Inst(ionshared::Ptr<BasicBlock> parent, InstKind kind) noexcept;
 
-        void accept(Pass &visitor) override = 0;
+        void accept(Pass& visitor) override = 0;
 
         [[nodiscard]] InstKind getInstKind() const noexcept;
 

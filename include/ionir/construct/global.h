@@ -7,7 +7,7 @@
 #include "type.h"
 
 namespace ionir {
-    class Pass;
+    struct Pass;
 
     struct Global : Construct, ionshared::Named {
         ionshared::Ptr<Type> type;
@@ -18,9 +18,9 @@ namespace ionir {
             ionshared::Ptr<Type> type,
             std::string id,
             ionshared::OptPtr<Value<>> value = std::nullopt
-        );
+        ) noexcept;
 
-        void accept(Pass &visitor) override;
+        void accept(Pass& visitor) override;
 
         [[nodiscard]] Ast getChildrenNodes() override;
     };

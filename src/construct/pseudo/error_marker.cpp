@@ -8,15 +8,7 @@ namespace ionir {
         //
     }
 
-    void ErrorMarker::accept(Pass &visitor) {
+    void ErrorMarker::accept(Pass& visitor) {
         visitor.visitErrorMarker(this->dynamicCast<ErrorMarker>());
-    }
-
-    std::string ErrorMarker::getMessage() const noexcept {
-        return this->message;
-    }
-
-    void ErrorMarker::setMessage(std::string message) noexcept {
-        this->message = std::move(message);
     }
 }

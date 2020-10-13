@@ -1,14 +1,17 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    Module::Module(ionshared::Ptr<Identifier> identifier, ionshared::Ptr<Context> context) :
+    Module::Module(
+        ionshared::Ptr<Identifier> identifier,
+        ionshared::Ptr<Context> context
+    ) noexcept :
         Construct(ConstructKind::Module),
         Identifiable(std::move(identifier)),
         context(std::move(context)) {
         //
     }
 
-    void Module::accept(Pass &visitor) {
+    void Module::accept(Pass& visitor) {
         visitor.visitModule(this->dynamicCast<Module>());
     }
 
@@ -19,7 +22,7 @@ namespace ionir {
         );
     }
 
-    bool Module::insertFunction(const ionshared::Ptr<Function> &function) {
+    bool Module::insertFunction(const ionshared::Ptr<Function>& function) {
         Scope globalScope = this->context->getGlobalScope();
         std::string functionName = function->prototype->name;
 
@@ -46,7 +49,7 @@ namespace ionir {
         return std::nullopt;
     }
 
-    bool Module::mergeInto(const ionshared::Ptr<Module> &module) {
+    bool Module::mergeInto(const ionshared::Ptr<Module>& module) {
         auto localGlobalScopeMap = this->context->getGlobalScope()->unwrap();
         std::vector<Scope> localScopes = this->context->getScopes();
         std::vector<Scope> targetScopes = module->context->getScopes();

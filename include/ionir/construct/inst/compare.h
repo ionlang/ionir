@@ -3,17 +3,17 @@
 #include <ionir/construct/inst.h>
 
 namespace ionir {
-    class Pass;
+    struct Pass;
 
-    class Function;
+    struct Function;
 
-    struct IcmpInstOpts : InstOpts {
+    struct CompareInstOpts : InstOpts {
         // TODO
     };
 
     struct CompareInst : Inst {
-        explicit CompareInst(const IcmpInstOpts &opts);
+        explicit CompareInst(const CompareInstOpts& opts);
 
-        void accept(Pass &visitor) override;
+        void accept(Pass& visitor) override;
     };
 }

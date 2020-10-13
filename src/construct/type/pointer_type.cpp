@@ -8,7 +8,7 @@ namespace ionir {
         //
     }
 
-    void PointerType::accept(Pass &pass) {
+    void PointerType::accept(Pass& pass) {
         pass.visitPointerType(this->dynamicCast<PointerType>());
     }
 }

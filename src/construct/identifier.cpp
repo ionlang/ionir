@@ -11,7 +11,7 @@ namespace ionir {
     Identifier::operator std::string() const {
         std::stringstream stream;
 
-        for (const auto &scopePath : this->scopePath) {
+        for (const auto& scopePath : this->scopePath) {
             // TODO: Avoid having it hard-coded.
             stream << scopePath << "::";
         }
@@ -25,7 +25,7 @@ namespace ionir {
         return this->operator std::string();
     }
 
-    void Identifier::accept(Pass &visitor) {
+    void Identifier::accept(Pass& visitor) {
         visitor.visitIdentifier(this->dynamicCast<Identifier>());
     }
 }

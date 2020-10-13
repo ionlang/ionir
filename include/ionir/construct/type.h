@@ -6,9 +6,9 @@
 #include "construct.h"
 
 namespace ionir {
-    class Pass;
+    struct Pass;
 
-    enum class TypeQualifier {
+    enum struct TypeQualifier {
         Constant,
 
         Mutable,
@@ -21,7 +21,7 @@ namespace ionir {
         Array
     };
 
-    enum class TypeKind {
+    enum struct TypeKind {
         UserDefined,
 
         Void,
@@ -39,8 +39,10 @@ namespace ionir {
 
     typedef ionshared::Set<TypeQualifier> TypeQualifiers;
 
-    struct Type : Construct, ionshared::Named {
-        TypeKind typeKind;
+    struct Type : Construct {
+        const TypeKind typeKind;
+
+        const std::optional<std::string> name;
 
         ionshared::Ptr<TypeQualifiers> qualifiers;
 
@@ -50,19 +52,13 @@ namespace ionir {
          * only takes 'id' (super class TypeKind::UserDefined).
          */
         explicit Type(
-            std::string name,
             TypeKind kind = TypeKind::UserDefined,
+            std::optional<std::string> name = std::nullopt,
 
             ionshared::Ptr<TypeQualifiers> qualifiers =
                 std::make_shared<TypeQualifiers>()
-        );
+        ) noexcept;
 
-        [[nodiscard]] bool equals(const ionshared::Ptr<Construct> &other) override;
-
-        [[nodiscard]] bool addQualifier(TypeQualifier qualifier) noexcept;
-
-        [[nodiscard]] bool removeQualifier(TypeQualifier qualifier) noexcept;
-
-        [[nodiscard]] bool hasQualifier(TypeQualifier qualifier) const;
+        [[nodiscard]] bool equals(const ionshared::Ptr<Construct>& other) override;
     };
 }

@@ -9,7 +9,7 @@
 #include "module.h"
 
 namespace ionir {
-    class Pass;
+    struct Pass;
 
     struct Prototype : ConstructWithParent<Module>, ionshared::Named {
         std::string id;
@@ -23,9 +23,9 @@ namespace ionir {
             ionshared::Ptr<Args> args,
             ionshared::Ptr<Type> returnType,
             ionshared::Ptr<Module> parent
-        );
+        ) noexcept;
 
-        void accept(Pass &visitor) override;
+        void accept(Pass& visitor) override;
 
         [[nodiscard]] Ast getChildrenNodes() override;
 

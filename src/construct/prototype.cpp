@@ -6,7 +6,7 @@ namespace ionir {
         ionshared::Ptr<Args> args,
         ionshared::Ptr<Type> returnType,
         ionshared::Ptr<Module> parent
-    ) :
+    ) noexcept :
         ConstructWithParent<Module>(std::move(parent), ConstructKind::Prototype),
         Named{std::move(id)},
         args(std::move(args)),
@@ -14,7 +14,7 @@ namespace ionir {
         //
     }
 
-    void Prototype::accept(Pass &visitor) {
+    void Prototype::accept(Pass& visitor) {
         visitor.visitPrototype(this->dynamicCast<Prototype>());
     }
 

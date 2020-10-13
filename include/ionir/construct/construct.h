@@ -8,11 +8,11 @@
 #include <ionir/tracking/symbol_table.h>
 
 namespace ionir {
-    class Pass;
+    struct Pass;
 
-    class Inst;
+    struct Inst;
 
-    class Type;
+    struct Type;
 
     template<typename T>
     struct Value;

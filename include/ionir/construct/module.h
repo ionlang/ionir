@@ -9,19 +9,19 @@
 #include "construct.h"
 
 namespace ionir {
-    class Pass;
+    struct Pass;
 
-    class Function;
+    struct Function;
 
-    struct Module : public Construct, public Identifiable {
+    struct Module : Construct, Identifiable {
         ionshared::Ptr<Context> context;
 
         explicit Module(
             ionshared::Ptr<Identifier> identifier,
             ionshared::Ptr<Context> context = std::make_shared<Context>()
-        );
+        ) noexcept;
 
-        void accept(Pass &visitor) override;
+        void accept(Pass& visitor) override;
 
         [[nodiscard]] Ast getChildrenNodes() override;
 

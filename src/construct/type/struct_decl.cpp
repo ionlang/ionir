@@ -6,7 +6,7 @@ namespace ionir {
         //
     }
 
-    void StructDecl::accept(Pass &visitor) {
+    void StructDecl::accept(Pass& visitor) {
         return visitor.visitStructDecl(this->dynamicCast<StructDecl>());
     }
 }

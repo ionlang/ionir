@@ -3,9 +3,9 @@
 #include <optional>
 
 namespace ionir {
-    class Pass;
+    struct Pass;
 
-    class BasicBlock;
+    struct BasicBlock;
 
     struct JumpInstOpts : InstOpts {
         ionshared::Ptr<BasicBlock> basicBlockTarget;
@@ -14,9 +14,9 @@ namespace ionir {
     struct JumpInst : Inst {
         ionshared::Ptr<BasicBlock> basicBlockTarget;
 
-        explicit JumpInst(const JumpInstOpts &opts);
+        explicit JumpInst(const JumpInstOpts& opts);
 
-        void accept(Pass &visitor) override;
+        void accept(Pass& visitor) override;
 
         [[nodiscard]] Ast getChildrenNodes() override;
     };

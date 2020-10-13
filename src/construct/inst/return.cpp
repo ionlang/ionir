@@ -1,13 +1,13 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    ReturnInst::ReturnInst(const ReturnInstOpts &opts) :
+    ReturnInst::ReturnInst(const ReturnInstOpts& opts) :
         Inst(opts.parent, InstKind::Return),
         value(opts.value) {
         //
     }
 
-    void ReturnInst::accept(Pass &visitor) {
+    void ReturnInst::accept(Pass& visitor) {
         visitor.visitReturnInst(this->dynamicCast<ReturnInst>());
     }
 
@@ -23,9 +23,5 @@ namespace ionir {
 
     bool ReturnInst::hasValue() noexcept {
         return ionshared::util::hasValue(this->value);
-    }
-
-    void ReturnInst::removeValue() noexcept {
-        this->value = std::nullopt;
     }
 }

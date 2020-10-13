@@ -3,9 +3,9 @@
 #include <ionir/construct/type.h>
 
 namespace ionir {
-    class Pass;
+    struct Pass;
 
-    enum class IntegerKind {
+    enum struct IntegerKind {
         Int8 = 8,
 
         Int16 = 16,
@@ -24,6 +24,6 @@ namespace ionir {
 
         explicit IntegerType(IntegerKind kind, bool isSigned = true);
 
-        void accept(Pass &pass) override;
+        void accept(Pass& pass) override;
     };
 }

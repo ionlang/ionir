@@ -3,13 +3,13 @@
 #include <ionir/construct/value.h>
 
 namespace ionir {
-    class Pass;
+    struct Pass;
 
     struct BooleanLiteral : Value<> {
         bool value;
 
         explicit BooleanLiteral(bool value);
 
-        void accept(Pass &visitor) override;
+        void accept(Pass& visitor) override;
     };
 }

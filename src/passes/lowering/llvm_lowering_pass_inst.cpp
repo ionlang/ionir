@@ -185,18 +185,18 @@ namespace ionir {
 
         ionshared::Ptr<AllocaInst> target = node->target;
 
-        std::optional<llvm::AllocaInst *> llvmTargetAlloca =
+        std::optional<llvm::AllocaInst*> llvmTargetAlloca =
             this->symbolTable.find<llvm::AllocaInst>(target);
 
         if (!ionshared::util::hasValue(llvmTargetAlloca)) {
             throw std::runtime_error("Target could not be retrieved from the emitted entities map");
         }
 
-        node->value->accept(*this);
+        this->visit(node->value);
 
-        llvm::Value *llvmValue = this->valueStack.pop();
+        llvm::Value* llvmValue = this->valueStack.pop();
 
-        llvm::StoreInst *llvmStoreInst =
+        llvm::StoreInst* llvmStoreInst =
             this->makeLlvmBuilder()->CreateStore(llvmValue, *llvmTargetAlloca);
 
         this->valueStack.push(llvmStoreInst);
@@ -269,10 +269,13 @@ namespace ionir {
             throw std::runtime_error("Value type of operation must be numerical");
         }
 
-        auto requireRightSide = [&]{
+        auto requireAndVisitRightSide = [&]{
             if (!ionshared::util::hasValue(node->rightSideValue)) {
                 throw std::runtime_error("Right side must have a value for this operation");
             }
+
+            this->visit(*node->rightSideValue);
+            llvmRightSideValue = this->valueStack.pop();
         };
 
         this->visit(node->leftSideValue);
@@ -284,7 +287,7 @@ namespace ionir {
 
         switch (node->operatorKind) {
             case OperatorKind::Addition: {
-                requireRightSide();
+                requireAndVisitRightSide();
 
                 llvmBinaryOperator = isInteger
                     ? llvm::Instruction::BinaryOps::Add
@@ -294,7 +297,7 @@ namespace ionir {
             }
 
             case OperatorKind::Multiplication: {
-                requireRightSide();
+                requireAndVisitRightSide();
 
                 llvmBinaryOperator = isInteger
                     ? llvm::Instruction::BinaryOps::Mul

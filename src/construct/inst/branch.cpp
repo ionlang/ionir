@@ -1,7 +1,7 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    BranchInst::BranchInst(const BranchInstOpts &opts) :
+    BranchInst::BranchInst(const BranchInstOpts& opts) :
         Inst(opts.parent, InstKind::Branch),
         condition(opts.condition),
         consequentBasicBlock(opts.consequentBasicBlock),
@@ -9,7 +9,7 @@ namespace ionir {
         //
     }
 
-    void BranchInst::accept(Pass &visitor) {
+    void BranchInst::accept(Pass& visitor) {
         visitor.visitBranchInst(this->dynamicCast<BranchInst>());
     }
 

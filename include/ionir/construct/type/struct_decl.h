@@ -1,12 +1,11 @@
 #pragma once
 
 namespace ionir {
-    class Pass;
+    struct Pass;
 
-    class StructDecl : public Construct {
-    public:
+    struct StructDecl : Construct {
         StructDecl();
 
-        void accept(Pass &visitor) override;
+        void accept(Pass& visitor) override;
     };
 }

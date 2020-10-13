@@ -4,9 +4,9 @@
 #include <ionir/construct/prototype.h>
 
 namespace ionir {
-    class Pass;
+    struct Pass;
 
-    enum class ValueKind {
+    enum struct ValueKind {
         Integer,
 
         Character,
@@ -17,12 +17,13 @@ namespace ionir {
     };
 
     template<typename T = Type>
+//        requires std::derived_from<T, Type>
     struct Value : Construct {
         const ValueKind valueKind;
 
         ionshared::Ptr<T> type;
 
-        Value(ValueKind kind, ionshared::Ptr<T> type) :
+        Value(ValueKind kind, ionshared::Ptr<T> type) noexcept :
             Construct(ConstructKind::Value),
             valueKind(kind),
             type(type) {

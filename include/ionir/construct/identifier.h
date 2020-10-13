@@ -6,7 +6,7 @@
 #include "prototype.h"
 
 namespace ionir {
-    class Pass;
+    struct Pass;
 
     struct Identifier : Construct, ionshared::Named {
         std::vector<std::string> scopePath;

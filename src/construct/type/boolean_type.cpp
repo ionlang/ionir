@@ -6,7 +6,7 @@ namespace ionir {
         //
     }
 
-    void BooleanType::accept(Pass &pass) {
+    void BooleanType::accept(Pass& pass) {
         pass.visitBooleanType(this->dynamicCast<BooleanType>());
     }
 }

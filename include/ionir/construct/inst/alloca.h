@@ -1,17 +1,16 @@
 #pragma once
 
 #include <ionir/construct/type.h>
-#include <ionir/construct/inst_yield.h>
 #include <ionir/construct/inst.h>
 
 namespace ionir {
-    class BasicBlock;
+    struct BasicBlock;
 
-    struct AllocaInstOpts : InstYieldOpts {
+    struct AllocaInstOpts : InstOpts {
         ionshared::Ptr<Type> type;
     };
 
-    struct AllocaInst : Inst, InstYield {
+    struct AllocaInst : Inst {
         ionshared::Ptr<Type> type;
 
         // TODO: Missing support for array-type allocas.

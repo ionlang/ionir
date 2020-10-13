@@ -9,7 +9,7 @@
 #include "basic_block.h"
 
 namespace ionir {
-    class Pass;
+    struct Pass;
 
     struct FunctionBody : ConstructWithParent<Function>, ScopeAnchor<BasicBlock> {
         explicit FunctionBody(
@@ -17,18 +17,18 @@ namespace ionir {
 
             PtrSymbolTable<BasicBlock> symbolTable =
                 ionshared::util::makePtrSymbolTable<BasicBlock>()
-        );
+        ) noexcept;
 
-        void accept(Pass &visitor) override;
+        void accept(Pass& visitor) override;
 
         [[nodiscard]] Ast getChildrenNodes() override;
 
-        [[nodiscard ]]bool verify() override;
+        [[nodiscard]] bool verify() override;
 
         [[nodiscard]] ionshared::OptPtr<BasicBlock> findEntryBasicBlock();
 
         [[nodiscard]] bool hasEntryBasicBlock();
 
-        void insertBasicBlock(const ionshared::Ptr<BasicBlock> &basicBlock);
+        void insertBasicBlock(const ionshared::Ptr<BasicBlock>& basicBlock);
     };
 }

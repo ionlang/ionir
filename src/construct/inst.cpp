@@ -2,7 +2,7 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    Inst::Inst(ionshared::Ptr<BasicBlock> parent, InstKind kind) :
+    Inst::Inst(ionshared::Ptr<BasicBlock> parent, InstKind kind) noexcept :
         ConstructWithParent(std::move(parent), ConstructKind::Inst),
         instKind(kind) {
         //

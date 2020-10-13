@@ -5,23 +5,21 @@
 #include <ionir/construct/inst.h>
 
 namespace ionir {
-    class Pass;
+    struct Pass;
 
     struct ReturnInstOpts : InstOpts {
-        ionshared::OptPtr<Construct> value = std::nullopt;
+        ionshared::OptPtr<Value<>> value = std::nullopt;
     };
 
     struct ReturnInst : Inst {
-        ionshared::OptPtr<Construct> value;
+        ionshared::OptPtr<Value<>> value;
 
-        explicit ReturnInst(const ReturnInstOpts &opts);
+        explicit ReturnInst(const ReturnInstOpts& opts);
 
-        void accept(Pass &visitor) override;
+        void accept(Pass& visitor) override;
 
         [[nodiscard]] Ast getChildrenNodes() override;
 
         [[nodiscard]] bool hasValue() noexcept;
-
-        void removeValue() noexcept;
     };
 }
