@@ -1,7 +1,7 @@
 #include <ionir/llvm/llvm_emitted_entities.h>
 
 namespace ionir {
-    LlvmEmittedEntities::LlvmEmittedEntities() :
+    LlvmEmittedEntities::LlvmEmittedEntities() noexcept :
         entities() {
         //
     }

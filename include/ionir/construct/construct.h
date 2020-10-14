@@ -109,15 +109,17 @@ namespace ionir {
             return children;
         }
 
+        [[nodiscard]] static bool verify(const ionshared::Ptr<Construct>& construct) noexcept;
+
         explicit Construct(
             ConstructKind kind,
             std::optional<ionshared::SourceLocation> sourceLocation = std::nullopt,
             ionshared::OptPtr<Construct> parent = std::nullopt
         );
 
-        virtual void accept(Pass &visitor) = 0;
+        virtual void accept(Pass& visitor) = 0;
 
-        [[nodiscard]] virtual bool equals(const ionshared::Ptr<Construct> &other);
+        [[nodiscard]] virtual bool equals(const ionshared::Ptr<Construct>& other);
 
         // TODO: Move to BaseConstruct<> in ionshared.
         /**

@@ -12,9 +12,9 @@
 #include <ionir/const/const_name.h>
 
 namespace ionir::util {
-    class Inst;
+    struct Inst;
 
-    class IntegerType;
+    struct IntegerType;
 
     template<typename T>
     struct ParentMixin {

@@ -12,11 +12,11 @@ namespace ionir {
             //
         }
 
-        [[nodiscard]] virtual T &unwrap() {
+        [[nodiscard]] virtual T& unwrap() {
             return this->value;
         }
 
-        [[nodiscard]] virtual const T &unwrapConst() const {
+        [[nodiscard]] virtual const T& unwrapConst() const {
             return this->value;
         }
     };

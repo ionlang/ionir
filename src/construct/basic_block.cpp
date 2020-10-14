@@ -24,6 +24,7 @@ namespace ionir {
     bool BasicBlock::verify() {
         return this->hasTerminalInst()
             && ionshared::util::hasValue(this->parent)
+            && Construct::verify(*this->parent)
             && Construct::verify();
     }
 

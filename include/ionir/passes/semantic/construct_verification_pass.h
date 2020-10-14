@@ -3,10 +3,10 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    struct ConstructValidationPass : Pass {
+    struct ConstructVerificationPass : Pass {
         IONSHARED_PASS_ID;
 
-        explicit ConstructValidationPass(
+        explicit ConstructVerificationPass(
             ionshared::Ptr<ionshared::PassContext> context
         ) noexcept;
 

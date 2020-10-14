@@ -27,12 +27,4 @@ namespace ionir {
     bool Struct::containsField(std::string name) const {
         return this->fields->contains(std::move(name));
     }
-
-    ionshared::OptPtr<Type> Struct::lookupField(std::string name) {
-        return this->fields->lookup(std::move(name));
-    }
-
-    void Struct::setField(std::string name, ionshared::Ptr<Type> field) {
-        this->fields->set(std::move(name), std::move(field));
-    }
 }

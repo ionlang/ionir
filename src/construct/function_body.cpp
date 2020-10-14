@@ -24,7 +24,8 @@ namespace ionir {
     }
 
     bool FunctionBody::verify() {
-        return this->hasEntryBasicBlock();
+        return this->hasEntryBasicBlock()
+            && Construct::verify();
     }
 
     ionshared::OptPtr<BasicBlock> FunctionBody::findEntryBasicBlock() {

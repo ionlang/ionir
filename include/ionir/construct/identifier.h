@@ -20,6 +20,6 @@ namespace ionir {
 
         [[nodiscard]] std::string operator*() const;
 
-        void accept(Pass &visitor) override;
+        void accept(Pass& visitor) override;
     };
 }

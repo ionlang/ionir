@@ -10,7 +10,7 @@ namespace ionir {
         );
 
         [[nodiscard]] static ionshared::Ptr<Function> function(
-            const std::string &id = ConstName::anonymous
+            const std::string& id = ConstName::anonymous
         );
 
         [[nodiscard]] static ionshared::Ptr<BasicBlock> basicBlock(

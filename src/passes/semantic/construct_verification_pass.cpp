@@ -1,14 +1,14 @@
-#include <ionir/passes/semantic/construct_validation_pass.h>
+#include <ionir/passes/semantic/construct_verification_pass.h>
 
 namespace ionir {
-    ConstructValidationPass::ConstructValidationPass(
+    ConstructVerificationPass::ConstructVerificationPass(
         ionshared::Ptr<ionshared::PassContext> context
     ) noexcept :
         Pass(std::move(context)) {
         //
     }
 
-    void ConstructValidationPass::visit(ionshared::Ptr<Construct> node) {
+    void ConstructVerificationPass::visit(ionshared::Ptr<Construct> node) {
         if (!node->verify()) {
             this->context->diagnosticBuilder
                 ->bootstrap(diagnostic::constructFailedVerification)

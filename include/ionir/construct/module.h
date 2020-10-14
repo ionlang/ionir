@@ -26,7 +26,7 @@ namespace ionir {
         [[nodiscard]] Ast getChildrenNodes() override;
 
         // TODO: What about externs/globals/classes/structs? ------------
-        bool insertFunction(const ionshared::Ptr<Function> &function);
+        bool insertFunction(const ionshared::Ptr<Function>& function);
 
         [[nodiscard]] ionshared::OptPtr<Function> lookupFunction(std::string name);
         // --------------------------------------------------------------
@@ -38,6 +38,6 @@ namespace ionir {
          * changes will be committed if any conflict occurs (or the process
          * fails).
          */
-        bool mergeInto(const ionshared::Ptr<Module> &module);
+        bool mergeInto(const ionshared::Ptr<Module>& module);
     };
 }

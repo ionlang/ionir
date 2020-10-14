@@ -55,7 +55,7 @@ namespace ionir {
 
         std::vector<ionshared::Ptr<Inst>> insts;
 
-        explicit BasicBlock(const BasicBlockOpts &opts);
+        explicit BasicBlock(const BasicBlockOpts& opts);
 
         void accept(Pass &visitor) override;
 
@@ -63,21 +63,21 @@ namespace ionir {
 
         [[nodiscard]] bool verify() override;
 
-        void insertInst(uint32_t order, const ionshared::Ptr<Inst> &inst);
+        void insertInst(uint32_t order, const ionshared::Ptr<Inst>& inst);
 
         /**
          * Inserts an instruction at the end of the instructions
          * list.
          */
-        void appendInst(const ionshared::Ptr<Inst> &inst);
+        void appendInst(const ionshared::Ptr<Inst>& inst);
 
         /**
          * Inserts an instruction at the beginning of the instructions
          * list.
          */
-        void prependInst(const ionshared::Ptr<Inst> &inst);
+        void prependInst(const ionshared::Ptr<Inst>& inst);
 
-        uint32_t relocateInsts(BasicBlock &target, uint32_t from = 0);
+        uint32_t relocateInsts(BasicBlock& target, uint32_t from = 0);
 
         /**
          * Splits the local basic block, relocating all instructions
@@ -92,7 +92,7 @@ namespace ionir {
          * targeting the provided block using an instruction builder
          * instance. Returns the created jump instruction.
          */
-        ionshared::Ptr<JumpInst> link(const ionshared::Ptr<BasicBlock> &basicBlock);
+        ionshared::Ptr<JumpInst> link(const ionshared::Ptr<BasicBlock>& basicBlock);
 
         /**
          * Attempt to find the index location of an instruction.

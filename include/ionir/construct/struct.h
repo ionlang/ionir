@@ -18,9 +18,5 @@ namespace ionir {
         [[nodiscard]] Ast getChildrenNodes() override;
 
         [[nodiscard]] bool containsField(std::string name) const;
-
-        [[nodiscard]] ionshared::OptPtr<Type> lookupField(std::string name);
-
-        void setField(std::string name, ionshared::Ptr<Type> field);
     };
 }

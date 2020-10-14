@@ -3,6 +3,11 @@
 #include <ionir/const/const.h>
 
 namespace ionir {
+    bool Construct::verify(const ionshared::Ptr<Construct>& construct) noexcept {
+        return construct != nullptr
+            && construct->verify();
+    }
+
     Construct::Construct(
         ConstructKind kind,
         std::optional<ionshared::SourceLocation> sourceLocation,
@@ -27,7 +32,7 @@ namespace ionir {
          */
         for (auto &child : children) {
             // NOTE: The verification function is not constant.
-            if (!child->verify()) {
+            if (!Construct::verify(child)) {
                 return false;
             }
         }

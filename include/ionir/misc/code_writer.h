@@ -14,7 +14,7 @@ namespace ionir {
         void createGlobal(const ionshared::Ptr<Global>& construct);
 
     public:
-        CodeWriter();
+        CodeWriter() noexcept;
 
         [[nodiscard]] std::string make(const ionshared::Ptr<Construct>& rootConstruct) const;
 

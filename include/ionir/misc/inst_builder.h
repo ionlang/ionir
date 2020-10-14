@@ -11,16 +11,12 @@
 #include <ionir/construct/inst/operation.h>
 
 namespace ionir {
-    class InstBuilder {
-    private:
+    struct InstBuilder {
         ionshared::Ptr<BasicBlock> basicBlock;
 
-    public:
         explicit InstBuilder(
             ionshared::Ptr<BasicBlock> basicBlock
         ) noexcept;
-
-        [[nodiscard]] ionshared::Ptr<BasicBlock> getBasicBlock() const;
 
         void appendInst(const ionshared::Ptr<Inst>& inst);
 

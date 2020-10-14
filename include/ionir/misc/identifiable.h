@@ -8,6 +8,6 @@ namespace ionir {
     struct Identifiable {
         ionshared::Ptr<Identifier> identifier;
 
-        explicit Identifiable(ionshared::Ptr<Identifier> identifier);
+        explicit Identifiable(ionshared::Ptr<Identifier> identifier) noexcept;
     };
 }

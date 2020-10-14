@@ -2,17 +2,17 @@
 #include <ionir/misc/code_writer.h>
 
 namespace ionir {
-    void CodeWriter::createModule(const ionshared::Ptr<Module> &construct) {
+    void CodeWriter::createModule(const ionshared::Ptr<Module>& construct) {
         // TODO
     }
 
-    void CodeWriter::createGlobal(const ionshared::Ptr<Global> &construct) {
+    void CodeWriter::createGlobal(const ionshared::Ptr<Global>& construct) {
         // TODO
     }
 
-    CodeWriter::CodeWriter() = default;
+    CodeWriter::CodeWriter() noexcept = default;
 
-    std::string CodeWriter::make(const ionshared::Ptr<Construct> &rootConstruct) const {
+    std::string CodeWriter::make(const ionshared::Ptr<Construct>& rootConstruct) const {
         std::queue<ionshared::Ptr<Construct>> queue = {};
 
         // Push initial items to the queue.

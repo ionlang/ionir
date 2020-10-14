@@ -21,12 +21,12 @@ namespace ionir {
     Ast Prototype::getChildrenNodes() {
         // TODO: What about 'args'?
         return {
-            this->returnType->nativeCast()
+            this->returnType
         };
     }
 
     bool Prototype::verify() {
         // TODO: Verify args.
-        return this->returnType->verify();
+        return Construct::verify();
     }
 }
