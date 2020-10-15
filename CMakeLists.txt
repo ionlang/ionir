@@ -12,8 +12,33 @@ set(PROJECT_URL "https://github.com/ionlang/ionir")
 set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(BIN_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
-# Scan dependencies.
-find_package(ionshared REQUIRED)
+# Dependencies.
+find_package(ionshared QUIET)
+
+# Download & build ionshared if it's not installed on
+# the system, via CMake's FetchContent.
+if(NOT ionshared_FOUND)
+    include(FetchContent)
+
+    FetchContent_Declare(
+        ionshared
+
+        # TODO: Using dev. branch temporarily.
+        URL https://github.com/ionlang/ionshared/archive/dev.tar.gz
+    )
+
+    # Has ionshared been downloaded yet?
+    if(NOT ionshared_POPULATED)
+        set(FETCHCONTENT_QUIET OFF)
+        FetchContent_Populate(ionshared)
+
+        # Do not build tests for it.
+        set(IONSHARED_BUILD_TESTS OFF)
+
+        # Build ionshared.
+        add_subdirectory(${ionshared_SOURCE_DIR} ${ionshared_BINARY_DIR})
+    endif()
+endif()
 
 # Setup default build flags.
 #set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
@@ -68,6 +93,12 @@ file(
 # Specify that this project is a library.
 add_library("${PROJECT_NAME}" ${SOURCES})
 
+# Set VERSION property. Optional, but good practice.
+set_target_properties("${PROJECT_NAME}" PROPERTIES VERSION ${PROJECT_VERSION})
+
+# Linux installation support.
+include(GNUInstallDirs)
+
 # Link .libs (same functionality handled by llvm_map_components_to_libnames().)
 #target_link_libraries(${PROJECT_NAME} ${LIB_SOURCES})
 
@@ -87,15 +118,15 @@ target_include_directories(
 llvm_map_components_to_libnames(llvm_libs all)
 
 # Link against various libraries including LLVM & libionshared.
-target_link_libraries("${PROJECT_NAME}" LLVM ionshared::ionshared)
+target_link_libraries("${PROJECT_NAME}" LLVM ionshared)
 
 # Setup unit testing using Google Test (GTest) if applicable. This binds the CMakeLists.txt on the test project.
 option(BUILD_TESTS "Build tests" ON)
 
-if (BUILD_TESTS)
+if(IONIR_BUILD_TESTS)
     add_subdirectory(libs/googletest)
     add_subdirectory(test)
-endif ()
+endif()
 
 # Setup install target.
 install(
