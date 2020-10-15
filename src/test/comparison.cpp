@@ -4,14 +4,13 @@
 #include <ionshared/llvm/llvm_module.h>
 #include <ionir/test/comparison.h>
 #include <ionir/test/filesystem.h>
-#include <ionir/test/bootstrap.h>
 
 namespace ionir::test::comparison {
     bool strings(std::string stringA, std::string stringB) {
         return util::trim(std::move(stringA)) == util::trim(std::move(stringB));
     }
 
-    bool ir(std::string output, const std::string &fileName) {
+    bool ir(std::string output, const std::string& fileName) {
         std::optional<std::string> contents = fs::readTestFile(
             fs::joinPaths(
                 IONIR_TESTS_OUTPUT_FOLDER_PATH,
@@ -29,7 +28,10 @@ namespace ionir::test::comparison {
         return util::trim(std::move(output)) == util::trim(*contents);
     }
 
-    bool ir(const ionshared::Ptr<LlvmLoweringPass> &llvmLoweringPass, const std::string &fileName) {
+    bool ir(
+        const ionshared::Ptr<LlvmLoweringPass>& llvmLoweringPass,
+        const std::string& fileName
+    ) {
         std::optional<llvm::Module *> llvmModuleBuffer = llvmLoweringPass->getModuleBuffer();
 
         if (!ionshared::util::hasValue(llvmModuleBuffer)) {

@@ -1,3 +1,3 @@
 #pragma once
 
-#include "gtest/gtest.h"
+#include "../libs/googletest/googletest/include/gtest/gtest.h"

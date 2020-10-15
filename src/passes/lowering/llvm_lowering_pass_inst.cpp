@@ -15,7 +15,7 @@ namespace ionir {
          * using the buffered builder.
          */
         llvm::AllocaInst* llvmAllocaInst =
-            this->makeLlvmBuilder()->CreateAlloca(type, (llvm::Value*)nullptr, node->yieldName);
+            this->makeLlvmBuilder()->CreateAlloca(type, (llvm::Value*)nullptr);
 
         this->valueStack.push(llvmAllocaInst);
         this->symbolTable.set(node, llvmAllocaInst);
@@ -120,7 +120,7 @@ namespace ionir {
         this->requireModule();
         this->requireBuilder();
 
-        ionshared::Ptr<Construct> callee = node->getCallee();
+        ionshared::Ptr<Construct> callee = node->callee;
         ConstructKind calleeConstructKind = callee->constructKind;
 
         if (calleeConstructKind != ConstructKind::Function && calleeConstructKind != ConstructKind::Extern) {
@@ -163,7 +163,7 @@ namespace ionir {
             throw std::runtime_error("Call instruction referenced an undefined function");
         }
 
-        std::vector<ionshared::Ptr<Construct>> args = node->getArgs();
+        std::vector<ionshared::Ptr<Construct>> args = node->args;
         std::vector<llvm::Value *> llvmArgs;
 
         for (const auto &arg : args) {

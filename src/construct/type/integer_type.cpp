@@ -2,7 +2,7 @@
 
 namespace ionir {
     IntegerType::IntegerType(IntegerKind kind, bool isSigned) :
-        Type(util::resolveIntegerKindName(kind), TypeKind::Integer),
+        Type(TypeKind::Integer, util::resolveIntegerKindName(kind)),
         integerKind(kind),
         isSigned(isSigned) {
         //

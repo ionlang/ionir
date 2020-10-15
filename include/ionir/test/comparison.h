@@ -5,7 +5,6 @@
 #include <string>
 #include <ionir/passes/lowering/llvm_lowering_pass.h>
 #include "util.h"
-#include "../../../test/pch.h"
 
 namespace ionir::test::comparison {
     /**

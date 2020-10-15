@@ -2,7 +2,7 @@
 
 namespace ionir {
     BooleanType::BooleanType() :
-        Type(ConstName::typeBool, TypeKind::Boolean) {
+        Type(TypeKind::Boolean, ConstName::typeBool) {
         //
     }
 

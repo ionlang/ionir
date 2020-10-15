@@ -7,10 +7,6 @@ namespace ionir {
         //
     }
 
-    ionshared::Ptr<BasicBlock> InstBuilder::getBasicBlock() const {
-        return this->basicBlock;
-    }
-
     void InstBuilder::appendInst(const ionshared::Ptr<Inst>& inst) {
         this->basicBlock->insts.push_back(inst);
     }
@@ -21,7 +17,6 @@ namespace ionir {
     ) {
         return this->make<AllocaInst>(AllocaInstOpts{
             this->basicBlock,
-            id,
             std::move(type)
         });
     }
@@ -51,7 +46,7 @@ namespace ionir {
     }
 
     ionshared::Ptr<ReturnInst> InstBuilder::createReturn(
-        const ionshared::OptPtr<Construct>& value
+        const ionshared::OptPtr<Value<>>& value
     ) {
         return this->make<ReturnInst, ReturnInstOpts>(ReturnInstOpts{
             this->basicBlock,

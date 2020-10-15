@@ -2,7 +2,7 @@
 
 namespace ionir {
     VoidType::VoidType() noexcept :
-        Type(ConstName::typeVoid, TypeKind::Void) {
+        Type(TypeKind::Void, ConstName::typeVoid) {
         //
     }
 

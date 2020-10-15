@@ -3,7 +3,7 @@
 
 namespace ionir {
     PointerType::PointerType(ionshared::Ptr<Type> type) :
-        Type(ConstName::typePointer, TypeKind::Pointer),
+        Type(TypeKind::Pointer, ConstName::typePointer),
         Wrapper<ionshared::Ptr<Type>>(std::move(type)) {
         //
     }

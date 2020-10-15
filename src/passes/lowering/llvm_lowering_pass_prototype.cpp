@@ -47,7 +47,7 @@ namespace ionir {
         this->requireModule();
         this->requireContext();
 
-        auto argsMap = node->args->getItems();
+        auto argsMap = node->args->items;
         auto &argsNativeMap = argsMap->unwrapConst();
 
         // Retrieve argument count from the argument vector.
@@ -77,21 +77,21 @@ namespace ionir {
         // Otherwise, function will be created.
         else {
             for (const auto &[id, arg] : argsNativeMap) {
-                arg.first->accept(*this);
+                this->visit(arg.first);
                 llvmArgumentTypes.push_back(this->typeStack.pop());
             }
 
             // Visit and pop the return type.
-            node->returnType->accept(*this);
+            this->visit(node->returnType);
 
-            llvm::Type *llvmReturnType = this->typeStack.pop();
+            llvm::Type* llvmReturnType = this->typeStack.pop();
 
             // TODO: Support for infinite arguments and hard-coded return type.
             // Create the function type.
-            llvm::FunctionType *llvmFunctionType = llvm::FunctionType::get(
+            llvm::FunctionType* llvmFunctionType = llvm::FunctionType::get(
                 llvmReturnType,
                 llvmArgumentTypes,
-                node->args->getIsVariable()
+                node->args->isVariable
             );
 
             // Cast the value to a function, since we know getCallee() will return a function.
@@ -108,8 +108,8 @@ namespace ionir {
             throw std::runtime_error("Expected argument count to be the same as the function's argument count");
         }
 
-        uint32_t argCounter = 0;
-        uint32_t llvmArgCounter = 0;
+        size_t argCounter = 0;
+        size_t llvmArgCounter = 0;
 
         // TODO: Simplify method of naming LLVM arguments, as this implementation is inefficient.
         for (const auto &[id, arg] : argsNativeMap) {
