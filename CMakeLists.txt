@@ -113,7 +113,7 @@ llvm_map_components_to_libnames(llvm_libs all)
 target_link_libraries("${PROJECT_NAME}" LLVM ionshared)
 
 # Setup unit testing using Google Test (GTest) if applicable. This binds the CMakeLists.txt on the test project.
-option(BUILD_TESTS "Build tests" ON)
+option(BUILD_TESTS "Build tests" OFF)
 
 if(IONIR_BUILD_TESTS)
     add_subdirectory(libs/googletest)
