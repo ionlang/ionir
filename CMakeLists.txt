@@ -110,7 +110,7 @@ target_include_directories(
 llvm_map_components_to_libnames(llvm_libs all)
 
 # Link against various libraries including LLVM & libionshared.
-target_link_libraries("${PROJECT_NAME}" LLVM ionshared)
+target_link_libraries("${PROJECT_NAME}" PUBLIC ${llvm_libs} ionshared)
 
 # Setup unit testing using Google Test (GTest) if applicable. This binds the CMakeLists.txt on the test project.
 option(IONIR_BUILD_TESTS "Build tests" OFF)
