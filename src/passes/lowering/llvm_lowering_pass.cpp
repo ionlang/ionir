@@ -346,7 +346,7 @@ namespace ionir {
         this->requireContext();
 
         auto fieldsNativeMap = node->fields->unwrap();
-        std::vector<llvm::Type*> llvmFields = {};
+        std::vector<llvm::Type*> llvmFields{};
 
         for (const auto& [name, type] : fieldsNativeMap) {
             this->visit(type);
@@ -362,5 +362,29 @@ namespace ionir {
 
         llvmStruct->setName(node->name);
         this->typeStack.push(llvmStruct);
+    }
+
+    void LlvmLoweringPass::visitStructDefinition(ionshared::Ptr<StructDefinition> construct) {
+        std::vector<llvm::Value*> llvmValues{};
+
+        for (const auto& value : construct->values) {
+            this->visit(value);
+            llvmValues.push_back(this->valueStack.pop());
+        }
+
+        llvm::IRBuilder<> builder = this->requireBuilder();
+
+        // TODO: What if the declaration has been previously visited?
+        this->visit(construct->declaration);
+
+        llvm::AllocaInst* structAllocation = builder.CreateAlloca(this->typeStack.pop());
+
+        for (size_t i = 0; i < llvmValues.size(); i++) {
+            llvm::Value* structElement = builder.CreateStructGEP(structAllocation, i);
+
+            builder.CreateStore(llvmValues[i], structElement);
+        }
+
+        this->valueStack.push(structAllocation);
     }
 }

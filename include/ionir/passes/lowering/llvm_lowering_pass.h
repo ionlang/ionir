@@ -149,5 +149,7 @@ namespace ionir {
         void visitModule(ionshared::Ptr<Module> node) override;
 
         void visitStruct(ionshared::Ptr<Struct> node) override;
+
+        void visitStructDefinition(ionshared::Ptr<StructDefinition> construct) override;
     };
 }

@@ -70,9 +70,9 @@ namespace ionir {
     typedef ionshared::Ast<Construct> Ast;
 
     struct Construct : ionshared::BaseConstruct<Construct, ConstructKind> {
-        template<class T>
+        template<typename T>
+            requires std::derived_from<T, Construct>
         static Ast convertChildren(std::vector<ionshared::Ptr<T>> vector) {
-            // TODO: Ensure T is child of AstNode.
             Ast children = {};
 
             for (const auto item : vector) {
@@ -82,7 +82,8 @@ namespace ionir {
             return children;
         }
 
-        template<class T>
+        template<typename T>
+            requires std::derived_from<T, Construct>
         static Ast convertChildren(ionshared::PtrSymbolTable<T> symbolTable) {
             Ast children = {};
             auto symbolTableEntries = symbolTable->unwrap();

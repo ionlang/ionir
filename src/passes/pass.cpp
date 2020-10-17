@@ -93,10 +93,6 @@ namespace ionir {
         //
     }
 
-    void Pass::visitStructDecl(ionshared::Ptr<StructDecl> node) {
-        //
-    }
-
     void Pass::visitIntegerType(ionshared::Ptr<IntegerType> node) {
         //
     }
@@ -134,6 +130,10 @@ namespace ionir {
     }
 
     void Pass::visitStruct(ionshared::Ptr<Struct> node) {
+        //
+    }
+
+    void Pass::visitStructDefinition(ionshared::Ptr<StructDefinition> node) {
         //
     }
 }
