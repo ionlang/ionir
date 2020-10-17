@@ -87,7 +87,7 @@ namespace ionir {
             Ast children = {};
             auto symbolTableEntries = symbolTable->unwrap();
 
-            for (const auto &[id, construct] : symbolTableEntries) {
+            for (const auto& [id, construct] : symbolTableEntries) {
                 children.push_back(construct);
             }
 
@@ -127,7 +127,9 @@ namespace ionir {
          * ensure that this construct is well-formed. Without an implementation
          * by the derived class (or without being called by it), this will return
          * true if all the child nodes are successfully verified. If there are no
-         * child nodes, the result will be true by default.
+         * child nodes, the result will be true by default. Verification should
+         * not be delegated to the parent (if any), to avoid circular, endless
+         * calls.
          */
         [[nodiscard]] virtual bool verify();
 

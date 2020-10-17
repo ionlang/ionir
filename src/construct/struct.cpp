@@ -17,7 +17,7 @@ namespace ionir {
         auto fieldsMap = this->fields->unwrap();
 
         // TODO: What about the field name?
-        for (const auto &[name, type] : fieldsMap) {
+        for (const auto& [name, type] : fieldsMap) {
             children.push_back(type);
         }
 

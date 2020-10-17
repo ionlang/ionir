@@ -10,8 +10,8 @@ namespace ionir::test::bootstrap {
         return std::make_shared<ionshared::LlvmModule>(llvmModule);
     }
 
-    ionshared::Ptr<LlvmLoweringPass> llvmLoweringPass(const ionshared::Ptr<ionshared::LlvmModule> &module) {
-        ionshared::Ptr<ionshared::SymbolTable<llvm::Module *>> modules = std::make_shared<ionshared::SymbolTable<llvm::Module *>>(ionshared::SymbolTable<llvm::Module *>({
+    ionshared::Ptr<LlvmLoweringPass> llvmLoweringPass(const ionshared::Ptr<ionshared::LlvmModule>& module) {
+        ionshared::Ptr<ionshared::SymbolTable<llvm::Module*>> modules = std::make_shared<ionshared::SymbolTable<llvm::Module*>>(ionshared::SymbolTable<llvm::Module*>({
             {module->getId(), module->unwrap()}
         }));
 

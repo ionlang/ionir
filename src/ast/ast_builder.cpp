@@ -4,7 +4,7 @@
 #include <ionir/const/const.h>
 
 namespace ionir {
-    void AstBuilder::setBasicBlockBuffer(const ionshared::OptPtr<BasicBlock> &basicBlockBuffer) {
+    void AstBuilder::setBasicBlockBuffer(const ionshared::OptPtr<BasicBlock>& basicBlockBuffer) {
         if (!basicBlockBuffer.has_value()) {
             this->basicBlockBuffer = std::nullopt;
             this->instBuilder = std::nullopt;
@@ -16,7 +16,7 @@ namespace ionir {
         this->instBuilder = std::make_shared<InstBuilder>(*this->basicBlockBuffer);
     }
 
-    void AstBuilder::require(const ionshared::OptPtr<Construct> &construct) const {
+    void AstBuilder::require(const ionshared::OptPtr<Construct>& construct) const {
         if (!construct.has_value()) {
             throw std::runtime_error("Required construct is null");
         }

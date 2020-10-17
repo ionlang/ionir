@@ -81,19 +81,19 @@ TEST(TypeCheckPassTast, FunctionReturnTypeValueMismatch) {
 
     ionshared::Ptr<ReturnInst> returnInst = instBuilder.createReturn(
         std::make_shared<IntegerLiteral>(
-            std::make_shared<IntegerType>(IntegerKind::Int8),
+            TypeFactory::typeInteger(IntegerKind::Int8),
             2
-        )
+        )->flatten()
     );
 
-	typeCheckPass->visitReturnInst(returnInst);
+    typeCheckPass->visitReturnInst(returnInst);
 
-	EXPECT_EQ(passContext->diagnostics->getSize(), 1);
+    EXPECT_EQ(passContext->diagnostics->getSize(), 1);
 
-	ionshared::Diagnostic functionReturnValueTypeMismatchDiagnostic =
-		(*passContext->diagnostics.get())[0];
+    ionshared::Diagnostic functionReturnValueTypeMismatchDiagnostic =
+        (*passContext->diagnostics.get())[0];
 
-	EXPECT_EQ(
+    EXPECT_EQ(
         functionReturnValueTypeMismatchDiagnostic.code.value(),
         diagnostic::functionReturnValueTypeMismatch.code.value()
     );

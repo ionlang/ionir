@@ -35,6 +35,7 @@ namespace ionir {
 
         Inst(ionshared::Ptr<BasicBlock> parent, InstKind kind) noexcept;
 
+        // TODO: Isn't this redundant?
         void accept(Pass& visitor) override = 0;
 
         [[nodiscard]] InstKind getInstKind() const noexcept;

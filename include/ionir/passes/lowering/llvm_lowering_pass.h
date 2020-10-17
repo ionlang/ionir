@@ -124,6 +124,8 @@ namespace ionir {
 
         void visitBooleanLiteral(ionshared::Ptr<BooleanLiteral> node) override;
 
+        void visitOperationValue(ionshared::Ptr<OperationValue> node) override;
+
         void visitAllocaInst(ionshared::Ptr<AllocaInst> node) override;
 
         void visitReturnInst(ionshared::Ptr<ReturnInst> node) override;
@@ -135,8 +137,6 @@ namespace ionir {
         void visitStoreInst(ionshared::Ptr<StoreInst> node) override;
 
         void visitJumpInst(ionshared::Ptr<JumpInst> node) override;
-
-        void visitOperationInst(ionshared::Ptr<OperationInst> node) override;
 
         void visitGlobal(ionshared::Ptr<Global> node) override;
 

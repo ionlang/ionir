@@ -73,17 +73,4 @@ namespace ionir {
             basicBlock
         });
     }
-
-    ionshared::Ptr<OperationInst> InstBuilder::createOperation(
-        OperatorKind operatorKind,
-        ionshared::Ptr<Value<>> leftSideValue,
-        ionshared::OptPtr<Value<>> rightSideValue
-    ) {
-        return this->make<OperationInst>(OperationInstOpts{
-            this->basicBlock,
-            operatorKind,
-            std::move(leftSideValue),
-            std::move(rightSideValue)
-        });
-    }
 }

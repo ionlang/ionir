@@ -58,14 +58,14 @@ namespace ionir {
         ionshared::Ptr<Context> newContext = std::make_shared<Context>(newGlobalScope);
 
         // Attempt to merge global scope.
-        for (const auto &[key, construct] : localGlobalScopeMap) {
+        for (const auto& [key, construct] : localGlobalScopeMap) {
             if (!newGlobalScope->set(key, construct)) {
                 return false;
             }
         }
 
         // Attempt to merge scopes.
-        for (const auto &scope : localScopes) {
+        for (const auto& scope : localScopes) {
             // TODO: Use ionshared::util::vectorContains<T>(); Does the same thing.
             if (ionshared::util::locateInVector<Scope>(targetScopes, scope) != std::nullopt) {
                 return false;

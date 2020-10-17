@@ -152,8 +152,8 @@ namespace ionir {
         // Emit the entity at this point so visiting children can access it.
         this->symbolTable.set(node, llvmBasicBlock);
 
-        for (const auto &inst : insts) {
-            inst->accept(*this);
+        for (const auto& inst : insts) {
+            this->visit(inst);
 
             // Discard the resulting instruction, as it is not needed.
             this->valueStack.pop();
@@ -199,7 +199,7 @@ namespace ionir {
         }
 
         // Visit all the block's section(s).
-        for (const auto &[key, basicBlock] : node->getSymbolTable()->unwrap()) {
+        for (const auto& [key, basicBlock] : node->getSymbolTable()->unwrap()) {
             this->visitBasicBlock(basicBlock);
             this->valueStack.pop();
         }
@@ -209,11 +209,11 @@ namespace ionir {
 
     void LlvmLoweringPass::visitGlobal(ionshared::Ptr<Global> node) {
         this->requireModule();
-        node->type->accept(*this);
+        this->visit(node->type);
 
-        llvm::Type *type = this->typeStack.pop();
+        llvm::Type* type = this->typeStack.pop();
 
-        auto *globalVar =
+        auto* globalVar =
             llvm::dyn_cast<llvm::GlobalVariable>(
                 (*this->buffers.llvmModule)->getOrInsertGlobal(node->name, type)
             );
@@ -222,9 +222,9 @@ namespace ionir {
 
         // Assign value if applicable.
         if (ionshared::util::hasValue(nodeValue)) {
-            nodeValue->get()->accept(*this);
+            this->visit(*nodeValue);
 
-            llvm::Value *value = this->valueStack.pop();
+            llvm::Value* value = this->valueStack.pop();
 
             // TODO: Value needs to be created from below commented statement.
             // llvm::Constant* initializerValue = llvm::Constant::getIntegerValue(llvm::Type);
@@ -241,7 +241,7 @@ namespace ionir {
     void LlvmLoweringPass::visitIntegerType(ionshared::Ptr<IntegerType> node) {
         this->requireContext();
 
-        std::optional<llvm::IntegerType *> type = std::nullopt;
+        std::optional<llvm::IntegerType*> type = std::nullopt;
 
         /**
          * Create the corresponding LLVM integer type based off the
@@ -330,7 +330,7 @@ namespace ionir {
         std::map<std::string, ionshared::Ptr<Construct>> moduleSymbolTable =
             this->buffers.context->getGlobalScope()->unwrap();
 
-        for (const auto &[id, topLevelConstruct] : moduleSymbolTable) {
+        for (const auto& [id, topLevelConstruct] : moduleSymbolTable) {
             this->visit(topLevelConstruct);
 
             /**
@@ -346,16 +346,16 @@ namespace ionir {
         this->requireContext();
 
         auto fieldsNativeMap = node->fields->unwrap();
-        std::vector<llvm::Type *> llvmFields = {};
+        std::vector<llvm::Type*> llvmFields = {};
 
-        for (const auto &[name, type] : fieldsNativeMap) {
-            type->accept(*this);
+        for (const auto& [name, type] : fieldsNativeMap) {
+            this->visit(type);
             llvmFields.push_back(this->typeStack.pop());
         }
 
         // TODO: Ensure struct isn't already defined, and doesn't exist on the LLVM module (or locally?).
 
-        llvm::StructType *llvmStruct = llvm::StructType::get(
+        llvm::StructType* llvmStruct = llvm::StructType::get(
             **this->buffers.llvmContext,
             llvmFields
         );

@@ -23,12 +23,10 @@ namespace ionir {
 
     bool BasicBlock::verify() {
         return this->hasTerminalInst()
-            && ionshared::util::hasValue(this->parent)
-            && Construct::verify(*this->parent)
             && Construct::verify();
     }
 
-    void BasicBlock::insertInst(uint32_t order, const ionshared::Ptr<Inst> &inst) {
+    void BasicBlock::insertInst(uint32_t order, const ionshared::Ptr<Inst>& inst) {
         const uint32_t maxOrder = this->insts.empty() ? 0 : this->insts.size() - 1;
 
         if (order > maxOrder) {
@@ -48,7 +46,7 @@ namespace ionir {
         // ----------------------------------------------------------
     }
 
-    void BasicBlock::appendInst(const ionshared::Ptr<Inst> &inst) {
+    void BasicBlock::appendInst(const ionshared::Ptr<Inst>& inst) {
         this->insts.push_back(inst);
 
         std::optional<std::string> id = util::findInstId(inst);
@@ -59,7 +57,7 @@ namespace ionir {
         }
     }
 
-    void BasicBlock::prependInst(const ionshared::Ptr<Inst> &inst) {
+    void BasicBlock::prependInst(const ionshared::Ptr<Inst>& inst) {
         this->insertInst(0, inst);
     }
 
@@ -111,7 +109,7 @@ namespace ionir {
         return newBasicBlock;
     }
 
-    ionshared::Ptr<JumpInst> BasicBlock::link(const ionshared::Ptr<BasicBlock> &basicBlock) {
+    ionshared::Ptr<JumpInst> BasicBlock::link(const ionshared::Ptr<BasicBlock>& basicBlock) {
         return this->createBuilder()->createJump(basicBlock);
     }
 
@@ -137,7 +135,7 @@ namespace ionir {
 
     ionshared::OptPtr<Inst> BasicBlock::findTerminalInst() const noexcept {
         // TODO: There can only be a single return instruction.
-        for (const auto &inst : this->insts) {
+        for (const auto& inst : this->insts) {
             if (inst->isTerminal()) {
                 return inst;
             }

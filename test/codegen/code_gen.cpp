@@ -4,6 +4,7 @@
 #include <ionir/test/bootstrap.h>
 #include <ionir/test/comparison.h>
 #include <ionir/test/const.h>
+#include "../pch.h"
 
 using namespace ionir;
 
@@ -93,7 +94,6 @@ TEST(CodeGenTest, VisitAllocaInst) {
     std::vector<ionshared::Ptr<Inst>> insts = {
         std::make_shared<AllocaInst>(AllocaInstOpts{
             nullptr,
-            test::constant::foobar,
             TypeFactory::typeInteger(IntegerKind::Int32)
         })
     };
@@ -111,7 +111,11 @@ TEST(CodeGenTest, VisitReturnInst) {
     std::vector<ionshared::Ptr<Inst>> insts = {
         std::make_shared<ReturnInst>(ReturnInstOpts{
             nullptr,
-            std::make_shared<IntegerLiteral>(TypeFactory::typeInteger(IntegerKind::Int32), 1)
+
+            std::make_shared<IntegerLiteral>(
+                TypeFactory::typeInteger(IntegerKind::Int32),
+                1
+            )->flatten()
         })
     };
 

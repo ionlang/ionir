@@ -1,5 +1,6 @@
 #include <vector>
 #include <ionir/test/comparison.h>
+#include "../pch.h"
 
 using namespace ionir;
 

@@ -19,7 +19,7 @@ namespace ionir {
          * After visiting the node, attempt to
          * visit all its children as well.
          */
-        for (const auto &child : children) {
+        for (const auto& child : children) {
             // TODO: CRITICAL: What if 'child' (AstNode) is not boxed under Construct?
             this->visit(child);
         }
@@ -85,7 +85,7 @@ namespace ionir {
         //
     }
 
-    void Pass::visitOperationInst(ionshared::Ptr<OperationInst> node) {
+    void Pass::visitOperationValue(ionshared::Ptr<OperationValue> node) {
         //
     }
 

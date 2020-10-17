@@ -6,7 +6,7 @@ namespace ionir {
         //
     }
 
-    void LlvmEmittedEntities::set(const ionshared::Ptr<Construct> &construct, llvm::Value *llvmValue) {
+    void LlvmEmittedEntities::set(const ionshared::Ptr<Construct>& construct, llvm::Value *llvmValue) {
         this->entities.set(construct, llvmValue, true);
     }
 

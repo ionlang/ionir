@@ -17,7 +17,7 @@ namespace ionir {
         //
     }
 
-    bool Construct::equals(const ionshared::Ptr<Construct> &other) {
+    bool Construct::equals(const ionshared::Ptr<Construct>& other) {
         return other == this->shared_from_this();
     }
 
@@ -30,7 +30,7 @@ namespace ionir {
          * If all the children's verification functions return true,
          * this construct's verification passes, and returns true.
          */
-        for (auto &child : children) {
+        for (auto& child : children) {
             // NOTE: The verification function is not constant.
             if (!Construct::verify(child)) {
                 return false;

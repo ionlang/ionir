@@ -12,7 +12,7 @@ namespace ionir::test::bootstrap {
     );
 
     [[nodiscard]] ionshared::Ptr<LlvmLoweringPass> llvmLoweringPass(
-        const ionshared::Ptr<ionshared::LlvmModule> &module = llvmModule()
+        const ionshared::Ptr<ionshared::LlvmModule>& module = llvmModule()
     );
 
     [[nodiscard]] ionshared::Ptr<Function> emptyFunction(

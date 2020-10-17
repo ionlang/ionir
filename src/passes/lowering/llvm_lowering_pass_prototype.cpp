@@ -48,13 +48,13 @@ namespace ionir {
         this->requireContext();
 
         auto argsMap = node->args->items;
-        auto &argsNativeMap = argsMap->unwrapConst();
+        auto& argsNativeMap = argsMap->unwrapConst();
 
         // Retrieve argument count from the argument vector.
         uint32_t argumentCount = argsMap->getSize();
 
         // Create the argument buffer vector.
-        std::vector<llvm::Type *> llvmArgumentTypes = {};
+        std::vector<llvm::Type*> llvmArgumentTypes = {};
 
         // Attempt to retrieve an existing function.
         llvm::Function *llvmFunction = (*this->buffers.llvmModule)->getFunction(node->name);
@@ -76,7 +76,7 @@ namespace ionir {
         }
         // Otherwise, function will be created.
         else {
-            for (const auto &[id, arg] : argsNativeMap) {
+            for (const auto& [id, arg] : argsNativeMap) {
                 this->visit(arg.first);
                 llvmArgumentTypes.push_back(this->typeStack.pop());
             }
@@ -112,8 +112,8 @@ namespace ionir {
         size_t llvmArgCounter = 0;
 
         // TODO: Simplify method of naming LLVM arguments, as this implementation is inefficient.
-        for (const auto &[id, arg] : argsNativeMap) {
-            for (auto &llvmArgument : llvmFunction->args()) {
+        for (const auto& [id, arg] : argsNativeMap) {
+            for (auto& llvmArgument : llvmFunction->args()) {
                 if (llvmArgCounter == argCounter) {
                     llvmArgument.setName(id);
                     llvmArgCounter = 0;

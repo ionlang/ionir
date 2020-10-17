@@ -6,7 +6,7 @@
 namespace ionir {
     void LlvmLoweringPass::visitAllocaInst(ionshared::Ptr<AllocaInst> node) {
         this->requireBuilder();
-        node->type->accept(*this);
+        this->visit(node->type);
 
         llvm::Type* type = this->typeStack.pop();
 
@@ -95,10 +95,10 @@ namespace ionir {
             this->valueStack.tryPop();
         });
 
-        std::optional<llvm::BasicBlock *> llvmConsequentBasicBlock =
+        std::optional<llvm::BasicBlock*> llvmConsequentBasicBlock =
             this->symbolTable.find<llvm::BasicBlock>(node->consequentBasicBlock);
 
-        std::optional<llvm::BasicBlock *> llvmAlternativeBasicBlock =
+        std::optional<llvm::BasicBlock*> llvmAlternativeBasicBlock =
             this->symbolTable.find<llvm::BasicBlock>(node->alternativeBasicBlock);
 
         if (!ionshared::util::hasValue(llvmConsequentBasicBlock) || !ionshared::util::hasValue(llvmAlternativeBasicBlock)) {
@@ -164,9 +164,9 @@ namespace ionir {
         }
 
         std::vector<ionshared::Ptr<Construct>> args = node->args;
-        std::vector<llvm::Value *> llvmArgs;
+        std::vector<llvm::Value*> llvmArgs;
 
-        for (const auto &arg : args) {
+        for (const auto& arg : args) {
             this->visit(arg);
             llvmArgs.push_back(this->valueStack.pop());
         }
@@ -229,7 +229,7 @@ namespace ionir {
             this->valueStack.tryPop();
         });
 
-        std::optional<llvm::BasicBlock *> llvmBasicBlockResult =
+        std::optional<llvm::BasicBlock*> llvmBasicBlockResult =
             this->symbolTable.find<llvm::BasicBlock>(basicBlockTarget);
 
         if (!ionshared::util::hasValue(llvmBasicBlockResult)) {
@@ -251,111 +251,5 @@ namespace ionir {
         // ------------------------------------------------------------------
         // ------------------------------------------------------------------
 
-    }
-
-    void LlvmLoweringPass::visitOperationInst(ionshared::Ptr<OperationInst> node) {
-        llvm::IRBuilder<> llvmBuilder = this->requireBuilder();
-        std::optional<llvm::Value*> llvmRightSideValue = std::nullopt;
-        bool isInteger = node->leftSideValue->type->typeKind == TypeKind::Integer;
-
-        /**
-         * NOTE: During lowering it is assumed that both types are
-         * compatible (equal), since there is no implicit conversions
-         * done by the compiler. This assurance comes from the type-checking
-         * pass, which must occur prior to lowering.
-         */
-        if (!isInteger && node->leftSideValue->type->typeKind != TypeKind::Decimal) {
-            // TODO: Internal error?
-            throw std::runtime_error("Value type of operation must be numerical");
-        }
-
-        auto requireAndVisitRightSide = [&]{
-            if (!ionshared::util::hasValue(node->rightSideValue)) {
-                throw std::runtime_error("Right side must have a value for this operation");
-            }
-
-            this->visit(*node->rightSideValue);
-            llvmRightSideValue = this->valueStack.pop();
-        };
-
-        this->visit(node->leftSideValue);
-
-        llvm::Value* llvmLeftSideValue = this->valueStack.pop();
-        llvm::Value* result;
-        llvm::Instruction::BinaryOps llvmBinaryOperator;
-        llvm::Instruction::UnaryOps llvmUnaryOperator;
-
-        switch (node->operatorKind) {
-            case OperatorKind::Addition: {
-                requireAndVisitRightSide();
-
-                llvmBinaryOperator = isInteger
-                    ? llvm::Instruction::BinaryOps::Add
-                    : llvm::Instruction::BinaryOps::FAdd;
-
-                break;
-            }
-
-            case OperatorKind::Multiplication: {
-                requireAndVisitRightSide();
-
-                llvmBinaryOperator = isInteger
-                    ? llvm::Instruction::BinaryOps::Mul
-                    : llvm::Instruction::BinaryOps::FMul;
-
-                break;
-            }
-
-            case OperatorKind::Subtraction: {
-                if (ionshared::util::hasValue(node->rightSideValue)) {
-                    llvmBinaryOperator = isInteger
-                        ? llvm::Instruction::BinaryOps::Sub
-                        : llvm::Instruction::BinaryOps::FSub;
-
-                    break;
-                }
-
-                // TODO: Implement lowering of integer neg. operator (via 0 - value?).
-                llvmUnaryOperator = isInteger
-                    ? throw std::runtime_error("Not yet implemented")
-                    : llvm::Instruction::UnaryOps::FNeg;
-
-                break;
-            }
-
-            case OperatorKind::And: {
-                llvmBinaryOperator = llvm::Instruction::BinaryOps::And;
-
-                break;
-            }
-
-            case OperatorKind::Or: {
-                llvmBinaryOperator = llvm::Instruction::BinaryOps::Or;
-
-                break;
-            }
-
-            // TODO: Add support for missing operators.
-
-            default: {
-                throw std::runtime_error("Unsupported operator kind");
-            }
-        }
-
-        if (ionshared::util::hasValue(node->rightSideValue)) {
-            result = llvmBuilder.CreateBinOp(
-                llvmBinaryOperator,
-                llvmLeftSideValue,
-                *llvmRightSideValue
-            );
-        }
-        else {
-            result = llvmBuilder.CreateUnOp(
-                llvmUnaryOperator,
-                llvmLeftSideValue
-            );
-        }
-
-        this->valueStack.push(result);
     }
 }

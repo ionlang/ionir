@@ -13,7 +13,9 @@ namespace ionir {
 
         String,
 
-        Boolean
+        Boolean,
+
+        Operation
     };
 
     template<typename T = Type>
@@ -28,6 +30,10 @@ namespace ionir {
             valueKind(kind),
             type(type) {
             //
+        }
+
+        ionshared::Ptr<Value<>> flatten() {
+            return this->staticCast<Value<>>();
         }
     };
 }

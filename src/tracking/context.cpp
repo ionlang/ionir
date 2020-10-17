@@ -36,7 +36,7 @@ namespace ionir {
         this->scopes.insert(this->scopes.begin(), scope);
     }
 
-    void Context::appendScope(const ionshared::Ptr<ScopeAnchor<>> &scopeAnchor) noexcept {
+    void Context::appendScope(const ionshared::Ptr<ScopeAnchor<>>& scopeAnchor) noexcept {
         this->appendScope(scopeAnchor->getSymbolTable());
     }
 
@@ -53,7 +53,7 @@ namespace ionir {
          * instead of the end of the scopes vector, essentially reversing
          * the order from last added to first added.
          */
-        for (const auto &scope : this->scopes) {
+        for (const auto& scope : this->scopes) {
             if (scope->contains(id)) {
                 return scope->lookup(id);
             }

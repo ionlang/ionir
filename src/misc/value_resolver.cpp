@@ -7,7 +7,7 @@ namespace ionir {
         //
     }
 
-    std::optional<llvm::Constant *> ValueResolver::tryResolveInt(IntegerKind kind, long value, bool isSigned) {
+    std::optional<llvm::Constant*> ValueResolver::tryResolveInt(IntegerKind kind, long value, bool isSigned) {
         std::optional<LlvmIntTypeResolver> resolver = Const::tryGetIntTypeResolver(kind);
 
         if (!resolver.has_value()) {

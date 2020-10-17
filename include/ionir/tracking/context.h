@@ -30,7 +30,7 @@ namespace ionir {
 
         void appendScope(const Scope &scope) noexcept;
 
-        void appendScope(const ionshared::Ptr<ScopeAnchor<>> &scopeAnchor) noexcept;
+        void appendScope(const ionshared::Ptr<ScopeAnchor<>>& scopeAnchor) noexcept;
 
         /**
          * Removes the lastly added scope from the scopes list.

@@ -8,7 +8,7 @@
 #include <ionir/construct/inst/return.h>
 #include <ionir/construct/inst/call.h>
 #include <ionir/construct/inst/jump.h>
-#include <ionir/construct/inst/operation.h>
+#include <ionir/construct/value/operation.h>
 
 namespace ionir {
     struct InstBuilder {
@@ -59,12 +59,6 @@ namespace ionir {
 
         ionshared::Ptr<JumpInst> createJump(
             const ionshared::Ptr<BasicBlock>& basicBlock
-        );
-
-        ionshared::Ptr<OperationInst> createOperation(
-            OperatorKind operatorKind,
-            ionshared::Ptr<Value<>> leftSideValue,
-            ionshared::OptPtr<Value<>> rightSideValue
         );
     };
 }

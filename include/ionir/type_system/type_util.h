@@ -10,8 +10,8 @@ namespace ionir::type_util {
     );
 
     bool isSameType(
-        const ionshared::Ptr<Type> &typeA,
-        const ionshared::Ptr<Type> &typeB
+        const ionshared::Ptr<Type>& typeA,
+        const ionshared::Ptr<Type>& typeB
     );
 
     bool isIntegerType(

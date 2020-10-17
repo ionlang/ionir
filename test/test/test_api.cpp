@@ -1,6 +1,7 @@
 #include <ionir/test/util.h>
 #include <ionir/test/comparison.h>
 #include <ionir/test/filesystem.h>
+#include "../pch.h"
 
 using namespace ionir::test;
 

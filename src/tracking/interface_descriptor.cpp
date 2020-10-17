@@ -39,7 +39,7 @@ namespace ionir {
             return *this->fields->lookup(name);
         }
 
-        for (const auto &interface : this->interfaces) {
+        for (const auto& interface : this->interfaces) {
             std::optional<ionshared::Ptr<FieldDescriptor>> field = interface->findField(name);
 
             if (field.has_value()) {
