@@ -5,8 +5,6 @@
 
 namespace ionir {
     void LlvmLoweringPass::visitAllocaInst(std::shared_ptr<AllocaInst> construct) {
-        this->requireBuilder();
-
         // TODO: Option to create array here too?
         /**
          * Create the LLVM-equivalent alloca instruction
@@ -15,10 +13,12 @@ namespace ionir {
         this->valueSymbolTable.set(
             construct,
 
-            std::shared_ptr<llvm::Value>(this->makeLlvmBuilder()->CreateAlloca(
-                this->typeSafeEarlyVisitOrLookup(construct->type).get(),
-                (llvm::Value*)nullptr
-            ))
+            std::shared_ptr<llvm::Value>(
+                this->llvmBuffers.makeBuilder().CreateAlloca(
+                    this->typeSafeEarlyVisitOrLookup(construct->type).get(),
+                    (llvm::Value*)nullptr
+                )
+            )
         );
     }
 
@@ -142,7 +142,7 @@ namespace ionir {
 
         // Attempt to resolve the callee LLVM-equivalent function.
         llvm::Function* llvmCallee =
-            (*this->buffers.llvmModule)->getFunction(calleePrototype->name);
+            (*this->buffers.module)->getFunction(calleePrototype->name);
 
         // LLVM-equivalent function could not be found. Report an error.
         if (llvmCallee == nullptr) {

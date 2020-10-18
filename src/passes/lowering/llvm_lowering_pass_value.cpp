@@ -34,7 +34,7 @@ namespace ionir {
         this->requireContext();
         this->requireBuilder();
 
-        llvm::Type *charType = llvm::Type::getInt8Ty(**this->buffers.llvmContext);
+        llvm::Type *charType = llvm::Type::getInt8Ty(**this->buffers.context);
 
         this->valueSymbolTable.set(
             construct,
@@ -63,7 +63,7 @@ namespace ionir {
         this->requireContext();
 
         // Create the boolean type along with the LLVM value.
-        llvm::IntegerType *type = llvm::Type::getInt1Ty(**this->buffers.llvmContext);
+        llvm::IntegerType *type = llvm::Type::getInt1Ty(**this->buffers.context);
 
         this->valueSymbolTable.set(node, std::shared_ptr<llvm::Value>(
             llvm::ConstantInt::get(

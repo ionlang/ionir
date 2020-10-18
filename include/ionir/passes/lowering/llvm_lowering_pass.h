@@ -31,28 +31,19 @@
 namespace ionir {
     class LlvmLoweringPass : public Pass {
     private:
-        struct Buffers {
-            std::optional<llvm::LLVMContext*> llvmContext = std::nullopt;
+        struct LlvmBuffers {
+            ionshared::Stack<std::shared_ptr<llvm::Module>> modules{};
 
-            std::optional<llvm::Module*> llvmModule = std::nullopt;
+            ionshared::Stack<std::shared_ptr<llvm::Function>> functions{};
 
-            std::optional<std::shared_ptr<llvm::Function>> llvmFunction = std::nullopt;
-
-            std::optional<std::shared_ptr<llvm::BasicBlock>> llvmBasicBlock = std::nullopt;
-
-            void requireContext() const;
-
-            void requireModule() const;
-
-            void requireFunction() const;
+            ionshared::Stack<std::shared_ptr<llvm::BasicBlock>> basicBlocks{};
 
             /**
-             * Ensure that the builder is instantiated, otherwise throws
-             * a runtime error.
+             * Create a new LLVM IR builder instance and return it.
+             * Will throw a runtime exception if the basic block buffer
+             * is empty.
              */
-            llvm::IRBuilder<> requireBuilder();
-
-
+            llvm::IRBuilder<> makeBuilder();
         };
 
         static std::shared_ptr<llvm::Type> processTypeQualifiers(
@@ -62,19 +53,11 @@ namespace ionir {
 
         std::shared_ptr<ionshared::SymbolTable<llvm::Module*>> modules;
 
-        ionshared::Stack<std::shared_ptr<Buffers>> buffersStack;
+        LlvmBuffers llvmBuffers;
 
         ionshared::LoweringSymbolTable<std::shared_ptr<Construct>, std::shared_ptr<llvm::Value>> valueSymbolTable;
 
         ionshared::LoweringSymbolTable<std::shared_ptr<Construct>, std::shared_ptr<llvm::Type>> typeSymbolTable;
-
-        /**
-         * Attempt to create a new LLVM IR builder instance from the
-         * currently buffered LLVM basic block (if any). Will return
-         * std::nullopt if the current LLVM basic block buffer is
-         * std::nullopt.
-         */
-        std::optional<llvm::IRBuilder<>> makeLlvmBuilder();
 
         /**
          * Visit and emit a construct if it has not been already
@@ -90,6 +73,8 @@ namespace ionir {
             bool useDynamicCast = true,
             bool stashBuffers = true
         ) {
+            // TODO: If the root (module) hasn't been emitted, emit it early. That would also emit the target along the way.
+
             /**
              * NOTE: If specified, buffers should be stashed and restored after
              * visitation, as the construct could be anything, including a block
@@ -174,6 +159,10 @@ namespace ionir {
         bool setModuleBuffer(const std::string& id);
 
         void visit(std::shared_ptr<Construct> node) override;
+
+        bool initialize(ionshared::PassInfo& info) override;
+
+        void finish() override;
 
         void visitScopeAnchor(std::shared_ptr<ScopeAnchor<>> node) override;
 

@@ -1,7 +1,9 @@
+#include <iostream>
 #include <llvm/ADT/APInt.h>
 #include <llvm/IR/DerivedTypes.h>
 #include <ionir/construct/value.h>
 #include <ionir/diagnostics/diagnostic.h>
+#include <ionir/passes/semantic/construct_verification_pass.h>
 #include <ionir/passes/lowering/llvm_lowering_pass.h>
 
 namespace ionir {
@@ -19,11 +21,33 @@ namespace ionir {
         node->accept(*this);
     }
 
+    bool LlvmLoweringPass::initialize(ionshared::PassInfo& info) {
+        /**
+         * In order to prevent segmentation faults, the construct
+         * tree must be validated before running this pass.
+         */
+        info.addRequirement<ConstructVerificationPass>();
+
+        return true;
+    }
+
+    void LlvmLoweringPass::finish() {
+        bool isBuffersEmpty = this->llvmBuffers.modules.isEmpty()
+            && this->llvmBuffers.functions.isEmpty()
+            && this->llvmBuffers.basicBlocks.isEmpty();
+
+        // At this point, all LLVM buffers should be empty.
+        if (!isBuffersEmpty) {
+            // TODO: Use diagnostics API.
+            std::cout << "Internal warning: LLVM buffers were not empty upon finish" << std::endl;
+        }
+    }
+
     void LlvmLoweringPass::visitExtern(std::shared_ptr<Extern> construct) {
         this->requireModule();
 
         llvm::Function* existingExternDefinition =
-            (*this->buffers.llvmModule)->getFunction(construct->prototype->name);
+            (*this->buffers.module)->getFunction(construct->prototype->name);
 
         if (existingExternDefinition != nullptr) {
             this->context->diagnosticBuilder
@@ -56,7 +80,7 @@ namespace ionir {
         std::vector<llvm::Type*> llvmArgumentTypes = {};
 
         // Attempt to retrieve an existing function.
-        llvm::Function* llvmFunction = (*this->buffers.llvmModule)->getFunction(construct->name);
+        llvm::Function* llvmFunction = (*this->buffers.module)->getFunction(construct->name);
 
         // A function with a matching identifier already exists.
         if (llvmFunction != nullptr) {
@@ -89,7 +113,7 @@ namespace ionir {
 
             // Cast the value to a function, since we know getCallee() will return a function.
             llvmFunction = llvm::dyn_cast<llvm::Function>(
-                (*this->buffers.llvmModule)->getOrInsertFunction(construct->name, llvmFunctionType).getCallee()
+                (*this->buffers.module)->getOrInsertFunction(construct->name, llvmFunctionType).getCallee()
             );
 
             // Set the function's linkage.
@@ -127,26 +151,24 @@ namespace ionir {
     }
 
     void LlvmLoweringPass::visitFunction(std::shared_ptr<Function> construct) {
-        // TODO: Why require module here?
-        this->requireModule();
+        std::shared_ptr<llvm::Module> llvmModuleBuffer =
+            this->llvmBuffers.modules.forceGetTopItem();
 
-        std::shared_ptr<Buffers> buffers =
-            this->buffersStack.forceGetTopItem();
-
-        if ((*buffers->llvmModule)->getFunction(construct->prototype->name) != nullptr) {
+        if (llvmModuleBuffer->getFunction(construct->prototype->name) != nullptr) {
             throw std::runtime_error("A function with the same identifier has been already previously defined");
         }
 
         std::shared_ptr<llvm::Function> llvmFunction =
             this->valueSafeEarlyVisitOrLookup<llvm::Function>(construct->prototype);
 
-        buffers->llvmFunction = llvmFunction;
+        this->llvmBuffers.functions.push(llvmFunction);
 
         // Visiting the function body's yields no value to the value stack.
         this->visit(construct->body);
 
         // TODO: Verify the resulting LLVM function (through LLVM)?
 
+        this->llvmBuffers.functions.forcePop();
         this->valueSymbolTable.set(construct, llvmFunction);
     }
 }
