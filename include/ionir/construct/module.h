@@ -14,11 +14,11 @@ namespace ionir {
     struct Function;
 
     struct Module : Construct, Identifiable {
-        ionshared::Ptr<Context> context;
+        std::shared_ptr<Context> context;
 
         explicit Module(
-            ionshared::Ptr<Identifier> identifier,
-            ionshared::Ptr<Context> context = std::make_shared<Context>()
+            std::shared_ptr<Identifier> identifier,
+            std::shared_ptr<Context> context = std::make_shared<Context>()
         ) noexcept;
 
         void accept(Pass& visitor) override;
@@ -26,7 +26,7 @@ namespace ionir {
         [[nodiscard]] Ast getChildrenNodes() override;
 
         // TODO: What about externs/globals/classes/structs? ------------
-        bool insertFunction(const ionshared::Ptr<Function>& function);
+        bool insertFunction(const std::shared_ptr<Function>& function);
 
         [[nodiscard]] ionshared::OptPtr<Function> lookupFunction(std::string name);
         // --------------------------------------------------------------
@@ -38,6 +38,6 @@ namespace ionir {
          * changes will be committed if any conflict occurs (or the process
          * fails).
          */
-        bool mergeInto(const ionshared::Ptr<Module>& module);
+        bool mergeInto(const std::shared_ptr<Module>& module);
     };
 }

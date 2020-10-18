@@ -29,7 +29,7 @@ namespace ionir::test::comparison {
     }
 
     bool ir(
-        const ionshared::Ptr<LlvmLoweringPass>& llvmLoweringPass,
+        const std::shared_ptr<LlvmLoweringPass>& llvmLoweringPass,
         const std::string& fileName
     ) {
         std::optional<llvm::Module*> llvmModuleBuffer = llvmLoweringPass->getModuleBuffer();

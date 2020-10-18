@@ -7,11 +7,11 @@ namespace ionir {
     struct Pass;
 
     struct Extern : ConstructWithParent<Module> {
-        ionshared::Ptr<Prototype> prototype;
+        std::shared_ptr<Prototype> prototype;
 
         Extern(
-            ionshared::Ptr<Module> parent,
-            ionshared::Ptr<Prototype> prototype
+            std::shared_ptr<Module> parent,
+            std::shared_ptr<Prototype> prototype
         ) noexcept;
 
         void accept(Pass& visitor) override;

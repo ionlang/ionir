@@ -5,8 +5,36 @@
 #include <iostream>
 
 namespace ionir {
-    llvm::Type* LlvmLoweringPass::processTypeQualifiers(
-        const ionshared::Ptr<TypeQualifiers>& qualifiers,
+    void LlvmLoweringPass::Buffers::requireContext() const {
+        if (!ionshared::util::hasValue(this->llvmContext)) {
+            throw std::runtime_error("Expected the context buffer to be set, but was null");
+        }
+    }
+
+    void LlvmLoweringPass::Buffers::requireModule() const {
+        if (!ionshared::util::hasValue(this->llvmModule)) {
+            throw std::runtime_error("Expected the module buffer to be set, but was null");
+        }
+    }
+
+    void LlvmLoweringPass::Buffers::requireFunction() const {
+        if (!ionshared::util::hasValue(this->llvmFunction)) {
+            throw std::runtime_error("Expected the function buffer to be set, but was null");
+        }
+    }
+
+    llvm::IRBuilder<> LlvmLoweringPass::Buffers::requireBuilder() {
+        // Builder must be instantiated.
+        if (!this->llvmBasicBlock.has_value()) {
+            // Otherwise, throw a runtime error.
+            throw std::runtime_error("Expected builder to be instantiated");
+        }
+
+        return llvm::IRBuilder<>(this->llvmBasicBlock->get());
+    }
+
+    std::shared_ptr<llvm::Type> LlvmLoweringPass::processTypeQualifiers(
+        const std::shared_ptr<TypeQualifiers>& qualifiers,
         llvm::Type* type
     ) {
         // TODO: This should be last? Or const?
@@ -17,18 +45,10 @@ namespace ionir {
 
         // TODO: Process other qualifiers.
 
-        return type;
+        return std::shared_ptr<llvm::Type>(type);
     }
 
-    ionshared::LlvmStack<llvm::Value> LlvmLoweringPass::getValueStack() const noexcept {
-        return this->valueStack;
-    }
-
-    ionshared::LlvmStack<llvm::Type> LlvmLoweringPass::getTypeStack() const noexcept {
-        return this->typeStack;
-    }
-
-    ionshared::Ptr<ionshared::SymbolTable<llvm::Module*>> LlvmLoweringPass::getModules() const {
+    std::shared_ptr<ionshared::SymbolTable<llvm::Module*>> LlvmLoweringPass::getModules() const {
         return this->modules;
     }
 
@@ -47,73 +67,23 @@ namespace ionir {
         return false;
     }
 
-    llvm::IRBuilder<> LlvmLoweringPass::requireBuilder() {
-        // Builder must be instantiated.
-        if (!this->buffers.llvmBasicBlock.has_value()) {
-            // Otherwise, throw a runtime error.
-            throw std::runtime_error("Expected builder to be instantiated");
-        }
-
-        return *this->makeLlvmBuilder();
-    }
-
-    void LlvmLoweringPass::requireFunction() const {
-        if (!ionshared::util::hasValue(this->buffers.llvmFunction)) {
-            throw std::runtime_error("Expected the function buffer to be set, but was null");
-        }
-    }
-
-    void LlvmLoweringPass::requireModule() const {
-        if (!ionshared::util::hasValue(this->buffers.llvmModule)) {
-            throw std::runtime_error("Expected the module buffer to be set, but was null");
-        }
-    }
-
-    void LlvmLoweringPass::requireContext() const {
-        if (!ionshared::util::hasValue(this->buffers.llvmContext)) {
-            throw std::runtime_error("Expected the context buffer to be set, but was null");
-        }
-    }
-
-    void LlvmLoweringPass::lockBuffers(const std::function<void()>& callback) {
-        Buffers buffersBackup = this->buffers;
-
-        callback();
-        this->buffers = buffersBackup;
-    }
-
-    std::optional<llvm::IRBuilder<>> LlvmLoweringPass::makeLlvmBuilder() noexcept {
-        if (!ionshared::util::hasValue(this->buffers.llvmBasicBlock)) {
-            return std::nullopt;
-        }
-
-        return llvm::IRBuilder<>(*this->buffers.llvmBasicBlock);
-    }
-
     LlvmLoweringPass::LlvmLoweringPass(
-        ionshared::Ptr<ionshared::PassContext> context,
-        ionshared::Ptr<ionshared::SymbolTable<llvm::Module*>> modules
+        std::shared_ptr<ionshared::PassContext> context,
+        std::shared_ptr<ionshared::SymbolTable<llvm::Module*>> modules
     ) noexcept :
         Pass(std::move(context)),
         modules(std::move(modules)),
-        valueStack(),
-        typeStack(),
-
-        buffers(Buffers{
-            std::make_shared<Context>()
-        }),
-
-        symbolTable(),
-        namedValues() {
+        buffersStack(),
+        valueSymbolTable(),
+        typeSymbolTable() {
         //
     }
 
     LlvmLoweringPass::~LlvmLoweringPass() {
-        this->typeStack.clear();
-        this->valueStack.clear();
+        // TODO?
     }
 
-    void LlvmLoweringPass::visitScopeAnchor(ionshared::Ptr<ScopeAnchor<>> node) {
+    void LlvmLoweringPass::visitScopeAnchor(std::shared_ptr<ScopeAnchor<>> node) {
         Pass::visitScopeAnchor(node);
 
         /**
@@ -124,51 +94,39 @@ namespace ionir {
         this->buffers.context->appendScope(node->getSymbolTable());
     }
 
-    void LlvmLoweringPass::visitBasicBlock(ionshared::Ptr<BasicBlock> node) {
+    void LlvmLoweringPass::visitBasicBlock(std::shared_ptr<BasicBlock> construct) {
         // TODO: This is a temporary fix? The other option is to place the block beforehand and emit it, but isn't it the same thing? Investigate.
-        // Node was already emitted.
-        if (this->symbolTable.contains(node)) {
-            return;
-        }
 
-        // Both context and function buffers must not be null.
-        this->requireContext();
-        this->requireFunction();
+        std::shared_ptr<Buffers> buffers = this->buffersStack.forceGetTopItem();
+
+        buffers->requireContext();
+        buffers->requireFunction();
 
         /**
          * Create the basic block and at the same time register it
          * under the buffer function.
          */
-        llvm::BasicBlock *llvmBasicBlock = llvm::BasicBlock::Create(
-            **this->buffers.llvmContext,
-            node->name,
-            *this->buffers.llvmFunction
+        std::shared_ptr<llvm::BasicBlock> llvmBasicBlock = std::shared_ptr<llvm::BasicBlock>(
+            llvm::BasicBlock::Create(
+                **buffers->llvmContext,
+                construct->name,
+                buffers->llvmFunction->get()
+            )
         );
 
-        this->buffers.llvmBasicBlock = llvmBasicBlock;
+        buffers->llvmBasicBlock = llvmBasicBlock;
 
-        std::vector<ionshared::Ptr<Inst>> insts = node->insts;
+        std::vector<std::shared_ptr<Instruction>> instructions = construct->instructions;
 
         // Emit the entity at this point so visiting children can access it.
-        this->symbolTable.set(node, llvmBasicBlock);
+        this->valueSymbolTable.set(construct, llvmBasicBlock);
 
-        for (const auto& inst : insts) {
-            this->visit(inst);
-
-            // Discard the resulting instruction, as it is not needed.
-            this->valueStack.pop();
+        for (const auto& instruction : instructions) {
+            this->visit(instruction);
         }
-
-        this->valueStack.push(llvmBasicBlock);
-        this->buffers.context->popScope();
     }
 
-    void LlvmLoweringPass::visitFunctionBody(ionshared::Ptr<FunctionBody> node) {
-        // Verify the block before continuing.
-        if (!node->verify()) {
-            throw std::runtime_error("Block failed to be verified");
-        }
-
+    void LlvmLoweringPass::visitFunctionBody(std::shared_ptr<FunctionBody> node) {
         /**
          * Retrieve the entry section from the block. At this point, it
          * should be guaranteed to be set.
@@ -200,45 +158,41 @@ namespace ionir {
 
         // Visit all the block's section(s).
         for (const auto& [key, basicBlock] : node->getSymbolTable()->unwrap()) {
-            this->visitBasicBlock(basicBlock);
-            this->valueStack.pop();
+            this->visit(basicBlock);
         }
 
         this->buffers.context->popScope();
     }
 
-    void LlvmLoweringPass::visitGlobal(ionshared::Ptr<Global> node) {
+    void LlvmLoweringPass::visitGlobal(std::shared_ptr<Global> construct) {
         this->requireModule();
-        this->visit(node->type);
 
-        llvm::Type* type = this->typeStack.pop();
+        std::shared_ptr<llvm::Type> llvmType =
+            this->typeSafeEarlyVisitOrLookup(construct->type);
 
-        auto* globalVar =
-            llvm::dyn_cast<llvm::GlobalVariable>(
-                (*this->buffers.llvmModule)->getOrInsertGlobal(node->name, type)
-            );
+        std::shared_ptr<llvm::GlobalVariable> llvmGlobalVariable =
+            std::shared_ptr<llvm::GlobalVariable>(llvm::dyn_cast<llvm::GlobalVariable>(
+                (*this->buffers.llvmModule)->getOrInsertGlobal(construct->name, llvmType.get())
+            ));
 
-        ionshared::OptPtr<Value<>> nodeValue = node->value;
-
-        // Assign value if applicable.
-        if (ionshared::util::hasValue(nodeValue)) {
-            this->visit(*nodeValue);
-
-            llvm::Value* value = this->valueStack.pop();
+        // Initialize the global variable if applicable.
+        if (ionshared::util::hasValue(construct->value)) {
+            std::shared_ptr<llvm::Value> llvmValue =
+                this->valueSafeEarlyVisitOrLookup(*construct->value);
 
             // TODO: Value needs to be created from below commented statement.
             // llvm::Constant* initializerValue = llvm::Constant::getIntegerValue(llvm::Type);
 
             // TODO: CRITICAL: You can't just cast llvm::value to constant! See above.
-            globalVar->setInitializer(llvm::dyn_cast<llvm::Constant>(value));
+            llvmGlobalVariable->setInitializer(llvm::dyn_cast<llvm::Constant>(llvmValue.get()));
         }
 
-        this->valueStack.push(globalVar);
+        this->valueSymbolTable.set(construct, llvmGlobalVariable);
 
         // TODO: Apply LLVM entity to the node.
     }
 
-    void LlvmLoweringPass::visitIntegerType(ionshared::Ptr<IntegerType> node) {
+    void LlvmLoweringPass::visitIntegerType(std::shared_ptr<IntegerType> construct) {
         this->requireContext();
 
         std::optional<llvm::IntegerType*> type = std::nullopt;
@@ -247,7 +201,7 @@ namespace ionir {
          * Create the corresponding LLVM integer type based off the
          * node's integer kind.
          */
-        switch (node->integerKind) {
+        switch (construct->integerKind) {
             case IntegerKind::Int8: {
                 type = llvm::Type::getInt8Ty(**this->buffers.llvmContext);
 
@@ -288,103 +242,101 @@ namespace ionir {
             throw std::runtime_error("Expected type to be defined");
         }
 
-        this->typeStack.push(this->processTypeQualifiers(
-            node->qualifiers,
+        this->typeSymbolTable.set(construct, this->processTypeQualifiers(
+            construct->qualifiers,
             *type
         ));
     }
 
-    void LlvmLoweringPass::visitBooleanType(ionshared::Ptr<BooleanType> node) {
+    void LlvmLoweringPass::visitBooleanType(std::shared_ptr<BooleanType> construct) {
         this->requireContext();
 
-        this->typeStack.push(this->processTypeQualifiers(
-            node->qualifiers,
+        this->typeSymbolTable.set(construct, this->processTypeQualifiers(
+            construct->qualifiers,
             llvm::Type::getInt1Ty(**this->buffers.llvmContext)
         ));
     }
 
-    void LlvmLoweringPass::visitVoidType(ionshared::Ptr<VoidType> node) {
+    void LlvmLoweringPass::visitVoidType(std::shared_ptr<VoidType> construct) {
         this->requireContext();
 
-        this->typeStack.push(this->processTypeQualifiers(
-            node->qualifiers,
+        this->typeSymbolTable.set(construct, this->processTypeQualifiers(
+            construct->qualifiers,
             llvm::Type::getVoidTy(**this->buffers.llvmContext)
         ));
     }
 
-    void LlvmLoweringPass::visitModule(ionshared::Ptr<Module> node) {
-        this->buffers.llvmContext = new llvm::LLVMContext();
+    void LlvmLoweringPass::visitModule(std::shared_ptr<Module> node) {
+        std::shared_ptr<Buffers> newBuffers = std::make_shared<Buffers>(Buffers{
+            .llvmContext = new llvm::LLVMContext(),
 
-        this->buffers.llvmModule = new llvm::Module(
-            **node->identifier,
-            **this->buffers.llvmContext
-        );
+            .llvmModule = new llvm::Module(
+                **node->identifier,
+                **newBuffers->llvmContext
+            )
+        });
 
-        // Set the module on the modules symbol table.
-        this->modules->set(**node->identifier, *this->buffers.llvmModule);
-
-        // Set the module's context as the context buffer.
-        this->buffers.context = node->context;
+        this->buffersStack.push(newBuffers);
+        this->modules->set(**node->identifier, *newBuffers->llvmModule);
 
         // Proceed to visit all the module's children (top-level constructs).
-        std::map<std::string, ionshared::Ptr<Construct>> moduleSymbolTable =
-            this->buffers.context->getGlobalScope()->unwrap();
+        std::map<std::string, std::shared_ptr<Construct>> moduleNativeSymbolTable =
+            node->context->getGlobalScope()->unwrap();
 
-        for (const auto& [id, topLevelConstruct] : moduleSymbolTable) {
+        for (const auto& [id, topLevelConstruct] : moduleNativeSymbolTable) {
             this->visit(topLevelConstruct);
-
-            /**
-             * Discard visited top-level constructs (such as functions and
-             * global variables) as they have no use elsewhere.
-             */
-             this->valueStack.tryPop();
         }
+
+        this->buffersStack.forcePop();
     }
 
-    void LlvmLoweringPass::visitStruct(ionshared::Ptr<Struct> node) {
+    void LlvmLoweringPass::visitStruct(std::shared_ptr<Struct> construct) {
         this->requireModule();
         this->requireContext();
 
-        auto fieldsNativeMap = node->fields->unwrap();
+        auto fieldsNativeMap = construct->fields->unwrap();
         std::vector<llvm::Type*> llvmFields{};
 
+        llvmFields.reserve(fieldsNativeMap.size());
+
         for (const auto& [name, type] : fieldsNativeMap) {
-            this->visit(type);
-            llvmFields.push_back(this->typeStack.pop());
+            llvmFields.push_back(this->typeSafeEarlyVisitOrLookup(type).get());
         }
 
         // TODO: Ensure struct isn't already defined, and doesn't exist on the LLVM module (or locally?).
 
-        llvm::StructType* llvmStruct = llvm::StructType::get(
-            **this->buffers.llvmContext,
-            llvmFields
-        );
+        std::shared_ptr<llvm::StructType> llvmStruct =
+            std::shared_ptr<llvm::StructType>(llvm::StructType::get(
+                **this->buffers.llvmContext,
+                llvmFields
+            ));
 
-        llvmStruct->setName(node->name);
-        this->typeStack.push(llvmStruct);
+        llvmStruct->setName(construct->name);
+        this->typeSymbolTable.set(construct, llvmStruct);
     }
 
-    void LlvmLoweringPass::visitStructDefinition(ionshared::Ptr<StructDefinition> construct) {
+    void LlvmLoweringPass::visitStructDefinition(std::shared_ptr<StructDefinition> construct) {
         std::vector<llvm::Value*> llvmValues{};
 
         for (const auto& value : construct->values) {
-            this->visit(value);
-            llvmValues.push_back(this->valueStack.pop());
+            llvmValues.push_back(this->valueSafeEarlyVisitOrLookup(value).get());
         }
 
         llvm::IRBuilder<> builder = this->requireBuilder();
 
-        // TODO: What if the declaration has been previously visited?
-        this->visit(construct->declaration);
-
-        llvm::AllocaInst* structAllocation = builder.CreateAlloca(this->typeStack.pop());
+        std::shared_ptr<llvm::AllocaInst> structAllocation =
+            std::shared_ptr<llvm::AllocaInst>(builder.CreateAlloca(
+                this->typeSafeEarlyVisitOrLookup(
+                    construct->declaration
+                ).get()
+            ));
 
         for (size_t i = 0; i < llvmValues.size(); i++) {
-            llvm::Value* structElement = builder.CreateStructGEP(structAllocation, i);
+            llvm::Value* structElement = builder.CreateStructGEP(structAllocation.get(), i);
 
             builder.CreateStore(llvmValues[i], structElement);
         }
 
-        this->valueStack.push(structAllocation);
+        this->valueSymbolTable.set(construct, structAllocation);
     }
 }

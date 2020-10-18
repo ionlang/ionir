@@ -1,7 +1,7 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    Function::Function(ionshared::Ptr<Prototype> prototype, ionshared::Ptr<FunctionBody> body) :
+    Function::Function(std::shared_ptr<Prototype> prototype, std::shared_ptr<FunctionBody> body) :
         Construct(ConstructKind::Function),
         prototype(std::move(prototype)),
         body(std::move(body)) {

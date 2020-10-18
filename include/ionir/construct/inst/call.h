@@ -8,15 +8,15 @@ namespace ionir {
     struct Function;
 
     struct CallInstOpts : InstOpts {
-        ionshared::Ptr<Construct> callee;
+        std::shared_ptr<Construct> callee;
 
-        std::vector<ionshared::Ptr<Construct>> args{};
+        std::vector<std::shared_ptr<Construct>> args{};
     };
 
-    struct CallInst : Inst {
-        ionshared::Ptr<Construct> callee;
+    struct CallInst : Instruction {
+        std::shared_ptr<Construct> callee;
 
-        std::vector<ionshared::Ptr<Construct>> args;
+        std::vector<std::shared_ptr<Construct>> args;
 
         explicit CallInst(const CallInstOpts& opts);
 

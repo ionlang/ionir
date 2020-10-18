@@ -6,8 +6,8 @@ namespace ionir {
     class Identifier;
 
     struct Identifiable {
-        ionshared::Ptr<Identifier> identifier;
+        std::shared_ptr<Identifier> identifier;
 
-        explicit Identifiable(ionshared::Ptr<Identifier> identifier) noexcept;
+        explicit Identifiable(std::shared_ptr<Identifier> identifier) noexcept;
     };
 }

@@ -44,7 +44,7 @@ namespace ionir {
 
         const std::optional<std::string> name;
 
-        ionshared::Ptr<TypeQualifiers> qualifiers;
+        std::shared_ptr<TypeQualifiers> qualifiers;
 
         /**
          * TODO: What if 'id' is atomic type yet kind is UserDefined?
@@ -55,10 +55,10 @@ namespace ionir {
             TypeKind kind = TypeKind::UserDefined,
             std::optional<std::string> name = std::nullopt,
 
-            ionshared::Ptr<TypeQualifiers> qualifiers =
+            std::shared_ptr<TypeQualifiers> qualifiers =
                 std::make_shared<TypeQualifiers>()
         ) noexcept;
 
-        [[nodiscard]] bool equals(const ionshared::Ptr<Construct>& other) override;
+        [[nodiscard]] bool equals(const std::shared_ptr<Construct>& other) override;
     };
 }

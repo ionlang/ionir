@@ -4,7 +4,7 @@
 
 namespace ionir {
     EntryPointCheckPass::EntryPointCheckPass(
-        ionshared::Ptr<ionshared::PassContext> context
+        std::shared_ptr<ionshared::PassContext> context
     ) noexcept :
         Pass(std::move(context)) {
         //
@@ -29,7 +29,7 @@ namespace ionir {
         this->entryFunction.reset();
     }
 
-    void EntryPointCheckPass::visitFunction(ionshared::Ptr<Function> node) {
+    void EntryPointCheckPass::visitFunction(std::shared_ptr<Function> node) {
         Pass::visitFunction(node);
 
         if (node->prototype->name == ConstName::main) {

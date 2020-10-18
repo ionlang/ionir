@@ -8,17 +8,20 @@
 namespace ionir {
     class LlvmEmittedEntities {
     private:
-        ionshared::Map<ionshared::Ptr<Construct>, llvm::Value*> entities;
+        ionshared::Map<std::shared_ptr<Construct>, llvm::Value*> entities;
 
     public:
         LlvmEmittedEntities() noexcept;
 
-        void set(const ionshared::Ptr<Construct>& construct, llvm::Value* llvmValue);
+        void set(const std::shared_ptr<Construct>& construct, llvm::Value* llvmValue);
 
-        [[nodiscard]] bool contains(ionshared::Ptr<Construct> construct) const;
+        [[nodiscard]] bool contains(std::shared_ptr<Construct> construct) const;
 
         template<typename T = llvm::Value>
-        [[nodiscard]] std::optional<T*> find(const ionshared::Ptr<Construct>& construct) {
+        [[nodiscard]] std::optional<T*> find(
+            const std::shared_ptr<Construct>& construct,
+            bool useDynamicCast = true
+        ) {
             if (this->contains(construct)) {
                 T *castResult = llvm::dyn_cast<T>(*this->entities.lookup(construct));
 

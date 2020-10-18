@@ -121,7 +121,7 @@ int main() {
      * and implementing a Pass class. This, in turn, makes the implementation of new targets
      * a breeze.
      */
-    ionshared::Ptr<LlvmCodegenPass> llvmCodegenPass = std::make_shared<LlvmCodegenPass>();
+    std::shared_ptr<LlvmCodegenPass> llvmCodegenPass = std::make_shared<LlvmCodegenPass>();
 
     passManager.registerPass(llvmCodegenPass);
 

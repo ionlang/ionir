@@ -2,8 +2,8 @@
 
 namespace ionir {
     Extern::Extern(
-        ionshared::Ptr<Module> parent,
-        ionshared::Ptr<Prototype> prototype
+        std::shared_ptr<Module> parent,
+        std::shared_ptr<Prototype> prototype
     ) noexcept :
         ConstructWithParent<Module>(std::move(parent), ConstructKind::Extern),
         prototype(std::move(prototype)) {

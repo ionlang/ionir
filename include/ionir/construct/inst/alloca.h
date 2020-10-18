@@ -7,11 +7,11 @@ namespace ionir {
     struct BasicBlock;
 
     struct AllocaInstOpts : InstOpts {
-        ionshared::Ptr<Type> type;
+        std::shared_ptr<Type> type;
     };
 
-    struct AllocaInst : Inst {
-        ionshared::Ptr<Type> type;
+    struct AllocaInst : Instruction {
+        std::shared_ptr<Type> type;
 
         // TODO: Missing support for array-type allocas.
         explicit AllocaInst(const AllocaInstOpts& opts);

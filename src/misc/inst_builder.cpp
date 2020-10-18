@@ -2,18 +2,18 @@
 #include <ionir/construct/function_body.h>
 
 namespace ionir {
-    InstBuilder::InstBuilder(ionshared::Ptr<BasicBlock> basicBlock) noexcept :
+    InstBuilder::InstBuilder(std::shared_ptr<BasicBlock> basicBlock) noexcept :
         basicBlock(std::move(basicBlock)) {
         //
     }
 
-    void InstBuilder::appendInst(const ionshared::Ptr<Inst>& inst) {
-        this->basicBlock->insts.push_back(inst);
+    void InstBuilder::appendInst(const std::shared_ptr<Instruction>& inst) {
+        this->basicBlock->instructions.push_back(inst);
     }
 
-    ionshared::Ptr<AllocaInst> InstBuilder::createAlloca(
+    std::shared_ptr<AllocaInst> InstBuilder::createAlloca(
         const std::string& id,
-        ionshared::Ptr<Type> type
+        std::shared_ptr<Type> type
     ) {
         return this->make<AllocaInst>(AllocaInstOpts{
             this->basicBlock,
@@ -21,9 +21,9 @@ namespace ionir {
         });
     }
 
-    ionshared::Ptr<StoreInst> InstBuilder::createStore(
-        ionshared::Ptr<Value<>> value,
-        ionshared::Ptr<AllocaInst> target
+    std::shared_ptr<StoreInst> InstBuilder::createStore(
+        std::shared_ptr<Value<>> value,
+        std::shared_ptr<AllocaInst> target
     ) {
         return this->make<StoreInst>(StoreInstOpts{
             this->basicBlock,
@@ -32,10 +32,10 @@ namespace ionir {
         });
     }
 
-    ionshared::Ptr<BranchInst> InstBuilder::createBranch(
-        ionshared::Ptr<Construct> condition,
-        const ionshared::Ptr<BasicBlock>& consequentBasicBlock,
-        const ionshared::Ptr<BasicBlock>& alternativeBasicBlock
+    std::shared_ptr<BranchInst> InstBuilder::createBranch(
+        std::shared_ptr<Construct> condition,
+        const std::shared_ptr<BasicBlock>& consequentBasicBlock,
+        const std::shared_ptr<BasicBlock>& alternativeBasicBlock
     ) {
         return this->make<BranchInst>(BranchInstOpts{
             this->basicBlock,
@@ -45,7 +45,7 @@ namespace ionir {
         });
     }
 
-    ionshared::Ptr<ReturnInst> InstBuilder::createReturn(
+    std::shared_ptr<ReturnInst> InstBuilder::createReturn(
         const ionshared::OptPtr<Value<>>& value
     ) {
         return this->make<ReturnInst, ReturnInstOpts>(ReturnInstOpts{
@@ -54,9 +54,9 @@ namespace ionir {
         });
     }
 
-    ionshared::Ptr<CallInst> InstBuilder::createCall(
-        const ionshared::Ptr<Construct>& callee,
-        const std::vector<ionshared::Ptr<Construct>>& args
+    std::shared_ptr<CallInst> InstBuilder::createCall(
+        const std::shared_ptr<Construct>& callee,
+        const std::vector<std::shared_ptr<Construct>>& args
     ) {
         return this->make<CallInst>(CallInstOpts{
             this->basicBlock,
@@ -65,8 +65,8 @@ namespace ionir {
         });
     }
 
-    ionshared::Ptr<JumpInst> InstBuilder::createJump(
-        const ionshared::Ptr<BasicBlock>& basicBlock
+    std::shared_ptr<JumpInst> InstBuilder::createJump(
+        const std::shared_ptr<BasicBlock>& basicBlock
     ) {
         return this->make<JumpInst>(JumpInstOpts{
             this->basicBlock,

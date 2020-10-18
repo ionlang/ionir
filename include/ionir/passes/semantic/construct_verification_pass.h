@@ -7,9 +7,9 @@ namespace ionir {
         IONSHARED_PASS_ID;
 
         explicit ConstructVerificationPass(
-            ionshared::Ptr<ionshared::PassContext> context
+            std::shared_ptr<ionshared::PassContext> context
         ) noexcept;
 
-        void visit(ionshared::Ptr<Construct> node) override;
+        void visit(std::shared_ptr<Construct> node) override;
     };
 }

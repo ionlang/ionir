@@ -3,7 +3,7 @@
 namespace ionir {
     // TODO: Finish init. implementation.
     AllocaInst::AllocaInst(const AllocaInstOpts &opts) :
-        Inst(opts.parent, InstKind::Alloca),
+        Instruction(opts.parent, InstKind::Alloca),
         type(opts.type) {
         //
     }

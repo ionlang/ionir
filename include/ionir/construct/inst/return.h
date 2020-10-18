@@ -11,7 +11,7 @@ namespace ionir {
         ionshared::OptPtr<Value<>> value = std::nullopt;
     };
 
-    struct ReturnInst : Inst {
+    struct ReturnInst : Instruction {
         ionshared::OptPtr<Value<>> value;
 
         explicit ReturnInst(const ReturnInstOpts& opts);

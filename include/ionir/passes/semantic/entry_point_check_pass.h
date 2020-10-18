@@ -12,11 +12,11 @@ namespace ionir {
         IONSHARED_PASS_ID;
 
         explicit EntryPointCheckPass(
-            ionshared::Ptr<ionshared::PassContext> context
+            std::shared_ptr<ionshared::PassContext> context
         ) noexcept;
 
         void finish() override;
 
-        void visitFunction(ionshared::Ptr<Function> node) override;
+        void visitFunction(std::shared_ptr<Function> node) override;
     };
 }

@@ -2,9 +2,9 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    PointerType::PointerType(ionshared::Ptr<Type> type) :
+    PointerType::PointerType(std::shared_ptr<Type> type) :
         Type(TypeKind::Pointer, ConstName::typePointer),
-        Wrapper<ionshared::Ptr<Type>>(std::move(type)) {
+        Wrapper<std::shared_ptr<Type>>(std::move(type)) {
         //
     }
 

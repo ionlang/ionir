@@ -10,7 +10,7 @@
 namespace ionir {
     struct Pass;
 
-    struct Inst;
+    struct Instruction;
 
     struct Type;
 
@@ -65,14 +65,14 @@ namespace ionir {
         Struct
     };
 
-    class Construct;
+    struct Construct;
 
     typedef ionshared::Ast<Construct> Ast;
 
     struct Construct : ionshared::BaseConstruct<Construct, ConstructKind> {
         template<typename T>
             requires std::derived_from<T, Construct>
-        static Ast convertChildren(std::vector<ionshared::Ptr<T>> vector) {
+        static Ast convertChildren(std::vector<std::shared_ptr<T>> vector) {
             Ast children = {};
 
             for (const auto item : vector) {
@@ -96,6 +96,7 @@ namespace ionir {
         }
 
         template<typename TFirst, typename TSecond>
+            // TODO: Require for-loop iteration capability.
         static Ast mergeChildren(TFirst first, TSecond second) {
             Ast children = {};
 
@@ -110,7 +111,7 @@ namespace ionir {
             return children;
         }
 
-        [[nodiscard]] static bool verify(const ionshared::Ptr<Construct>& construct) noexcept;
+        [[nodiscard]] static bool verify(const std::shared_ptr<Construct>& construct) noexcept;
 
         explicit Construct(
             ConstructKind kind,
@@ -120,7 +121,7 @@ namespace ionir {
 
         virtual void accept(Pass& visitor) = 0;
 
-        [[nodiscard]] virtual bool equals(const ionshared::Ptr<Construct>& other);
+        [[nodiscard]] virtual bool equals(const std::shared_ptr<Construct>& other);
 
         // TODO: Move to BaseConstruct<> in ionshared.
         /**

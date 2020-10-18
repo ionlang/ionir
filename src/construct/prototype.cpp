@@ -3,9 +3,9 @@
 namespace ionir {
     Prototype::Prototype(
         std::string id,
-        ionshared::Ptr<Args> args,
-        ionshared::Ptr<Type> returnType,
-        ionshared::Ptr<Module> parent
+        std::shared_ptr<Args> args,
+        std::shared_ptr<Type> returnType,
+        std::shared_ptr<Module> parent
     ) noexcept :
         ConstructWithParent<Module>(std::move(parent), ConstructKind::Prototype),
         Named{std::move(id)},

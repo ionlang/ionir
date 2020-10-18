@@ -4,7 +4,7 @@ namespace ionir {
     Type::Type(
         TypeKind kind,
         std::optional<std::string> name,
-        ionshared::Ptr<ionshared::Set<TypeQualifier>> qualifiers
+        std::shared_ptr<ionshared::Set<TypeQualifier>> qualifiers
     ) noexcept :
         Construct(ConstructKind::Type),
         typeKind(kind),
@@ -13,12 +13,12 @@ namespace ionir {
         //
     }
 
-    bool Type::equals(const ionshared::Ptr<Construct>& other) {
+    bool Type::equals(const std::shared_ptr<Construct>& other) {
         if (other->constructKind != ConstructKind::Type) {
             return false;
         }
 
-        ionshared::Ptr<Type> otherType = other->dynamicCast<Type>();
+        std::shared_ptr<Type> otherType = other->dynamicCast<Type>();
 
         return otherType->typeKind == this->typeKind
             && otherType->name == this->name;

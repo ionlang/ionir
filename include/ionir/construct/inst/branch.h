@@ -8,19 +8,19 @@ namespace ionir {
     struct BasicBlock;
 
     struct BranchInstOpts : InstOpts {
-        ionshared::Ptr<Construct> condition;
+        std::shared_ptr<Construct> condition;
 
-        ionshared::Ptr<BasicBlock> consequentBasicBlock;
+        std::shared_ptr<BasicBlock> consequentBasicBlock;
 
-        ionshared::Ptr<BasicBlock> alternativeBasicBlock;
+        std::shared_ptr<BasicBlock> alternativeBasicBlock;
     };
 
-    struct BranchInst : Inst {
-        ionshared::Ptr<Construct> condition;
+    struct BranchInst : Instruction {
+        std::shared_ptr<Construct> condition;
 
-        ionshared::Ptr<BasicBlock> consequentBasicBlock;
+        std::shared_ptr<BasicBlock> consequentBasicBlock;
 
-        ionshared::Ptr<BasicBlock> alternativeBasicBlock;
+        std::shared_ptr<BasicBlock> alternativeBasicBlock;
 
         explicit BranchInst(const BranchInstOpts& opts);
 

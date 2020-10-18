@@ -5,72 +5,78 @@
 #include <ionir/passes/lowering/llvm_lowering_pass.h>
 
 namespace ionir {
-    void LlvmLoweringPass::visitIntegerLiteral(ionshared::Ptr<IntegerLiteral> node) {
+    void LlvmLoweringPass::visitIntegerLiteral(std::shared_ptr<IntegerLiteral> construct) {
         /**
          * Create the APInt (Arbitrary-precision integer) to provide.
          * Acts sort of an LLVM integer value wrapper.
          */
-        llvm::APInt apInt(
-            (unsigned)node->type->integerKind,
-            node->value,
-            node->type->isSigned
-        );
+        llvm::APInt llvmApInt{
+            (unsigned)construct->type->integerKind,
+            construct->value,
+            construct->type->isSigned
+        };
 
-        ionshared::Ptr<Type> nodeType = node->type;
-
-        if (nodeType->typeKind != TypeKind::Integer) {
+        if (construct->type->typeKind != TypeKind::Integer) {
             throw std::runtime_error("Integer value's type must be integer type");
         }
 
-        this->visitIntegerType(nodeType->dynamicCast<IntegerType>());
+        this->valueSymbolTable.set(construct, std::shared_ptr<llvm::Value>(
+            llvm::ConstantInt::get(
+                this->typeSafeEarlyVisitOrLookup(construct->type).get(),
+                llvmApInt
+            )
+        ));
 
-        llvm::Type *type = this->typeStack.pop();
-
-        // Finally, create the LLVM value constant.
-        llvm::Constant *value = llvm::ConstantInt::get(type, apInt);
-
-        this->valueStack.push(value);
 //        this->addToScope(node, value);
     }
 
-    void LlvmLoweringPass::visitCharLiteral(ionshared::Ptr<CharLiteral> node) {
+    void LlvmLoweringPass::visitCharLiteral(std::shared_ptr<CharLiteral> construct) {
         this->requireContext();
         this->requireBuilder();
 
         llvm::Type *charType = llvm::Type::getInt8Ty(**this->buffers.llvmContext);
-        llvm::Constant *value = llvm::ConstantInt::get(charType, node->value);
 
-        this->valueStack.push(value);
-//        this->addToScope(node, value);
-    }
+        this->valueSymbolTable.set(
+            construct,
 
-    void LlvmLoweringPass::visitStringLiteral(ionshared::Ptr<StringLiteral> node) {
-        this->requireBuilder();
-
-        this->valueStack.push(
-            this->makeLlvmBuilder()->CreateGlobalStringPtr(node->value)
+            std::shared_ptr<llvm::Value>(
+                llvm::ConstantInt::get(charType, construct->value)
+            )
         );
 //        this->addToScope(node, value);
     }
 
-    void LlvmLoweringPass::visitBooleanLiteral(ionshared::Ptr<BooleanLiteral> node) {
+    void LlvmLoweringPass::visitStringLiteral(std::shared_ptr<StringLiteral> construct) {
+        this->requireBuilder();
+
+        this->valueSymbolTable.set(
+            construct,
+
+            std::shared_ptr<llvm::Value>(
+                this->makeLlvmBuilder()->CreateGlobalStringPtr(construct->value)
+            )
+        );
+//        this->addToScope(node, value);
+    }
+
+    void LlvmLoweringPass::visitBooleanLiteral(std::shared_ptr<BooleanLiteral> node) {
         this->requireContext();
 
         // Create the boolean type along with the LLVM value.
         llvm::IntegerType *type = llvm::Type::getInt1Ty(**this->buffers.llvmContext);
 
-        llvm::Constant *value = llvm::ConstantInt::get(
-            type,
-            llvm::APInt(1, node->value, false)
-        );
-
-        this->valueStack.push(value);
+        this->valueSymbolTable.set(node, std::shared_ptr<llvm::Value>(
+            llvm::ConstantInt::get(
+                type,
+                llvm::APInt(1, node->value, false)
+            )
+        ));
 //        this->addToScope(node, value);
     }
 
-    void LlvmLoweringPass::visitOperationValue(ionshared::Ptr<OperationValue> node) {
+    void LlvmLoweringPass::visitOperationValue(std::shared_ptr<OperationValue> node) {
         llvm::IRBuilder<> llvmBuilder = this->requireBuilder();
-        std::optional<llvm::Value*> llvmRightSideValue = std::nullopt;
+        std::optional<std::shared_ptr<llvm::Value>> llvmRightSideValue = std::nullopt;
         bool isInteger = node->leftSideValue->type->typeKind == TypeKind::Integer;
 
         /**
@@ -89,14 +95,12 @@ namespace ionir {
                 throw std::runtime_error("Right side must have a value for this operation");
             }
 
-            this->visit(*node->rightSideValue);
-            llvmRightSideValue = this->valueStack.pop();
+            llvmRightSideValue = this->valueSafeEarlyVisitOrLookup(*node->rightSideValue);
         };
 
-        this->visit(node->leftSideValue);
+        std::shared_ptr<llvm::Value> llvmLeftSideValue =
+            this->valueSafeEarlyVisitOrLookup(node->leftSideValue);
 
-        llvm::Value* llvmLeftSideValue = this->valueStack.pop();
-        llvm::Value* result;
         llvm::Instruction::BinaryOps llvmBinaryOperator;
         llvm::Instruction::UnaryOps llvmUnaryOperator;
 
@@ -157,20 +161,18 @@ namespace ionir {
             }
         }
 
-        if (ionshared::util::hasValue(node->rightSideValue)) {
-            result = llvmBuilder.CreateBinOp(
-                llvmBinaryOperator,
-                llvmLeftSideValue,
-                *llvmRightSideValue
-            );
-        }
-        else {
-            result = llvmBuilder.CreateUnOp(
-                llvmUnaryOperator,
-                llvmLeftSideValue
-            );
-        }
+        this->valueSymbolTable.set(node, std::shared_ptr<llvm::Value>(
+            ionshared::util::hasValue(node->rightSideValue)
+                ? llvmBuilder.CreateBinOp(
+                    llvmBinaryOperator,
+                    llvmLeftSideValue.get(),
+                    llvmRightSideValue->get()
+                )
 
-        this->valueStack.push(result);
+                : llvmBuilder.CreateUnOp(
+                    llvmUnaryOperator,
+                    llvmLeftSideValue.get()
+                )
+        ));
     }
 }

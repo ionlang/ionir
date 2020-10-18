@@ -7,9 +7,9 @@ namespace ionir {
     struct Pass;
 
     struct IntegerLiteral : Value<IntegerType> {
-        int64_t value;
+        uint64_t value;
 
-        IntegerLiteral(ionshared::Ptr<IntegerType> type, int64_t value) noexcept;
+        IntegerLiteral(std::shared_ptr<IntegerType> type, int64_t value) noexcept;
 
         void accept(Pass& visitor) override;
     };

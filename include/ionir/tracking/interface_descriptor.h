@@ -15,7 +15,7 @@ namespace ionir {
 
         //        PtrSymbolTable<MethodDescriptor> methods;
 
-        std::vector<ionshared::Ptr<InterfaceDescriptor>> interfaces;
+        std::vector<std::shared_ptr<InterfaceDescriptor>> interfaces;
 
     public:
         std::string getName() const;
@@ -30,11 +30,11 @@ namespace ionir {
 
         //void setMethods(PtrSymbolTable<MethodDescriptor> methods);
 
-        std::vector<ionshared::Ptr<InterfaceDescriptor>> getInterfaces() const;
+        std::vector<std::shared_ptr<InterfaceDescriptor>> getInterfaces() const;
 
-        void setInterfaces(std::vector<ionshared::Ptr<InterfaceDescriptor>> interfaces);
+        void setInterfaces(std::vector<std::shared_ptr<InterfaceDescriptor>> interfaces);
 
-        std::optional<ionshared::Ptr<FieldDescriptor>> findField(const std::string &name);
+        std::optional<std::shared_ptr<FieldDescriptor>> findField(const std::string &name);
 
         bool containsField(const std::string &name);
     };

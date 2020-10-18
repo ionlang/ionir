@@ -3,7 +3,7 @@
 #include <ionir/const/const.h>
 
 namespace ionir {
-    bool Construct::verify(const ionshared::Ptr<Construct>& construct) noexcept {
+    bool Construct::verify(const std::shared_ptr<Construct>& construct) noexcept {
         return construct != nullptr
             && construct->verify();
     }
@@ -17,7 +17,7 @@ namespace ionir {
         //
     }
 
-    bool Construct::equals(const ionshared::Ptr<Construct>& other) {
+    bool Construct::equals(const std::shared_ptr<Construct>& other) {
         return other == this->shared_from_this();
     }
 

@@ -39,7 +39,7 @@ namespace ionir {
     struct OperationValue : Value<> {
         const OperatorKind operatorKind;
 
-        ionshared::Ptr<Value<>> leftSideValue;
+        std::shared_ptr<Value<>> leftSideValue;
 
         ionshared::OptPtr<Value<>> rightSideValue;
 
@@ -50,7 +50,7 @@ namespace ionir {
          */
         explicit OperationValue(
             OperatorKind operatorKind,
-            ionshared::Ptr<Value<>> leftSideValue,
+            std::shared_ptr<Value<>> leftSideValue,
             ionshared::OptPtr<Value<>> rightSideValue = std::nullopt
         ) noexcept;
 

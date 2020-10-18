@@ -2,7 +2,7 @@
 
 namespace ionir {
     ReturnInst::ReturnInst(const ReturnInstOpts& opts) :
-        Inst(opts.parent, InstKind::Return),
+        Instruction(opts.parent, InstKind::Return),
         value(opts.value) {
         //
     }

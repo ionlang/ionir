@@ -5,26 +5,25 @@
 #include <ionir/passes/lowering/llvm_lowering_pass.h>
 
 namespace ionir {
-    void LlvmLoweringPass::visit(ionshared::Ptr<Construct> node) {
+    void LlvmLoweringPass::visit(std::shared_ptr<Construct> node) {
+        // Prevent construct from being emitted more than once.
+        if (this->valueSymbolTable.contains(node)) {
+            return;
+        }
+
         /**
-         * Only instruct the node to visit this instance and not
+         * Only instruct the construct to visit this instance and not
          * its children, since they're already manually visited by
          * the other member methods.
          */
         node->accept(*this);
     }
 
-    void LlvmLoweringPass::visitExtern(ionshared::Ptr<Extern> node) {
-        if (this->symbolTable.contains(node)) {
-            return;
-        }
-
+    void LlvmLoweringPass::visitExtern(std::shared_ptr<Extern> construct) {
         this->requireModule();
 
-        IONIR_PASS_INTERNAL_ASSERT(node->prototype != nullptr)
-
-        llvm::Function *existingExternDefinition =
-            (*this->buffers.llvmModule)->getFunction(node->prototype->name);
+        llvm::Function* existingExternDefinition =
+            (*this->buffers.llvmModule)->getFunction(construct->prototype->name);
 
         if (existingExternDefinition != nullptr) {
             this->context->diagnosticBuilder
@@ -34,20 +33,20 @@ namespace ionir {
             throw std::runtime_error("Awaiting new diagnostic buffer checking");
         }
 
-        // Visit the prototype.
-        this->visitPrototype(node->prototype);
+        this->valueSymbolTable.set(
+            construct,
 
-        auto *llvmExtern = this->valueStack.popAs<llvm::Function>();
-
-        this->symbolTable.set(node, llvmExtern);
-        this->valueStack.push(llvmExtern);
+            this->valueSafeEarlyVisitOrLookup<llvm::Function>(
+                construct->prototype
+            )
+        );
     }
 
-    void LlvmLoweringPass::visitPrototype(ionshared::Ptr<Prototype> node) {
+    void LlvmLoweringPass::visitPrototype(std::shared_ptr<Prototype> construct) {
         this->requireModule();
         this->requireContext();
 
-        auto argsMap = node->args->items;
+        auto argsMap = construct->args->items;
         auto& argsNativeMap = argsMap->unwrapConst();
 
         // Retrieve argument count from the argument vector.
@@ -57,7 +56,7 @@ namespace ionir {
         std::vector<llvm::Type*> llvmArgumentTypes = {};
 
         // Attempt to retrieve an existing function.
-        llvm::Function *llvmFunction = (*this->buffers.llvmModule)->getFunction(node->name);
+        llvm::Function* llvmFunction = (*this->buffers.llvmModule)->getFunction(construct->name);
 
         // A function with a matching identifier already exists.
         if (llvmFunction != nullptr) {
@@ -77,26 +76,20 @@ namespace ionir {
         // Otherwise, function will be created.
         else {
             for (const auto& [id, arg] : argsNativeMap) {
-                this->visit(arg.first);
-                llvmArgumentTypes.push_back(this->typeStack.pop());
+                llvmArgumentTypes.push_back(
+                    this->typeSafeEarlyVisitOrLookup(arg.first).get()
+                );
             }
 
-            // Visit and pop the return type.
-            this->visit(node->returnType);
-
-            llvm::Type* llvmReturnType = this->typeStack.pop();
-
-            // TODO: Support for infinite arguments and hard-coded return type.
-            // Create the function type.
             llvm::FunctionType* llvmFunctionType = llvm::FunctionType::get(
-                llvmReturnType,
+                this->typeSafeEarlyVisitOrLookup(construct->returnType).get(),
                 llvmArgumentTypes,
-                node->args->isVariable
+                construct->args->isVariable
             );
 
             // Cast the value to a function, since we know getCallee() will return a function.
             llvmFunction = llvm::dyn_cast<llvm::Function>(
-                (*this->buffers.llvmModule)->getOrInsertFunction(node->name, llvmFunctionType).getCallee()
+                (*this->buffers.llvmModule)->getOrInsertFunction(construct->name, llvmFunctionType).getCallee()
             );
 
             // Set the function's linkage.
@@ -127,41 +120,33 @@ namespace ionir {
             argCounter++;
         }
 
-        this->valueStack.push(llvmFunction);
+        this->valueSymbolTable.set(
+            construct,
+            std::shared_ptr<llvm::Value>(llvmFunction)
+        );
     }
 
-    void LlvmLoweringPass::visitFunction(ionshared::Ptr<Function> node) {
-        if (this->symbolTable.contains(node)) {
-            return;
-        }
-
+    void LlvmLoweringPass::visitFunction(std::shared_ptr<Function> construct) {
+        // TODO: Why require module here?
         this->requireModule();
 
-        if (!node->verify()) {
-            throw std::runtime_error("Function verification failed");
-        }
-        else if ((*this->buffers.llvmModule)->getFunction(node->prototype->name) != nullptr) {
+        std::shared_ptr<Buffers> buffers =
+            this->buffersStack.forceGetTopItem();
+
+        if ((*buffers->llvmModule)->getFunction(construct->prototype->name) != nullptr) {
             throw std::runtime_error("A function with the same identifier has been already previously defined");
         }
 
-        // Clear named values.
-        this->namedValues.clear();
+        std::shared_ptr<llvm::Function> llvmFunction =
+            this->valueSafeEarlyVisitOrLookup<llvm::Function>(construct->prototype);
 
-        // Visit the prototype.
-        this->visitPrototype(node->prototype);
-
-        // Retrieve the resulting function off the stack.
-        auto *llvmFunction = this->valueStack.popAs<llvm::Function>();
-
-        // Set the function buffer.
-        this->buffers.llvmFunction = llvmFunction;
+        buffers->llvmFunction = llvmFunction;
 
         // Visiting the function body's yields no value to the value stack.
-        this->visitFunctionBody(node->body);
+        this->visit(construct->body);
 
         // TODO: Verify the resulting LLVM function (through LLVM)?
 
-        this->symbolTable.set(node, llvmFunction);
-        this->valueStack.push(llvmFunction);
+        this->valueSymbolTable.set(construct, llvmFunction);
     }
 }

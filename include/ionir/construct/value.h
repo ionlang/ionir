@@ -23,16 +23,16 @@ namespace ionir {
     struct Value : Construct {
         const ValueKind valueKind;
 
-        ionshared::Ptr<T> type;
+        std::shared_ptr<T> type;
 
-        Value(ValueKind kind, ionshared::Ptr<T> type) noexcept :
+        Value(ValueKind kind, std::shared_ptr<T> type) noexcept :
             Construct(ConstructKind::Value),
             valueKind(kind),
             type(type) {
             //
         }
 
-        ionshared::Ptr<Value<>> flatten() {
+        std::shared_ptr<Value<>> flatten() {
             return this->staticCast<Value<>>();
         }
     };

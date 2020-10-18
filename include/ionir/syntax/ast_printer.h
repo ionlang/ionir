@@ -10,7 +10,7 @@ namespace ionir {
 
         bool isLeaf;
 
-        ionshared::Ptr<Construct> construct;
+        std::shared_ptr<Construct> construct;
     };
 
     class AstPrinter {

@@ -3,19 +3,19 @@
 #include <ionir/passes/type_system/type_check_pass.h>
 
 namespace ionir {
-    TypeCheckPass::TypeCheckPass(ionshared::Ptr<ionshared::PassContext> context) :
+    TypeCheckPass::TypeCheckPass(std::shared_ptr<ionshared::PassContext> context) :
         Pass(std::move(context)) {
         //
     }
 
-    bool TypeCheckPass::initialize(ionshared::PassInfo &info) {
+    bool TypeCheckPass::initialize(ionshared::PassInfo& info) {
         // TODO: Technically, we don't NEED to check for an entry point during type-check.
 //        info.addRequirement<EntryPointCheckPass>();
 
         return true;
     }
 
-    void TypeCheckPass::visitFunction(ionshared::Ptr<Function> node) {
+    void TypeCheckPass::visitFunction(std::shared_ptr<Function> node) {
         ionshared::OptPtr<FunctionBody> functionBody = node->body;
 
         IONIR_PASS_INTERNAL_ASSERT(ionshared::util::hasValue(functionBody))
@@ -45,10 +45,10 @@ namespace ionir {
          * with no value.
          */
         if (parentFunctionPrototypeReturnTypeKind != TypeKind::Void) {
-            std::vector<ionshared::Ptr<Inst>> insts = entryBasicBlock->get()->insts;
+            std::vector<std::shared_ptr<Instruction>> insts = entryBasicBlock->get()->instructions;
 
             // TODO: CRITICAL! There may be more than a single terminal statement on basic blocks? Technically speaking LLVM does not allow that to EXECUTE, however, it can OCCUR.
-            ionshared::OptPtr<Inst> terminalInst = entryBasicBlock->get()->findTerminalInst();
+            ionshared::OptPtr<Instruction> terminalInst = entryBasicBlock->get()->findTerminalInst();
 
             if (insts.empty() || !ionshared::util::hasValue(terminalInst)) {
                 this->context->diagnosticBuilder
@@ -58,16 +58,16 @@ namespace ionir {
         }
     }
 
-    void TypeCheckPass::visitReturnInst(ionshared::Ptr<ReturnInst> node) {
-        ionshared::Ptr<Construct> possibleFunctionParent =
+    void TypeCheckPass::visitReturnInst(std::shared_ptr<ReturnInst> node) {
+        std::shared_ptr<Construct> possibleFunctionParent =
             node->getUnboxedParent()->getUnboxedParent()->getUnboxedParent();
 
         IONIR_PASS_INTERNAL_ASSERT(
             possibleFunctionParent->constructKind == ConstructKind::Function
         )
 
-        ionshared::Ptr<Function> function = possibleFunctionParent->dynamicCast<Function>();
-        ionshared::Ptr<Type> functionReturnType = function->prototype->returnType;
+        std::shared_ptr<Function> function = possibleFunctionParent->dynamicCast<Function>();
+        std::shared_ptr<Type> functionReturnType = function->prototype->returnType;
         ionshared::OptPtr<Construct> returnStatementValue = node->value;
         bool returnStatementValueSet = ionshared::util::hasValue(returnStatementValue);
 
@@ -98,7 +98,7 @@ namespace ionir {
                      * At this point, the function returns a non-void value. Abstract its
                      * return value's type construct.
                      */
-                    ionshared::Ptr<Type> returnInstValueType =
+                    std::shared_ptr<Type> returnInstValueType =
                         returnStatementValue->get()->staticCast<Value<>>()->type;
 
                     /**
@@ -140,9 +140,9 @@ namespace ionir {
         }
     }
 
-    void TypeCheckPass::visitStoreInst(ionshared::Ptr<StoreInst> node) {
+    void TypeCheckPass::visitStoreInst(std::shared_ptr<StoreInst> node) {
         TypeKind storeInstValueTypeKind = node->value->type->typeKind;
-        ionshared::Ptr<AllocaInst> targetValue = node->target;
+        std::shared_ptr<AllocaInst> targetValue = node->target;
 
         // Attempting to store a value with a different type than what was allocated.
         if (storeInstValueTypeKind != targetValue->type->typeKind) {

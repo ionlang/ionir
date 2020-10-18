@@ -2,7 +2,7 @@
 
 namespace ionir {
     StoreInst::StoreInst(const StoreInstOpts& opts) :
-        Inst(opts.parent, InstKind::Store),
+        Instruction(opts.parent, InstKind::Store),
         value(opts.value),
         target(opts.target) {
         //

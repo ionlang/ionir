@@ -8,7 +8,7 @@
 
 namespace ionir {
     template<typename T>
-    using PtrSymbolTable = ionshared::Ptr<ionshared::SymbolTable<ionshared::Ptr<T>>>;
+    using PtrSymbolTable = std::shared_ptr<ionshared::SymbolTable<std::shared_ptr<T>>>;
 
     template<typename TKey, typename TValue>
     using ScopeListItem = ionshared::Map<TKey, TValue>;

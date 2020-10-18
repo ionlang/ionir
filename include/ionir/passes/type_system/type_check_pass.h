@@ -6,14 +6,14 @@ namespace ionir {
     struct TypeCheckPass : Pass {
         IONSHARED_PASS_ID;
 
-        explicit TypeCheckPass(ionshared::Ptr<ionshared::PassContext> context);
+        explicit TypeCheckPass(std::shared_ptr<ionshared::PassContext> context);
 
         bool initialize(ionshared::PassInfo &info) override;
 
-        void visitFunction(ionshared::Ptr<Function> node) override;
+        void visitFunction(std::shared_ptr<Function> node) override;
 
-        void visitReturnInst(ionshared::Ptr<ReturnInst> node) override;
+        void visitReturnInst(std::shared_ptr<ReturnInst> node) override;
 
-        void visitStoreInst(ionshared::Ptr<StoreInst> node) override;
+        void visitStoreInst(std::shared_ptr<StoreInst> node) override;
     };
 }

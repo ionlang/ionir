@@ -10,8 +10,8 @@ namespace ionir {
             .make();
     }
 
-    ionshared::Ptr<Function> Bootstrap::function(const std::string& id) {
-        ionshared::Ptr<Module> module = Bootstrap::functionAst(id)[0]->dynamicCast<Module>();
+    std::shared_ptr<Function> Bootstrap::function(const std::string& id) {
+        std::shared_ptr<Module> module = Bootstrap::functionAst(id)[0]->dynamicCast<Module>();
         ionshared::OptPtr<Function> function = module->lookupFunction(id);
 
         // Ensure the function was retrieved, as a precaution.
@@ -22,8 +22,8 @@ namespace ionir {
         return *function;
     }
 
-    ionshared::Ptr<BasicBlock> Bootstrap::basicBlock(
-        ionshared::Ptr<FunctionBody> parent,
+    std::shared_ptr<BasicBlock> Bootstrap::basicBlock(
+        std::shared_ptr<FunctionBody> parent,
         std::string id,
         BasicBlockKind basicBlockKind
     ) {

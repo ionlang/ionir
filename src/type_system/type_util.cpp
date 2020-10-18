@@ -22,8 +22,8 @@ namespace ionir::type_util {
     }
 
     bool isSameType(
-        const ionshared::Ptr<Type>& typeA,
-        const ionshared::Ptr<Type>& typeB
+        const std::shared_ptr<Type>& typeA,
+        const std::shared_ptr<Type>& typeB
     ) {
         TypeKind typeAKind = typeA->typeKind;
         TypeKind typeBKind = typeB->typeKind;
@@ -34,8 +34,8 @@ namespace ionir::type_util {
 
         switch (typeAKind) {
             case TypeKind::Integer: {
-                ionshared::Ptr<IntegerType> integerTypeA = typeA->dynamicCast<IntegerType>();
-                ionshared::Ptr<IntegerType> integerTypeB = typeB->dynamicCast<IntegerType>();
+                std::shared_ptr<IntegerType> integerTypeA = typeA->dynamicCast<IntegerType>();
+                std::shared_ptr<IntegerType> integerTypeB = typeB->dynamicCast<IntegerType>();
 
                 return integerTypeA->integerKind == integerTypeB->integerKind;
             }
@@ -57,7 +57,7 @@ namespace ionir::type_util {
     }
 
     bool isIntegerType(
-        ionshared::Ptr<Type> type,
+        std::shared_ptr<Type> type,
         IntegerKind integerKind
     ) {
         if (type->typeKind != TypeKind::Integer) {

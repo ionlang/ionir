@@ -27,7 +27,7 @@ using namespace ionir;
 //TEST(RefTest, SetOwner) {
 //    // TODO: Just passing RefKind::Inst as a placeholder, doesn't really matter.
 //    Ref<> ref = Ref<>(RefKind::Inst, test::constant::foobar, nullptr);
-//    ionshared::Ptr<ReturnInst> returnInst = std::make_shared<ReturnInst>(ReturnInstOpts{});
+//    std::shared_ptr<ReturnInst> returnInst = std::make_shared<ReturnInst>(ReturnInstOpts{});
 //
 //    ref.setOwner(returnInst);
 //
@@ -37,7 +37,7 @@ using namespace ionir;
 //TEST(RefTest, SetValue) {
 //    // TODO: Just passing RefKind::Inst as a placeholder, doesn't really matter.
 //    Ref<> ref = Ref<>(RefKind::Inst, test::constant::foobar, nullptr);
-//    ionshared::Ptr<ReturnInst> returnInst = std::make_shared<ReturnInst>(ReturnInstOpts{});
+//    std::shared_ptr<ReturnInst> returnInst = std::make_shared<ReturnInst>(ReturnInstOpts{});
 //
 //    ref.setOwner(returnInst);
 //

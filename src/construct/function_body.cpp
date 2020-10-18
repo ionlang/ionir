@@ -4,7 +4,7 @@
 
 namespace ionir {
     FunctionBody::FunctionBody(
-        ionshared::Ptr<Function> parent,
+        std::shared_ptr<Function> parent,
         PtrSymbolTable<BasicBlock> symbolTable
     ) noexcept :
         ConstructWithParent(std::move(parent),
@@ -36,7 +36,7 @@ namespace ionir {
         return ionshared::util::hasValue(this->findEntryBasicBlock());
     }
 
-    void FunctionBody::insertBasicBlock(const ionshared::Ptr<BasicBlock>& basicBlock) {
+    void FunctionBody::insertBasicBlock(const std::shared_ptr<BasicBlock>& basicBlock) {
         // TODO: Check if section exists first?
         this->getSymbolTable()->set(basicBlock->name, basicBlock);
 

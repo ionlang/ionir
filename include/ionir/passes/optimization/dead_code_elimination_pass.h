@@ -7,10 +7,10 @@ namespace ionir {
         IONSHARED_PASS_ID;
 
         explicit DeadCodeEliminationPass(
-            ionshared::Ptr<ionshared::PassContext> context
+            std::shared_ptr<ionshared::PassContext> context
         ) noexcept;
 
-        void visitBasicBlock(ionshared::Ptr<BasicBlock> node) override;
+        void visitBasicBlock(std::shared_ptr<BasicBlock> node) override;
 
         // TODO: Optimize assignment to a dead variable (alloca but never used).
     };

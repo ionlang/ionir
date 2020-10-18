@@ -16,7 +16,7 @@ using namespace ionir;
 //
 //    EXPECT_TRUE(util::hasValue(module));
 //
-//    ionshared::Ptr<Module> moduleValue = util::getResultValue(module);
+//    std::shared_ptr<Module> moduleValue = util::getResultValue(module);
 //
 //    EXPECT_EQ(moduleValue->getId(), test::constant::foobar);
 //    EXPECT_TRUE(moduleValue->getContext()->getGlobalScope()->isEmpty());

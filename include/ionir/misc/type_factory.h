@@ -10,17 +10,17 @@
 
 namespace ionir {
     struct TypeFactory {
-        [[nodiscard]] static ionshared::Ptr<IntegerType> typeInteger(
+        [[nodiscard]] static std::shared_ptr<IntegerType> typeInteger(
             IntegerKind integerKind,
             bool isSigned = true
         );
 
-        [[nodiscard]] static ionshared::Ptr<BooleanType> typeBoolean();
+        [[nodiscard]] static std::shared_ptr<BooleanType> typeBoolean();
 
-        [[nodiscard]] static ionshared::Ptr<IntegerType> typeChar();
+        [[nodiscard]] static std::shared_ptr<IntegerType> typeChar();
 
-        [[nodiscard]] static ionshared::Ptr<Type> typeString();
+        [[nodiscard]] static std::shared_ptr<Type> typeString();
 
-        [[nodiscard]] static ionshared::Ptr<VoidType> typeVoid();
+        [[nodiscard]] static std::shared_ptr<VoidType> typeVoid();
     };
 }

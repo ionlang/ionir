@@ -1,7 +1,7 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    IntegerLiteral::IntegerLiteral(ionshared::Ptr<IntegerType> type, int64_t value) noexcept :
+    IntegerLiteral::IntegerLiteral(std::shared_ptr<IntegerType> type, int64_t value) noexcept :
         Value(ValueKind::Integer, std::move(type)),
         value(value) {
         //

@@ -10,13 +10,13 @@ namespace ionir {
     struct Pass;
 
     struct StructDefinition : Construct {
-        ionshared::Ptr<Struct> declaration;
+        std::shared_ptr<Struct> declaration;
 
-        std::vector<ionshared::Ptr<Value<>>> values;
+        std::vector<std::shared_ptr<Value<>>> values;
 
         explicit StructDefinition(
-            ionshared::Ptr<Struct> declaration,
-            std::vector<ionshared::Ptr<Value<>>> values = {}
+            std::shared_ptr<Struct> declaration,
+            std::vector<std::shared_ptr<Value<>>> values = {}
         ) noexcept;
 
         void accept(Pass& visitor) override;

@@ -2,7 +2,7 @@
 
 namespace ionir {
     Global::Global(
-        ionshared::Ptr<Type> type,
+        std::shared_ptr<Type> type,
         std::string id,
         ionshared::OptPtr<Value<>> value
     ) noexcept :

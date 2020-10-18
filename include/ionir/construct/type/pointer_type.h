@@ -5,8 +5,8 @@
 namespace ionir {
     struct Pass;
 
-    struct PointerType : Type, ionshared::Wrapper<ionshared::Ptr<Type>> {
-        explicit PointerType(ionshared::Ptr<Type> type);
+    struct PointerType : Type, ionshared::Wrapper<std::shared_ptr<Type>> {
+        explicit PointerType(std::shared_ptr<Type> type);
 
         void accept(Pass& pass) override;
     };

@@ -4,10 +4,10 @@
 namespace ionir {
     BasicBlock::BasicBlock(const BasicBlockOpts &opts) :
         ConstructWithParent(opts.parent, ConstructKind::BasicBlock),
-        ScopeAnchor<Inst>(opts.symbolTable),
+        ScopeAnchor<Instruction>(opts.symbolTable),
         Named{opts.id},
         basicBlockKind(opts.kind),
-        insts(opts.insts) {
+        instructions(opts.insts) {
         //
     }
 
@@ -18,7 +18,7 @@ namespace ionir {
     }
 
     Ast BasicBlock::getChildrenNodes() {
-        return Construct::convertChildren(this->insts);
+        return Construct::convertChildren(this->instructions);
     }
 
     bool BasicBlock::verify() {
@@ -26,14 +26,14 @@ namespace ionir {
             && Construct::verify();
     }
 
-    void BasicBlock::insertInst(uint32_t order, const ionshared::Ptr<Inst>& inst) {
-        const uint32_t maxOrder = this->insts.empty() ? 0 : this->insts.size() - 1;
+    void BasicBlock::insertInst(uint32_t order, const std::shared_ptr<Instruction>& inst) {
+        const uint32_t maxOrder = this->instructions.empty() ? 0 : this->instructions.size() - 1;
 
         if (order > maxOrder) {
             throw std::out_of_range("Order is larger than the size of elements in the vector");
         }
 
-        this->insts.insert(this->insts.begin() + order, inst);
+        this->instructions.insert(this->instructions.begin() + order, inst);
 
         // TODO: --- Repeated code below (appendInst). Simplify? Maybe create registerInst() function? ---
 
@@ -46,8 +46,8 @@ namespace ionir {
         // ----------------------------------------------------------
     }
 
-    void BasicBlock::appendInst(const ionshared::Ptr<Inst>& inst) {
-        this->insts.push_back(inst);
+    void BasicBlock::appendInst(const std::shared_ptr<Instruction>& inst) {
+        this->instructions.push_back(inst);
 
         std::optional<std::string> id = util::findInstId(inst);
 
@@ -57,43 +57,43 @@ namespace ionir {
         }
     }
 
-    void BasicBlock::prependInst(const ionshared::Ptr<Inst>& inst) {
+    void BasicBlock::prependInst(const std::shared_ptr<Instruction>& inst) {
         this->insertInst(0, inst);
     }
 
     uint32_t BasicBlock::relocateInsts(BasicBlock &target, const uint32_t from) {
         uint32_t count = 0;
 
-        for (uint32_t i = from; i < this->insts.size(); i++) {
-            target.insts.push_back(this->insts[i]);
-            this->insts.erase(this->insts.begin() + i - 1);
+        for (uint32_t i = from; i < this->instructions.size(); i++) {
+            target.instructions.push_back(this->instructions[i]);
+            this->instructions.erase(this->instructions.begin() + i - 1);
             count++;
         }
 
         return count;
     }
 
-    ionshared::Ptr<BasicBlock> BasicBlock::split(uint32_t atOrder, std::string id) {
+    std::shared_ptr<BasicBlock> BasicBlock::split(uint32_t atOrder, std::string id) {
         // TODO: If insts are empty, atOrder parameter is ignored (useless). Address that.
         // TODO: Symbol table is not being relocated/split.
 
-        if (!this->insts.empty() && (atOrder < 0 || atOrder > this->insts.size() - 1)) {
+        if (!this->instructions.empty() && (atOrder < 0 || atOrder > this->instructions.size() - 1)) {
             throw std::out_of_range("Provided order is outsize of bounds");
         }
 
-        std::vector<ionshared::Ptr<Inst>> insts = {};
+        std::vector<std::shared_ptr<Instruction>> insts = {};
 
-        if (!this->insts.empty()) {
-            auto from = this->insts.begin() + atOrder;
-            auto to = this->insts.end();
+        if (!this->instructions.empty()) {
+            auto from = this->instructions.begin() + atOrder;
+            auto to = this->instructions.end();
 
-            insts = std::vector<ionshared::Ptr<Inst>>(from, to);
+            insts = std::vector<std::shared_ptr<Instruction>>(from, to);
 
             // Erase the instructions from the local basic block.
-            this->insts.erase(from, to);
+            this->instructions.erase(from, to);
         }
 
-        ionshared::Ptr<BasicBlock> newBasicBlock = std::make_shared<BasicBlock>(BasicBlockOpts{
+        std::shared_ptr<BasicBlock> newBasicBlock = std::make_shared<BasicBlock>(BasicBlockOpts{
             this->getUnboxedParent(),
             this->basicBlockKind,
             std::move(id),
@@ -109,33 +109,33 @@ namespace ionir {
         return newBasicBlock;
     }
 
-    ionshared::Ptr<JumpInst> BasicBlock::link(const ionshared::Ptr<BasicBlock>& basicBlock) {
+    std::shared_ptr<JumpInst> BasicBlock::link(const std::shared_ptr<BasicBlock>& basicBlock) {
         return this->createBuilder()->createJump(basicBlock);
     }
 
-    std::optional<uint32_t> BasicBlock::locate(ionshared::Ptr<Inst> inst) {
-        return ionshared::util::locateInVector(this->insts, std::move(inst));
+    std::optional<uint32_t> BasicBlock::locate(std::shared_ptr<Instruction> inst) {
+        return ionshared::util::locateInVector(this->instructions, std::move(inst));
     }
 
-    ionshared::OptPtr<Inst> BasicBlock::findInstByOrder(uint32_t order) const noexcept {
+    ionshared::OptPtr<Instruction> BasicBlock::findInstByOrder(uint32_t order) const noexcept {
         /**
          * Provided order is larger than the amount of elements in the
          * insts vector. No need to continue, return std::nullopt.
          */
-        if (this->insts.empty() || this->insts.size() < order + 1) {
+        if (this->instructions.empty() || this->instructions.size() < order + 1) {
             return std::nullopt;
         }
 
-        return this->insts[order];
+        return this->instructions[order];
     }
 
-    ionshared::Ptr<InstBuilder> BasicBlock::createBuilder() {
+    std::shared_ptr<InstBuilder> BasicBlock::createBuilder() {
         return std::make_shared<InstBuilder>(this->dynamicCast<BasicBlock>());
     }
 
-    ionshared::OptPtr<Inst> BasicBlock::findTerminalInst() const noexcept {
+    ionshared::OptPtr<Instruction> BasicBlock::findTerminalInst() const noexcept {
         // TODO: There can only be a single return instruction.
-        for (const auto& inst : this->insts) {
+        for (const auto& inst : this->instructions) {
             if (inst->isTerminal()) {
                 return inst;
             }
@@ -148,17 +148,17 @@ namespace ionir {
         return ionshared::util::hasValue(this->findTerminalInst());
     }
 
-    ionshared::OptPtr<Inst> BasicBlock::findFirstInst() noexcept {
-        if (!this->insts.empty()) {
-            return this->insts.front();
+    ionshared::OptPtr<Instruction> BasicBlock::findFirstInst() noexcept {
+        if (!this->instructions.empty()) {
+            return this->instructions.front();
         }
 
         return std::nullopt;
     }
 
-    ionshared::OptPtr<Inst> BasicBlock::findLastInst() noexcept {
-        if (!this->insts.empty()) {
-            return this->insts.back();
+    ionshared::OptPtr<Instruction> BasicBlock::findLastInst() noexcept {
+        if (!this->instructions.empty()) {
+            return this->instructions.back();
         }
 
         return std::nullopt;

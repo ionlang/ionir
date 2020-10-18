@@ -9,14 +9,14 @@ namespace ionir {
     private:
         std::string buffer;
 
-        void createModule(const ionshared::Ptr<Module>& construct);
+        void createModule(const std::shared_ptr<Module>& construct);
 
-        void createGlobal(const ionshared::Ptr<Global>& construct);
+        void createGlobal(const std::shared_ptr<Global>& construct);
 
     public:
         CodeWriter() noexcept;
 
-        [[nodiscard]] std::string make(const ionshared::Ptr<Construct>& rootConstruct) const;
+        [[nodiscard]] std::string make(const std::shared_ptr<Construct>& rootConstruct) const;
 
         [[nodiscard]] std::string getBuffer() const noexcept;
 

@@ -39,67 +39,67 @@
 
 namespace ionir {
     struct Pass : ionshared::BasePass<Construct> {
-        explicit Pass(ionshared::Ptr<ionshared::PassContext> context) noexcept;
+        explicit Pass(std::shared_ptr<ionshared::PassContext> context) noexcept;
 
-        void visit(ionshared::Ptr<Construct> node) override;
+        void visit(std::shared_ptr<Construct> node) override;
 
-        virtual void visitChildren(ionshared::Ptr<Construct> node);
+        virtual void visitChildren(std::shared_ptr<Construct> node);
 
-        virtual void visitFunction(ionshared::Ptr<Function> node);
+        virtual void visitFunction(std::shared_ptr<Function> node);
 
-        virtual void visitExtern(ionshared::Ptr<Extern> node);
+        virtual void visitExtern(std::shared_ptr<Extern> node);
 
-        virtual void visitBasicBlock(ionshared::Ptr<BasicBlock> node);
+        virtual void visitBasicBlock(std::shared_ptr<BasicBlock> node);
 
-        virtual void visitFunctionBody(ionshared::Ptr<FunctionBody> node);
+        virtual void visitFunctionBody(std::shared_ptr<FunctionBody> node);
 
-        virtual void visitPrototype(ionshared::Ptr<Prototype> node);
+        virtual void visitPrototype(std::shared_ptr<Prototype> node);
 
-        virtual void visitIntegerLiteral(ionshared::Ptr<IntegerLiteral> node);
+        virtual void visitIntegerLiteral(std::shared_ptr<IntegerLiteral> node);
 
-        virtual void visitCharLiteral(ionshared::Ptr<CharLiteral> node);
+        virtual void visitCharLiteral(std::shared_ptr<CharLiteral> node);
 
-        virtual void visitStringLiteral(ionshared::Ptr<StringLiteral> node);
+        virtual void visitStringLiteral(std::shared_ptr<StringLiteral> node);
 
-        virtual void visitBooleanLiteral(ionshared::Ptr<BooleanLiteral> node);
+        virtual void visitBooleanLiteral(std::shared_ptr<BooleanLiteral> node);
 
-        virtual void visitOperationValue(ionshared::Ptr<OperationValue> node);
+        virtual void visitOperationValue(std::shared_ptr<OperationValue> node);
 
-        virtual void visitAllocaInst(ionshared::Ptr<AllocaInst> node);
+        virtual void visitAllocaInst(std::shared_ptr<AllocaInst> node);
 
-        virtual void visitReturnInst(ionshared::Ptr<ReturnInst> node);
+        virtual void visitReturnInst(std::shared_ptr<ReturnInst> node);
 
-        virtual void visitBranchInst(ionshared::Ptr<BranchInst> node);
+        virtual void visitBranchInst(std::shared_ptr<BranchInst> node);
 
-        virtual void visitCallInst(ionshared::Ptr<CallInst> node);
+        virtual void visitCallInst(std::shared_ptr<CallInst> node);
 
-        virtual void visitStoreInst(ionshared::Ptr<StoreInst> node);
+        virtual void visitStoreInst(std::shared_ptr<StoreInst> node);
 
-        virtual void visitJumpInst(ionshared::Ptr<JumpInst> node);
+        virtual void visitJumpInst(std::shared_ptr<JumpInst> node);
 
-        virtual void visitGlobal(ionshared::Ptr<Global> node);
+        virtual void visitGlobal(std::shared_ptr<Global> node);
 
-        virtual void visitIntegerType(ionshared::Ptr<IntegerType> node);
+        virtual void visitIntegerType(std::shared_ptr<IntegerType> node);
 
-        virtual void visitVoidType(ionshared::Ptr<VoidType> node);
+        virtual void visitVoidType(std::shared_ptr<VoidType> node);
 
-        virtual void visitBooleanType(ionshared::Ptr<BooleanType> node);
+        virtual void visitBooleanType(std::shared_ptr<BooleanType> node);
 
-        virtual void visitPointerType(ionshared::Ptr<PointerType> node);
+        virtual void visitPointerType(std::shared_ptr<PointerType> node);
 
-        virtual void visitModule(ionshared::Ptr<Module> node);
+        virtual void visitModule(std::shared_ptr<Module> node);
 
         virtual void visitDirective(Directive node);
 
-        virtual void visitScopeAnchor(ionshared::Ptr<ScopeAnchor<>> node);
+        virtual void visitScopeAnchor(std::shared_ptr<ScopeAnchor<>> node);
 
-        virtual void visitErrorMarker(ionshared::Ptr<ErrorMarker> node);
+        virtual void visitErrorMarker(std::shared_ptr<ErrorMarker> node);
 
-        virtual void visitIdentifier(ionshared::Ptr<Identifier> node);
+        virtual void visitIdentifier(std::shared_ptr<Identifier> node);
 
-        virtual void visitStruct(ionshared::Ptr<Struct> node);
+        virtual void visitStruct(std::shared_ptr<Struct> node);
 
-        virtual void visitStructDefinition(ionshared::Ptr<StructDefinition> node);
+        virtual void visitStructDefinition(std::shared_ptr<StructDefinition> node);
     };
 
     typedef ionshared::BasePassManager<Pass, Construct> PassManager;

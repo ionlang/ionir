@@ -44,8 +44,8 @@ namespace ionir {
 
         AstBuilder& function(const std::string &id);
 
-        AstBuilder& functionReturnType(ionshared::Ptr<Type> returnType);
+        AstBuilder& functionReturnType(std::shared_ptr<Type> returnType);
 
-        AstBuilder& instAlloca(const std::string& id, ionshared::Ptr<Type> type);
+        AstBuilder& instAlloca(const std::string& id, std::shared_ptr<Type> type);
     };
 }

@@ -58,7 +58,7 @@ namespace ionir {
     }
 
     AstBuilder &AstBuilder::module(const std::string &id) {
-        ionshared::Ptr<Module> module =
+        std::shared_ptr<Module> module =
             std::make_shared<Module>(std::make_shared<Identifier>(id));
 
         this->clearBuffers();
@@ -72,9 +72,9 @@ namespace ionir {
         this->requireModule();
 
         // Parent will be filled in below.
-        ionshared::Ptr<FunctionBody> functionBody = std::make_shared<FunctionBody>(nullptr);
+        std::shared_ptr<FunctionBody> functionBody = std::make_shared<FunctionBody>(nullptr);
 
-        ionshared::Ptr<BasicBlock> entrySection = std::make_shared<BasicBlock>(BasicBlockOpts{
+        std::shared_ptr<BasicBlock> entrySection = std::make_shared<BasicBlock>(BasicBlockOpts{
             functionBody,
             BasicBlockKind::Entry,
             Const::basicBlockEntryId
@@ -83,10 +83,10 @@ namespace ionir {
         functionBody->insertBasicBlock(entrySection);
         this->setBasicBlockBuffer(entrySection);
 
-        ionshared::Ptr<Type> returnType = std::make_shared<VoidType>();
-        ionshared::Ptr<Args> args = std::make_shared<Args>();
-        ionshared::Ptr<Prototype> prototype = std::make_shared<Prototype>(id, args, returnType, *this->moduleBuffer);
-        ionshared::Ptr<Function> function = std::make_shared<Function>(prototype, functionBody);
+        std::shared_ptr<Type> returnType = std::make_shared<VoidType>();
+        std::shared_ptr<Args> args = std::make_shared<Args>();
+        std::shared_ptr<Prototype> prototype = std::make_shared<Prototype>(id, args, returnType, *this->moduleBuffer);
+        std::shared_ptr<Function> function = std::make_shared<Function>(prototype, functionBody);
 
         // Fill in the function body's parent.
         functionBody->parent = function;
@@ -97,14 +97,14 @@ namespace ionir {
         return *this;
     }
 
-    AstBuilder &AstBuilder::functionReturnType(ionshared::Ptr<Type> returnType) {
+    AstBuilder &AstBuilder::functionReturnType(std::shared_ptr<Type> returnType) {
         this->requireFunction();
         this->functionBuffer->get()->prototype->returnType = std::move(returnType);
 
         return *this;
     }
 
-    AstBuilder &AstBuilder::instAlloca(const std::string &id, ionshared::Ptr<Type> type) {
+    AstBuilder &AstBuilder::instAlloca(const std::string &id, std::shared_ptr<Type> type) {
         this->requireBasicBlock();
         this->instBuilder->get()->createAlloca(id, std::move(type));
 

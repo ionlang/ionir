@@ -8,7 +8,7 @@ namespace ionir {
         IONSHARED_PASS_ID;
 
         explicit BorrowCheckPass(
-            ionshared::Ptr<ionshared::PassContext> context
+            std::shared_ptr<ionshared::PassContext> context
         ) noexcept;
     };
 }

@@ -4,7 +4,7 @@ namespace ionir {
     // TODO: Finish init. implementation.
     OperationValue::OperationValue(
         OperatorKind operatorKind,
-        ionshared::Ptr<Value<>> leftSideValue,
+        std::shared_ptr<Value<>> leftSideValue,
         ionshared::OptPtr<Value<>> rightSideValue
     ) noexcept :
         Value<>(ValueKind::Operation, leftSideValue->type),

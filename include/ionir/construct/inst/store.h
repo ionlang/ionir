@@ -8,15 +8,15 @@ namespace ionir {
     struct Pass;
 
     struct StoreInstOpts : InstOpts {
-        ionshared::Ptr<Value<>> value;
+        std::shared_ptr<Value<>> value;
 
-        ionshared::Ptr<AllocaInst> target;
+        std::shared_ptr<AllocaInst> target;
     };
 
-    struct StoreInst : Inst {
-        ionshared::Ptr<Value<>> value;
+    struct StoreInst : Instruction {
+        std::shared_ptr<Value<>> value;
 
-        ionshared::Ptr<AllocaInst> target;
+        std::shared_ptr<AllocaInst> target;
 
         explicit StoreInst(const StoreInstOpts& opts);
 

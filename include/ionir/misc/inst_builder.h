@@ -12,53 +12,53 @@
 
 namespace ionir {
     struct InstBuilder {
-        ionshared::Ptr<BasicBlock> basicBlock;
+        std::shared_ptr<BasicBlock> basicBlock;
 
         explicit InstBuilder(
-            ionshared::Ptr<BasicBlock> basicBlock
+            std::shared_ptr<BasicBlock> basicBlock
         ) noexcept;
 
-        void appendInst(const ionshared::Ptr<Inst>& inst);
+        void appendInst(const std::shared_ptr<Instruction>& inst);
 
         template<class TInst, typename... TArgs>
-            requires std::derived_from<TInst, Inst>
-        ionshared::Ptr<TInst> make(TArgs... args) {
+            requires std::derived_from<TInst, Instruction>
+        std::shared_ptr<TInst> make(TArgs... args) {
             // TODO: Ensure T inherits from Inst or derived.
 
-            ionshared::Ptr<TInst> inst = std::make_shared<TInst>(args...);
+            std::shared_ptr<TInst> inst = std::make_shared<TInst>(args...);
 
             this->appendInst(inst);
 
             return inst;
         }
 
-        ionshared::Ptr<AllocaInst> createAlloca(
+        std::shared_ptr<AllocaInst> createAlloca(
             const std::string& id,
-            ionshared::Ptr<Type> type
+            std::shared_ptr<Type> type
         );
 
-        ionshared::Ptr<StoreInst> createStore(
-            ionshared::Ptr<Value<>> value,
-            ionshared::Ptr<AllocaInst> target
+        std::shared_ptr<StoreInst> createStore(
+            std::shared_ptr<Value<>> value,
+            std::shared_ptr<AllocaInst> target
         );
 
-        ionshared::Ptr<BranchInst> createBranch(
-            ionshared::Ptr<Construct> condition,
-            const ionshared::Ptr<BasicBlock>& consequentBasicBlock,
-            const ionshared::Ptr<BasicBlock>& alternativeBasicBlock
+        std::shared_ptr<BranchInst> createBranch(
+            std::shared_ptr<Construct> condition,
+            const std::shared_ptr<BasicBlock>& consequentBasicBlock,
+            const std::shared_ptr<BasicBlock>& alternativeBasicBlock
         );
 
-        ionshared::Ptr<ReturnInst> createReturn(
+        std::shared_ptr<ReturnInst> createReturn(
             const ionshared::OptPtr<Value<>>& value = std::nullopt
         );
 
-        ionshared::Ptr<CallInst> createCall(
-            const ionshared::Ptr<Construct>& callee,
-            const std::vector<ionshared::Ptr<Construct>>& args = {}
+        std::shared_ptr<CallInst> createCall(
+            const std::shared_ptr<Construct>& callee,
+            const std::vector<std::shared_ptr<Construct>>& args = {}
         );
 
-        ionshared::Ptr<JumpInst> createJump(
-            const ionshared::Ptr<BasicBlock>& basicBlock
+        std::shared_ptr<JumpInst> createJump(
+            const std::shared_ptr<BasicBlock>& basicBlock
         );
     };
 }

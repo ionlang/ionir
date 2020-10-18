@@ -9,12 +9,12 @@ namespace ionir {
             const std::string& id = ConstName::anonymous
         );
 
-        [[nodiscard]] static ionshared::Ptr<Function> function(
+        [[nodiscard]] static std::shared_ptr<Function> function(
             const std::string& id = ConstName::anonymous
         );
 
-        [[nodiscard]] static ionshared::Ptr<BasicBlock> basicBlock(
-            ionshared::Ptr<FunctionBody> parent = nullptr,
+        [[nodiscard]] static std::shared_ptr<BasicBlock> basicBlock(
+            std::shared_ptr<FunctionBody> parent = nullptr,
             std::string id = ConstName::anonymous,
             BasicBlockKind basicBlockKind = BasicBlockKind::Entry
         );

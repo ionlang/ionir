@@ -2,7 +2,7 @@
 
 namespace ionir {
     BranchInst::BranchInst(const BranchInstOpts& opts) :
-        Inst(opts.parent, InstKind::Branch),
+        Instruction(opts.parent, InstKind::Branch),
         condition(opts.condition),
         consequentBasicBlock(opts.consequentBasicBlock),
         alternativeBasicBlock(opts.alternativeBasicBlock) {

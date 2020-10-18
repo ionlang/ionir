@@ -24,7 +24,7 @@ namespace ionir {
         }
 
         template<class TConstruct, typename... TArgs>
-        ionshared::Ptr<ConstructBuilder> push(TArgs... args) {
+        std::shared_ptr<ConstructBuilder> push(TArgs... args) {
             // TODO: Ensure TConstruct inherits from Construct or derived.
 
             this->parts.push_back(std::make_shared<TConstruct>(args));
@@ -32,7 +32,7 @@ namespace ionir {
             return nullptr;
         }
 
-        ionshared::Ptr<T> make() {
+        std::shared_ptr<T> make() {
             std::vector<Construct> parts = this->parts;
 
             this->clear();

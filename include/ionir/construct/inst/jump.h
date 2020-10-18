@@ -8,11 +8,11 @@ namespace ionir {
     struct BasicBlock;
 
     struct JumpInstOpts : InstOpts {
-        ionshared::Ptr<BasicBlock> basicBlockTarget;
+        std::shared_ptr<BasicBlock> basicBlockTarget;
     };
 
-    struct JumpInst : Inst {
-        ionshared::Ptr<BasicBlock> basicBlockTarget;
+    struct JumpInst : Instruction {
+        std::shared_ptr<BasicBlock> basicBlockTarget;
 
         explicit JumpInst(const JumpInstOpts& opts);
 

@@ -2,17 +2,17 @@
 
 namespace ionir {
     DeadCodeEliminationPass::DeadCodeEliminationPass(
-        ionshared::Ptr<ionshared::PassContext> context
+        std::shared_ptr<ionshared::PassContext> context
     ) noexcept :
         Pass(std::move(context)) {
     }
 
-    void DeadCodeEliminationPass::visitBasicBlock(ionshared::Ptr<BasicBlock> node) {
-        std::vector<ionshared::Ptr<Inst>> insts = node->insts;
+    void DeadCodeEliminationPass::visitBasicBlock(std::shared_ptr<BasicBlock> node) {
+        std::vector<std::shared_ptr<Instruction>> insts = node->instructions;
         bool erase = false;
 
         for (auto iterator = insts.begin(); iterator < insts.end(); ++iterator) {
-            ionshared::Ptr<Inst> inst = *iterator;
+            std::shared_ptr<Instruction> inst = *iterator;
 
             /**
              * If applicable, erase all further instructions,

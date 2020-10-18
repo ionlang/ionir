@@ -5,10 +5,10 @@
 namespace ionir {
     class ClassDescriptor : public InterfaceDescriptor {
     private:
-        std::optional<ionshared::Ptr<ClassDescriptor>> parent;
+        std::optional<std::shared_ptr<ClassDescriptor>> parent;
 
     public:
-        //        std::optional<ionshared::Ptr<MethodDescriptor>> findMethod(std::string name);
+        //        std::optional<std::shared_ptr<MethodDescriptor>> findMethod(std::string name);
 
         //        bool containsMethod(std::string name);
     };

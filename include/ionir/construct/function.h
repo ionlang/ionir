@@ -10,13 +10,13 @@ namespace ionir {
     struct Pass;
 
     struct Function : Construct {
-        ionshared::Ptr<Prototype> prototype;
+        std::shared_ptr<Prototype> prototype;
 
-        ionshared::Ptr<FunctionBody> body;
+        std::shared_ptr<FunctionBody> body;
 
         Function(
-            ionshared::Ptr<Prototype> prototype,
-            ionshared::Ptr<FunctionBody> body
+            std::shared_ptr<Prototype> prototype,
+            std::shared_ptr<FunctionBody> body
         );
 
         void accept(Pass& visitor) override;

@@ -7,15 +7,15 @@
 #include "util.h"
 
 namespace ionir::test::bootstrap {
-    [[nodiscard]] ionshared::Ptr<ionshared::LlvmModule> llvmModule(
+    [[nodiscard]] std::shared_ptr<ionshared::LlvmModule> llvmModule(
         const std::string &identifier = "test"
     );
 
-    [[nodiscard]] ionshared::Ptr<LlvmLoweringPass> llvmLoweringPass(
-        const ionshared::Ptr<ionshared::LlvmModule>& module = llvmModule()
+    [[nodiscard]] std::shared_ptr<LlvmLoweringPass> llvmLoweringPass(
+        const std::shared_ptr<ionshared::LlvmModule>& module = llvmModule()
     );
 
-    [[nodiscard]] ionshared::Ptr<Function> emptyFunction(
-        std::vector<ionshared::Ptr<Inst>> insts = {}
+    [[nodiscard]] std::shared_ptr<Function> emptyFunction(
+        std::vector<std::shared_ptr<Instruction>> insts = {}
     );
 }

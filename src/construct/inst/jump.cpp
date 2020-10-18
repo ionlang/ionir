@@ -2,7 +2,7 @@
 
 namespace ionir {
     JumpInst::JumpInst(const JumpInstOpts& opts) :
-        Inst(opts.parent, InstKind::Jump),
+        Instruction(opts.parent, InstKind::Jump),
         basicBlockTarget(opts.basicBlockTarget) {
         //
     }

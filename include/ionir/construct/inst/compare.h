@@ -11,7 +11,7 @@ namespace ionir {
         // TODO
     };
 
-    struct CompareInst : Inst {
+    struct CompareInst : Instruction {
         explicit CompareInst(const CompareInstOpts& opts);
 
         void accept(Pass& visitor) override;

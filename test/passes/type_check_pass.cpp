@@ -10,7 +10,7 @@ using namespace ionir;
 TEST(TypeCheckPassTest, Run) {
     PassManager passManager = PassManager();
 
-    ionshared::Ptr<ionshared::PassContext> passContext =
+    std::shared_ptr<ionshared::PassContext> passContext =
         std::make_shared<ionshared::PassContext>();
 
     passManager.registerPass(std::make_shared<TypeCheckPass>(passContext));
@@ -20,7 +20,7 @@ TEST(TypeCheckPassTest, Run) {
 
     EXPECT_TRUE(ionshared::util::hasValue(function));
 
-    ionshared::Ptr<Prototype> prototype = function->get()->prototype;
+    std::shared_ptr<Prototype> prototype = function->get()->prototype;
 
     prototype->returnType = TypeFactory::typeInteger(IntegerKind::Int32);
 
@@ -47,7 +47,7 @@ TEST(TypeCheckPassTest, Run) {
 
     prototype->returnType = TypeFactory::typeVoid();
 
-    ionshared::Ptr<BasicBlock> entrySection = *function->get()->body->findEntryBasicBlock();
+    std::shared_ptr<BasicBlock> entrySection = *function->get()->body->findEntryBasicBlock();
     InstBuilder instBuilder = InstBuilder(entrySection);
 
     instBuilder.createReturn();
@@ -62,24 +62,24 @@ TEST(TypeCheckPassTest, Run) {
 }
 
 TEST(TypeCheckPassTast, FunctionReturnTypeValueMismatch) {
-    ionshared::Ptr<ionshared::PassContext> passContext =
+    std::shared_ptr<ionshared::PassContext> passContext =
         std::make_shared<ionshared::PassContext>();
 
-    ionshared::Ptr<TypeCheckPass> typeCheckPass = std::make_shared<TypeCheckPass>(passContext);
+    std::shared_ptr<TypeCheckPass> typeCheckPass = std::make_shared<TypeCheckPass>(passContext);
 
     Ast ast = Bootstrap::functionAst(test::constant::foobar);
     ionshared::OptPtr<Function> function = ast[0]->dynamicCast<Module>()->lookupFunction(test::constant::foobar);
 
     EXPECT_TRUE(function.has_value());
 
-    ionshared::Ptr<Prototype> prototype = function->get()->prototype;
+    std::shared_ptr<Prototype> prototype = function->get()->prototype;
 
     prototype->returnType = TypeFactory::typeInteger(IntegerKind::Int32);
 
-    ionshared::Ptr<BasicBlock> entrySection = *function->get()->body->findEntryBasicBlock();
+    std::shared_ptr<BasicBlock> entrySection = *function->get()->body->findEntryBasicBlock();
     InstBuilder instBuilder = InstBuilder(entrySection);
 
-    ionshared::Ptr<ReturnInst> returnInst = instBuilder.createReturn(
+    std::shared_ptr<ReturnInst> returnInst = instBuilder.createReturn(
         std::make_shared<IntegerLiteral>(
             TypeFactory::typeInteger(IntegerKind::Int8),
             2

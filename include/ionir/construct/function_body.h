@@ -13,7 +13,7 @@ namespace ionir {
 
     struct FunctionBody : ConstructWithParent<Function>, ScopeAnchor<BasicBlock> {
         explicit FunctionBody(
-            ionshared::Ptr<Function> parent,
+            std::shared_ptr<Function> parent,
 
             PtrSymbolTable<BasicBlock> symbolTable =
                 ionshared::util::makePtrSymbolTable<BasicBlock>()
@@ -29,6 +29,6 @@ namespace ionir {
 
         [[nodiscard]] bool hasEntryBasicBlock();
 
-        void insertBasicBlock(const ionshared::Ptr<BasicBlock>& basicBlock);
+        void insertBasicBlock(const std::shared_ptr<BasicBlock>& basicBlock);
     };
 }

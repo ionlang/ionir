@@ -10,12 +10,12 @@ namespace ionir::type_util {
     );
 
     bool isSameType(
-        const ionshared::Ptr<Type>& typeA,
-        const ionshared::Ptr<Type>& typeB
+        const std::shared_ptr<Type>& typeA,
+        const std::shared_ptr<Type>& typeB
     );
 
     bool isIntegerType(
-        ionshared::Ptr<Type> type,
+        std::shared_ptr<Type> type,
         IntegerKind integerKind
     );
 }

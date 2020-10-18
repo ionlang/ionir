@@ -10,12 +10,12 @@ namespace ionir {
     struct Pass;
 
     struct Global : Construct, ionshared::Named {
-        ionshared::Ptr<Type> type;
+        std::shared_ptr<Type> type;
 
         ionshared::OptPtr<Value<>> value;
 
         Global(
-            ionshared::Ptr<Type> type,
+            std::shared_ptr<Type> type,
             std::string id,
             ionshared::OptPtr<Value<>> value = std::nullopt
         ) noexcept;

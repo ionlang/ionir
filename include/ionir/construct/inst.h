@@ -9,7 +9,7 @@ namespace ionir {
     struct BasicBlock;
 
     struct InstOpts {
-        const ionshared::Ptr<BasicBlock> parent;
+        const std::shared_ptr<BasicBlock> parent;
     };
 
     enum struct InstKind {
@@ -30,10 +30,10 @@ namespace ionir {
         Jump
     };
 
-    struct Inst : ConstructWithParent<BasicBlock> {
+    struct Instruction : ConstructWithParent<BasicBlock> {
         const InstKind instKind;
 
-        Inst(ionshared::Ptr<BasicBlock> parent, InstKind kind) noexcept;
+        Instruction(std::shared_ptr<BasicBlock> parent, InstKind kind) noexcept;
 
         // TODO: Isn't this redundant?
         void accept(Pass& visitor) override = 0;

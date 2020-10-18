@@ -2,13 +2,13 @@
 
 namespace ionir {
     ConstructVerificationPass::ConstructVerificationPass(
-        ionshared::Ptr<ionshared::PassContext> context
+        std::shared_ptr<ionshared::PassContext> context
     ) noexcept :
         Pass(std::move(context)) {
         //
     }
 
-    void ConstructVerificationPass::visit(ionshared::Ptr<Construct> node) {
+    void ConstructVerificationPass::visit(std::shared_ptr<Construct> node) {
         if (!node->verify()) {
             this->context->diagnosticBuilder
                 ->bootstrap(diagnostic::constructFailedVerification)

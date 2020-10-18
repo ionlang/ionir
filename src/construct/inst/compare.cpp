@@ -3,7 +3,7 @@
 
 namespace ionir {
     CompareInst::CompareInst(const CompareInstOpts &opts) :
-        Inst(opts.parent, InstKind::Compare) {
+        Instruction(opts.parent, InstKind::Compare) {
         //
     }
 

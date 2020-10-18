@@ -36,7 +36,7 @@ namespace ionir {
         this->scopes.insert(this->scopes.begin(), scope);
     }
 
-    void Context::appendScope(const ionshared::Ptr<ScopeAnchor<>>& scopeAnchor) noexcept {
+    void Context::appendScope(const std::shared_ptr<ScopeAnchor<>>& scopeAnchor) noexcept {
         this->appendScope(scopeAnchor->getSymbolTable());
     }
 

@@ -5,8 +5,8 @@
 using namespace ionir;
 
 TEST(InstBuilderTest, GetSection) {
-    ionshared::Ptr<BasicBlock> section = Bootstrap::basicBlock();
-    ionshared::Ptr<InstBuilder> builder = section->createBuilder();
+    std::shared_ptr<BasicBlock> section = Bootstrap::basicBlock();
+    std::shared_ptr<InstBuilder> builder = section->createBuilder();
 
     EXPECT_EQ(builder->basicBlock, section);
 }

@@ -4,24 +4,25 @@
 #include <ionir/passes/lowering/llvm_lowering_pass.h>
 
 namespace ionir {
-    void LlvmLoweringPass::visitAllocaInst(ionshared::Ptr<AllocaInst> node) {
+    void LlvmLoweringPass::visitAllocaInst(std::shared_ptr<AllocaInst> construct) {
         this->requireBuilder();
-        this->visit(node->type);
 
-        llvm::Type* type = this->typeStack.pop();
-
+        // TODO: Option to create array here too?
         /**
          * Create the LLVM-equivalent alloca instruction
          * using the buffered builder.
          */
-        llvm::AllocaInst* llvmAllocaInst =
-            this->makeLlvmBuilder()->CreateAlloca(type, (llvm::Value*)nullptr);
+        this->valueSymbolTable.set(
+            construct,
 
-        this->valueStack.push(llvmAllocaInst);
-        this->symbolTable.set(node, llvmAllocaInst);
+            std::shared_ptr<llvm::Value>(this->makeLlvmBuilder()->CreateAlloca(
+                this->typeSafeEarlyVisitOrLookup(construct->type).get(),
+                (llvm::Value*)nullptr
+            ))
+        );
     }
 
-    void LlvmLoweringPass::visitReturnInst(ionshared::Ptr<ReturnInst> node) {
+    void LlvmLoweringPass::visitReturnInst(std::shared_ptr<ReturnInst> node) {
         this->requireBuilder();
 
         ionshared::OptPtr<Construct> returnInstValue = node->value;
@@ -75,84 +76,69 @@ namespace ionir {
 //        this->addToScope(node, llvmReturnInst);
     }
 
-    void LlvmLoweringPass::visitBranchInst(ionshared::Ptr<BranchInst> node) {
+    void LlvmLoweringPass::visitBranchInst(std::shared_ptr<BranchInst> node) {
         this->requireBuilder();
-        this->visit(node->condition);
 
-        llvm::Value *condition = this->valueStack.pop();
+        std::shared_ptr<llvm::Value> llvmCondition =
+            this->valueSafeEarlyVisitOrLookup(node->condition);
 
-        this->lockBuffers([&, this] {
-            /**
-             * Visit the consequent and alternative basic blocks. There's a
-             * mechanism in place to prevent the blocks from being processed
-             * twice, wherever they're first encountered. Then try to pop the
-             * resulting value because it might not have been emitted if it was
-             * processed already.
-             */
-            this->visitBasicBlock(node->consequentBasicBlock);
-            this->valueStack.tryPop();
-            this->visitBasicBlock(node->alternativeBasicBlock);
-            this->valueStack.tryPop();
+        std::shared_ptr<llvm::BasicBlock> llvmConsequentBasicBlock;
+        std::shared_ptr<llvm::BasicBlock> llvmAlternativeBasicBlock;
+
+        /**
+         * Visit the consequent and alternative basic blocks. There's a
+         * mechanism in place to prevent the blocks from being processed
+         * twice, wherever they're first encountered. Then try to pop the
+         * resulting value because it might not have been emitted if it was
+         * processed already.
+         */
+        this->stashBuffers([&, this] {
+            llvmConsequentBasicBlock =
+                this->valueSafeEarlyVisitOrLookup<llvm::BasicBlock>(node->consequentBasicBlock);
+
+            llvmAlternativeBasicBlock =
+                this->valueSafeEarlyVisitOrLookup<llvm::BasicBlock>(node->alternativeBasicBlock);
         });
 
-        std::optional<llvm::BasicBlock*> llvmConsequentBasicBlock =
-            this->symbolTable.find<llvm::BasicBlock>(node->consequentBasicBlock);
-
-        std::optional<llvm::BasicBlock*> llvmAlternativeBasicBlock =
-            this->symbolTable.find<llvm::BasicBlock>(node->alternativeBasicBlock);
-
-        if (!ionshared::util::hasValue(llvmConsequentBasicBlock) || !ionshared::util::hasValue(llvmAlternativeBasicBlock)) {
-            throw std::runtime_error("Emitted LLVM basic block could not be found");
-        }
-
-        // Create the LLVM conditional branch instruction.
-        llvm::BranchInst *llvmBranchInst = this->makeLlvmBuilder()->CreateCondBr(
-            condition,
-            *llvmConsequentBasicBlock,
-            *llvmAlternativeBasicBlock
+        this->valueSymbolTable.set(node, std::shared_ptr<llvm::Value>(
+            this->makeLlvmBuilder()->CreateCondBr(
+                llvmCondition.get(),
+                llvmConsequentBasicBlock.get(),
+                llvmAlternativeBasicBlock.get()
+            ))
         );
 
-        this->valueStack.push(llvmBranchInst);
 //        this->addToScope(node, llvmBranchInst);
     }
 
-    void LlvmLoweringPass::visitCallInst(ionshared::Ptr<CallInst> node) {
+    void LlvmLoweringPass::visitCallInst(std::shared_ptr<CallInst> node) {
         this->requireModule();
         this->requireBuilder();
 
-        ionshared::Ptr<Construct> callee = node->callee;
+        std::shared_ptr<Construct> callee = node->callee;
         ConstructKind calleeConstructKind = callee->constructKind;
 
         if (calleeConstructKind != ConstructKind::Function && calleeConstructKind != ConstructKind::Extern) {
-            // TODO: Use DiagnosticBuilder.
+            // TODO: Use DiagnosticBuilder: internal error.
             throw std::runtime_error("Callee is neither a function nor an extern");
         }
 
+        // TODO: ~~~Review with NEW symbol table system~~~ 10/18/2020
         /**
          * If the callee function or extern  has not yet been visited/emitted
          * yet, visit it at this point, as it is required to be present on the
          * emitted entities symbol table in order to emit the call instruction.
          */
-        if (!this->symbolTable.contains(callee)) {
-            this->lockBuffers([&, this] {
+        if (!this->valueSymbolTable.contains(callee)) {
+            this->saveThenRestoreBuffers([&, this] {
                 this->visit(callee);
             });
-
-            // TODO: The function is being discarded here, but what if that function needs to be present in the stack because of the invoking method requires to pop it?
-            this->valueStack.tryPop();
         }
 
-        ionshared::Ptr<Prototype> calleePrototype = nullptr;
-
-        if (calleeConstructKind == ConstructKind::Function) {
-            calleePrototype = callee->dynamicCast<Function>()->prototype;
-        }
-        else if (calleeConstructKind == ConstructKind::Extern) {
-            calleePrototype = callee->dynamicCast<Extern>()->prototype;
-        }
-        else {
-            throw std::runtime_error("Callee is neither a function nor an extern");
-        }
+        std::shared_ptr<Prototype> calleePrototype =
+            calleeConstructKind == ConstructKind::Function
+                ? callee->dynamicCast<Function>()->prototype
+                : callee->dynamicCast<Extern>()->prototype;
 
         // Attempt to resolve the callee LLVM-equivalent function.
         llvm::Function* llvmCallee =
@@ -163,30 +149,29 @@ namespace ionir {
             throw std::runtime_error("Call instruction referenced an undefined function");
         }
 
-        std::vector<ionshared::Ptr<Construct>> args = node->args;
-        std::vector<llvm::Value*> llvmArgs;
+        std::vector<std::shared_ptr<Construct>> args = node->args;
+        std::vector<llvm::Value*> llvmArgs{};
 
         for (const auto& arg : args) {
-            this->visit(arg);
-            llvmArgs.push_back(this->valueStack.pop());
+            llvmArgs.push_back(this->valueSafeEarlyVisitOrLookup(arg).get());
         }
 
-        // Otherwise, create the LLVM call instruction.
-        llvm::CallInst *callInst =
-            this->makeLlvmBuilder()->CreateCall(llvmCallee, llvmArgs);
+        this->valueSymbolTable.set(
+            node,
 
-        this->valueStack.push(callInst);
+            std::shared_ptr<llvm::Value>(
+                this->makeLlvmBuilder()->CreateCall(llvmCallee, llvmArgs)
+            )
+        );
 //        this->addToScope(node, callInst);
     }
 
-    void LlvmLoweringPass::visitStoreInst(ionshared::Ptr<StoreInst> node) {
+    void LlvmLoweringPass::visitStoreInst(std::shared_ptr<StoreInst> node) {
         this->requireFunction();
         this->requireBuilder();
 
-        ionshared::Ptr<AllocaInst> target = node->target;
-
         std::optional<llvm::AllocaInst*> llvmTargetAlloca =
-            this->symbolTable.find<llvm::AllocaInst>(target);
+            this->valueSymbolTable.find<llvm::AllocaInst>(node->target);
 
         if (!ionshared::util::hasValue(llvmTargetAlloca)) {
             throw std::runtime_error("Target could not be retrieved from the emitted entities map");
@@ -203,7 +188,7 @@ namespace ionir {
 //        this->addToScope(node, llvmStoreInst);
     }
 
-    void LlvmLoweringPass::visitJumpInst(ionshared::Ptr<JumpInst> node) {
+    void LlvmLoweringPass::visitJumpInst(std::shared_ptr<JumpInst> node) {
         // TODO: Check everything thoroughly. Was just left there uncompleted!
         // ------------------------------------------------------------------
         // ------------------------------------------------------------------
@@ -217,20 +202,21 @@ namespace ionir {
         // ------------------------------------------------------------------
         this->requireBuilder();
 
-        ionshared::Ptr<BasicBlock> basicBlockTarget = node->basicBlockTarget;
+        std::shared_ptr<BasicBlock> basicBlockTarget = node->basicBlockTarget;
 
-        this->lockBuffers([&, this] {
+        this->saveThenRestoreBuffers([&, this] {
             /**
-             * Visit the basic block. A mechanism will prevent it from being
-             * emitted twice. Try popping the resulting value because it might
-             * be processed if it has been previously emitted.
-             */
-            this->visitBasicBlock(basicBlockTarget);
-            this->valueStack.tryPop();
-        });
+     * Visit the basic block. A mechanism will prevent it from being
+     * emitted twice. Try popping the resulting value because it might
+     * be processed if it has been previously emitted.
+     */
+                this->visitBasicBlock(basicBlockTarget);
+                this->valueStack.tryPop();
+            }
+        );
 
         std::optional<llvm::BasicBlock*> llvmBasicBlockResult =
-            this->symbolTable.find<llvm::BasicBlock>(basicBlockTarget);
+            this->valueSymbolTable.find<llvm::BasicBlock>(basicBlockTarget);
 
         if (!ionshared::util::hasValue(llvmBasicBlockResult)) {
             // TODO: Throw as internal error (DiagnosticBuilder).

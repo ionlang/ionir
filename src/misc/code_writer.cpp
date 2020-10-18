@@ -2,18 +2,18 @@
 #include <ionir/misc/code_writer.h>
 
 namespace ionir {
-    void CodeWriter::createModule(const ionshared::Ptr<Module>& construct) {
+    void CodeWriter::createModule(const std::shared_ptr<Module>& construct) {
         // TODO
     }
 
-    void CodeWriter::createGlobal(const ionshared::Ptr<Global>& construct) {
+    void CodeWriter::createGlobal(const std::shared_ptr<Global>& construct) {
         // TODO
     }
 
     CodeWriter::CodeWriter() noexcept = default;
 
-    std::string CodeWriter::make(const ionshared::Ptr<Construct>& rootConstruct) const {
-        std::queue<ionshared::Ptr<Construct>> queue = {};
+    std::string CodeWriter::make(const std::shared_ptr<Construct>& rootConstruct) const {
+        std::queue<std::shared_ptr<Construct>> queue = {};
 
         // Push initial items to the queue.
         for (const auto& item : rootConstruct->getChildrenNodes()) {
@@ -22,11 +22,11 @@ namespace ionir {
 
         while (!queue.empty()) {
             // TODO: Front or back? Not tested!
-            ionshared::Ptr<Construct> item = queue.front();
+            std::shared_ptr<Construct> item = queue.front();
 
             queue.pop();
 
-            std::vector<ionshared::Ptr<Construct>> children = item->getChildrenNodes();
+            std::vector<std::shared_ptr<Construct>> children = item->getChildrenNodes();
 
             for (const auto& child : children) {
                 queue.push(child);
