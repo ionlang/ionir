@@ -1,8 +1,7 @@
+#include <iostream>
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/BasicBlock.h>
 #include <ionir/passes/lowering/llvm_lowering_pass.h>
-
-#include <iostream>
 
 namespace ionir {
     llvm::IRBuilder<> LlvmLoweringPass::LlvmBuffers::makeBuilder() {
@@ -11,36 +10,25 @@ namespace ionir {
 
     std::shared_ptr<llvm::Type> LlvmLoweringPass::processTypeQualifiers(
         const std::shared_ptr<TypeQualifiers>& qualifiers,
-        llvm::Type* type
+        const std::shared_ptr<llvm::Type>& llvmType
     ) {
+        std::shared_ptr<llvm::Type> result = llvmType;
+
         // TODO: This should be last? Or const?
         if (qualifiers->contains(TypeQualifier::Pointer)) {
             // TODO: Address space correct?
-            type = llvm::PointerType::get(type, 0);
+            result = std::shared_ptr<llvm::Type>{
+                llvm::PointerType::get(llvmType.get(), 0)
+            };
         }
 
         // TODO: Process other qualifiers.
 
-        return std::shared_ptr<llvm::Type>(type);
+        return std::shared_ptr<llvm::Type>(result);
     }
 
     std::shared_ptr<ionshared::SymbolTable<llvm::Module*>> LlvmLoweringPass::getModules() const {
         return this->modules;
-    }
-
-    std::optional<llvm::Module*> LlvmLoweringPass::getModuleBuffer() const {
-        return this->buffers.module;
-    }
-
-    bool LlvmLoweringPass::setModuleBuffer(const std::string& id) {
-        if (this->modules->contains(id)) {
-            this->buffers.module = this->modules->lookup(id);
-            this->buffers.context = &(*this->buffers.module)->getContext();
-
-            return true;
-        }
-
-        return false;
     }
 
     LlvmLoweringPass::LlvmLoweringPass(
@@ -61,13 +49,6 @@ namespace ionir {
 
     void LlvmLoweringPass::visitScopeAnchor(std::shared_ptr<ScopeAnchor<>> node) {
         Pass::visitScopeAnchor(node);
-
-        /**
-         * Append the scope of the visited scope anchor construct.
-         * Before the visit method of the construct exits, it itself
-         * must pop the lastly added scope from the context.
-         */
-        this->buffers.context->appendScope(node->getSymbolTable());
     }
 
     void LlvmLoweringPass::visitBasicBlock(std::shared_ptr<BasicBlock> construct) {
@@ -129,29 +110,25 @@ namespace ionir {
             }));
         }
 
-        // Visit all the block's section(s).
         for (const auto& [key, basicBlock] : node->getSymbolTable()->unwrap()) {
             this->visit(basicBlock);
         }
-
-        this->buffers.context->popScope();
     }
 
     void LlvmLoweringPass::visitGlobal(std::shared_ptr<Global> construct) {
-        this->requireModule();
-
         std::shared_ptr<llvm::Type> llvmType =
-            this->typeSafeEarlyVisitOrLookup(construct->type);
+            this->eagerVisitType(construct->type);
 
         std::shared_ptr<llvm::GlobalVariable> llvmGlobalVariable =
             std::shared_ptr<llvm::GlobalVariable>(llvm::dyn_cast<llvm::GlobalVariable>(
-                (*this->buffers.module)->getOrInsertGlobal(construct->name, llvmType.get())
+                this->llvmBuffers.modules.forceGetTopItem()
+                    ->getOrInsertGlobal(construct->name, llvmType.get())
             ));
 
         // Initialize the global variable if applicable.
         if (ionshared::util::hasValue(construct->value)) {
             std::shared_ptr<llvm::Value> llvmValue =
-                this->valueSafeEarlyVisitOrLookup(*construct->value);
+                this->eagerVisitValue(*construct->value);
 
             // TODO: Value needs to be created from below commented statement.
             // llvm::Constant* initializerValue = llvm::Constant::getIntegerValue(llvm::Type);
@@ -166,9 +143,11 @@ namespace ionir {
     }
 
     void LlvmLoweringPass::visitIntegerType(std::shared_ptr<IntegerType> construct) {
-        this->requireContext();
+        std::optional<std::shared_ptr<llvm::IntegerType>> llvmType{std::nullopt};
 
-        std::optional<llvm::IntegerType*> type = std::nullopt;
+        llvm::LLVMContext& llvmContext{
+            this->llvmBuffers.modules.forceGetTopItem()->getContext()
+        };
 
         /**
          * Create the corresponding LLVM integer type based off the
@@ -176,66 +155,78 @@ namespace ionir {
          */
         switch (construct->integerKind) {
             case IntegerKind::Int8: {
-                type = llvm::Type::getInt8Ty(**this->buffers.context);
+                llvmType = std::shared_ptr<llvm::IntegerType>{
+                    llvm::Type::getInt8Ty(llvmContext)
+                };
 
                 break;
             }
 
             case IntegerKind::Int16: {
-                type = llvm::Type::getInt16Ty(**this->buffers.context);
+                llvmType = std::shared_ptr<llvm::IntegerType>{
+                    llvm::Type::getInt16Ty(llvmContext)
+                };
 
                 break;
             }
 
             case IntegerKind::Int32: {
-                type = llvm::Type::getInt32Ty(**this->buffers.context);
+                llvmType = std::shared_ptr<llvm::IntegerType>{
+                    llvm::Type::getInt32Ty(llvmContext)
+                };
 
                 break;
             }
 
             case IntegerKind::Int64: {
-                type = llvm::Type::getInt64Ty(**this->buffers.context);
+                llvmType = std::shared_ptr<llvm::IntegerType>{
+                    llvm::Type::getInt64Ty(llvmContext)
+                };
 
                 break;
             }
 
             case IntegerKind::Int128: {
-                type = llvm::Type::getInt128Ty(**this->buffers.context);
+                llvmType = std::shared_ptr<llvm::IntegerType>{llvm::Type::getInt128Ty(llvmContext)};
 
                 break;
             }
 
             default: {
+                // TODO: Use diagnostics API.
                 throw std::runtime_error("An unrecognized integer kind was provided");
             }
         }
 
         // At this point, type must be defined.
-        if (!type.has_value()) {
+        if (!llvmType.has_value()) {
+            // TODO: Use diagnostics API.
             throw std::runtime_error("Expected type to be defined");
         }
 
         this->typeSymbolTable.set(construct, this->processTypeQualifiers(
             construct->qualifiers,
-            *type
+            *llvmType
         ));
     }
 
     void LlvmLoweringPass::visitBooleanType(std::shared_ptr<BooleanType> construct) {
-        this->requireContext();
-
         this->typeSymbolTable.set(construct, this->processTypeQualifiers(
             construct->qualifiers,
-            llvm::Type::getInt1Ty(**this->buffers.context)
+
+            std::shared_ptr<llvm::Type>{llvm::Type::getInt1Ty(
+                this->llvmBuffers.modules.forceGetTopItem()->getContext()
+            )}
         ));
     }
 
     void LlvmLoweringPass::visitVoidType(std::shared_ptr<VoidType> construct) {
-        this->requireContext();
-
         this->typeSymbolTable.set(construct, this->processTypeQualifiers(
             construct->qualifiers,
-            llvm::Type::getVoidTy(**this->buffers.context)
+
+            std::shared_ptr<llvm::Type>{llvm::Type::getVoidTy(
+                this->llvmBuffers.modules.forceGetTopItem()->getContext()
+            )}
         ));
     }
 
@@ -259,23 +250,18 @@ namespace ionir {
     }
 
     void LlvmLoweringPass::visitStruct(std::shared_ptr<Struct> construct) {
-        this->requireModule();
-        this->requireContext();
-
         auto fieldsNativeMap = construct->fields->unwrap();
         std::vector<llvm::Type*> llvmFields{};
 
         llvmFields.reserve(fieldsNativeMap.size());
 
         for (const auto& [name, type] : fieldsNativeMap) {
-            llvmFields.push_back(this->typeSafeEarlyVisitOrLookup(type).get());
+            llvmFields.push_back(this->eagerVisitType(type).get());
         }
-
-        // TODO: Ensure struct isn't already defined, and doesn't exist on the LLVM module (or locally?).
 
         std::shared_ptr<llvm::StructType> llvmStruct =
             std::shared_ptr<llvm::StructType>(llvm::StructType::get(
-                **this->buffers.context,
+                this->llvmBuffers.modules.forceGetTopItem()->getContext(),
                 llvmFields
             ));
 
@@ -287,22 +273,22 @@ namespace ionir {
         std::vector<llvm::Value*> llvmValues{};
 
         for (const auto& value : construct->values) {
-            llvmValues.push_back(this->valueSafeEarlyVisitOrLookup(value).get());
+            llvmValues.push_back(this->eagerVisitValue(value).get());
         }
 
-        llvm::IRBuilder<> builder = this->requireBuilder();
+        llvm::IRBuilder<> llvmBuilder = this->llvmBuffers.makeBuilder();
 
         std::shared_ptr<llvm::AllocaInst> structAllocation =
-            std::shared_ptr<llvm::AllocaInst>(builder.CreateAlloca(
-                this->typeSafeEarlyVisitOrLookup(
+            std::shared_ptr<llvm::AllocaInst>(llvmBuilder.CreateAlloca(
+                this->eagerVisitType(
                     construct->declaration
                 ).get()
             ));
 
         for (size_t i = 0; i < llvmValues.size(); i++) {
-            llvm::Value* structElement = builder.CreateStructGEP(structAllocation.get(), i);
+            llvm::Value* structElement = llvmBuilder.CreateStructGEP(structAllocation.get(), i);
 
-            builder.CreateStore(llvmValues[i], structElement);
+            llvmBuilder.CreateStore(llvmValues[i], structElement);
         }
 
         this->valueSymbolTable.set(construct, structAllocation);

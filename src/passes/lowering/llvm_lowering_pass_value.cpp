@@ -22,7 +22,7 @@ namespace ionir {
 
         this->valueSymbolTable.set(construct, std::shared_ptr<llvm::Value>(
             llvm::ConstantInt::get(
-                this->typeSafeEarlyVisitOrLookup(construct->type).get(),
+                this->eagerVisitType(construct->type).get(),
                 llvmApInt
             )
         ));
@@ -31,43 +31,44 @@ namespace ionir {
     }
 
     void LlvmLoweringPass::visitCharLiteral(std::shared_ptr<CharLiteral> construct) {
-        this->requireContext();
-        this->requireBuilder();
-
-        llvm::Type *charType = llvm::Type::getInt8Ty(**this->buffers.context);
-
         this->valueSymbolTable.set(
             construct,
 
             std::shared_ptr<llvm::Value>(
-                llvm::ConstantInt::get(charType, construct->value)
+                llvm::ConstantInt::get(
+                    llvm::Type::getInt8Ty(
+                        this->llvmBuffers.modules.forceGetTopItem()
+                            ->getContext()
+                    ),
+
+                    construct->value
+                )
             )
         );
 //        this->addToScope(node, value);
     }
 
     void LlvmLoweringPass::visitStringLiteral(std::shared_ptr<StringLiteral> construct) {
-        this->requireBuilder();
-
         this->valueSymbolTable.set(
             construct,
 
             std::shared_ptr<llvm::Value>(
-                this->makeLlvmBuilder()->CreateGlobalStringPtr(construct->value)
+                this->llvmBuffers.makeBuilder()
+                    .CreateGlobalStringPtr(construct->value)
             )
         );
 //        this->addToScope(node, value);
     }
 
     void LlvmLoweringPass::visitBooleanLiteral(std::shared_ptr<BooleanLiteral> node) {
-        this->requireContext();
-
         // Create the boolean type along with the LLVM value.
-        llvm::IntegerType *type = llvm::Type::getInt1Ty(**this->buffers.context);
-
         this->valueSymbolTable.set(node, std::shared_ptr<llvm::Value>(
             llvm::ConstantInt::get(
-                type,
+                llvm::Type::getInt1Ty(
+                    this->llvmBuffers.modules.forceGetTopItem()
+                        ->getContext()
+                ),
+
                 llvm::APInt(1, node->value, false)
             )
         ));
@@ -75,7 +76,6 @@ namespace ionir {
     }
 
     void LlvmLoweringPass::visitOperationValue(std::shared_ptr<OperationValue> node) {
-        llvm::IRBuilder<> llvmBuilder = this->requireBuilder();
         std::optional<std::shared_ptr<llvm::Value>> llvmRightSideValue = std::nullopt;
         bool isInteger = node->leftSideValue->type->typeKind == TypeKind::Integer;
 
@@ -95,11 +95,11 @@ namespace ionir {
                 throw std::runtime_error("Right side must have a value for this operation");
             }
 
-            llvmRightSideValue = this->valueSafeEarlyVisitOrLookup(*node->rightSideValue);
+            llvmRightSideValue = this->eagerVisitValue(*node->rightSideValue);
         };
 
         std::shared_ptr<llvm::Value> llvmLeftSideValue =
-            this->valueSafeEarlyVisitOrLookup(node->leftSideValue);
+            this->eagerVisitValue(node->leftSideValue);
 
         llvm::Instruction::BinaryOps llvmBinaryOperator;
         llvm::Instruction::UnaryOps llvmUnaryOperator;
@@ -160,6 +160,8 @@ namespace ionir {
                 throw std::runtime_error("Unsupported operator kind");
             }
         }
+
+        llvm::IRBuilder<> llvmBuilder = this->llvmBuffers.makeBuilder();
 
         this->valueSymbolTable.set(node, std::shared_ptr<llvm::Value>(
             ionshared::util::hasValue(node->rightSideValue)

@@ -48,7 +48,7 @@ namespace ionir {
 
         static std::shared_ptr<llvm::Type> processTypeQualifiers(
             const std::shared_ptr<TypeQualifiers>& qualifiers,
-            llvm::Type* type
+            const std::shared_ptr<llvm::Type>& llvmType
         );
 
         std::shared_ptr<ionshared::SymbolTable<llvm::Module*>> modules;
@@ -68,30 +68,17 @@ namespace ionir {
          */
         template<typename T = llvm::Value>
             requires std::derived_from<T, llvm::Value>
-        std::shared_ptr<T> valueSafeEarlyVisitOrLookup(
+        std::shared_ptr<T> eagerVisitValue(
             std::shared_ptr<Construct> construct,
-            bool useDynamicCast = true,
-            bool stashBuffers = true
+            bool useDynamicCast = true
         ) {
             // TODO: If the root (module) hasn't been emitted, emit it early. That would also emit the target along the way.
 
             /**
-             * NOTE: If specified, buffers should be stashed and restored after
-             * visitation, as the construct could be anything, including a block
-             * or a function, which, among others, alter buffers when being lowered.
+             * NOTE: Construct is protected from being emitted more
+             * than once during this call.
              */
-            if (stashBuffers) {
-                this->stashBuffers([&, this] {
-                    /**
-                     * NOTE: Construct is protected from being emitted more
-                     * than once during this call.
-                     */
-                    this->visit(construct);
-                });
-            }
-            else {
-                this->visit(construct);
-            }
+            this->visit(construct);
 
             if (!this->valueSymbolTable.contains(construct)) {
                 throw std::runtime_error("Visiting construct did not create an entry in the local symbol table");
@@ -109,29 +96,17 @@ namespace ionir {
          */
         template<typename T = llvm::Type>
             requires std::derived_from<T, llvm::Type>
-        std::shared_ptr<T> typeSafeEarlyVisitOrLookup(
+        std::shared_ptr<T> eagerVisitType(
             std::shared_ptr<Construct> construct,
-            bool useDynamicCast = true,
-            bool stashBuffers = true
+            bool useDynamicCast = true
         ) {
+            // TODO: If the root (module) hasn't been emitted, emit it early. That would also emit the target along the way.
+
             /**
-             * NOTE: If specified, buffers should be stashed and restored after
-             * visitation, as the construct could be anything, including a block
-             * or a function, which, among others, alter buffers when being lowered.
+             * NOTE: Construct is protected from being emitted more
+             * than once during this call.
              */
-            if (stashBuffers) {
-                this->stashBuffers([&, this] {
-                    /**
-                 * NOTE: Construct is protected from being emitted more
-                 * than once during this call.
-                 */
-                        this->visit(construct);
-                    }
-                );
-            }
-            else {
-                this->visit(construct);
-            }
+            this->visit(construct);
 
             if (!this->typeSymbolTable.contains(construct)) {
                 throw std::runtime_error("Visiting construct did not create an entry in the local symbol table");
@@ -153,10 +128,6 @@ namespace ionir {
         ~LlvmLoweringPass();
 
         [[nodiscard]] std::shared_ptr<ionshared::SymbolTable<llvm::Module*>> getModules() const;
-
-        [[nodiscard]] std::optional<llvm::Module*> getModuleBuffer() const;
-
-        bool setModuleBuffer(const std::string& id);
 
         void visit(std::shared_ptr<Construct> node) override;
 
@@ -188,13 +159,13 @@ namespace ionir {
 
         void visitAllocaInst(std::shared_ptr<AllocaInst> construct) override;
 
-        void visitReturnInst(std::shared_ptr<ReturnInst> node) override;
+        void visitReturnInst(std::shared_ptr<ReturnInst> construct) override;
 
-        void visitBranchInst(std::shared_ptr<BranchInst> node) override;
+        void visitBranchInst(std::shared_ptr<BranchInst> construct) override;
 
-        void visitCallInst(std::shared_ptr<CallInst> node) override;
+        void visitCallInst(std::shared_ptr<CallInst> construct) override;
 
-        void visitStoreInst(std::shared_ptr<StoreInst> node) override;
+        void visitStoreInst(std::shared_ptr<StoreInst> construct) override;
 
         void visitJumpInst(std::shared_ptr<JumpInst> node) override;
 

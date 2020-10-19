@@ -44,10 +44,11 @@ namespace ionir {
     }
 
     void LlvmLoweringPass::visitExtern(std::shared_ptr<Extern> construct) {
-        this->requireModule();
-
-        llvm::Function* existingExternDefinition =
-            (*this->buffers.module)->getFunction(construct->prototype->name);
+        // TODO: Should we be checking whether a function exists/has been emitted via name/id? Or using symbol table? Investigate.
+        std::shared_ptr<llvm::Function> existingExternDefinition{
+            this->llvmBuffers.modules.forceGetTopItem()
+                ->getFunction(construct->prototype->name)
+        };
 
         if (existingExternDefinition != nullptr) {
             this->context->diagnosticBuilder
@@ -60,27 +61,24 @@ namespace ionir {
         this->valueSymbolTable.set(
             construct,
 
-            this->valueSafeEarlyVisitOrLookup<llvm::Function>(
+            this->eagerVisitValue<llvm::Function>(
                 construct->prototype
             )
         );
     }
 
     void LlvmLoweringPass::visitPrototype(std::shared_ptr<Prototype> construct) {
-        this->requireModule();
-        this->requireContext();
-
         auto argsMap = construct->args->items;
         auto& argsNativeMap = argsMap->unwrapConst();
-
-        // Retrieve argument count from the argument vector.
         uint32_t argumentCount = argsMap->getSize();
+        std::vector<llvm::Type*> llvmArgumentTypes{};
 
-        // Create the argument buffer vector.
-        std::vector<llvm::Type*> llvmArgumentTypes = {};
+        std::shared_ptr<llvm::Module> llvmModuleBuffer =
+            this->llvmBuffers.modules.forceGetTopItem();
 
-        // Attempt to retrieve an existing function.
-        llvm::Function* llvmFunction = (*this->buffers.module)->getFunction(construct->name);
+        std::shared_ptr<llvm::Function> llvmFunction{
+            llvmModuleBuffer->getFunction(construct->name)
+        };
 
         // A function with a matching identifier already exists.
         if (llvmFunction != nullptr) {
@@ -94,6 +92,7 @@ namespace ionir {
                     ->bootstrap(diagnostic::functionRedefinitionDiffArgs)
                     ->finish();
 
+                // TODO
                 throw std::runtime_error("Awaiting new diagnostic buffer checking");
             }
         }
@@ -101,20 +100,28 @@ namespace ionir {
         else {
             for (const auto& [id, arg] : argsNativeMap) {
                 llvmArgumentTypes.push_back(
-                    this->typeSafeEarlyVisitOrLookup(arg.first).get()
+                    this->eagerVisitType(arg.first).get()
                 );
             }
 
             llvm::FunctionType* llvmFunctionType = llvm::FunctionType::get(
-                this->typeSafeEarlyVisitOrLookup(construct->returnType).get(),
+                this->eagerVisitType(construct->returnType).get(),
                 llvmArgumentTypes,
                 construct->args->isVariable
             );
 
-            // Cast the value to a function, since we know getCallee() will return a function.
-            llvmFunction = llvm::dyn_cast<llvm::Function>(
-                (*this->buffers.module)->getOrInsertFunction(construct->name, llvmFunctionType).getCallee()
-            );
+            /**
+             * Cast the LLVM value to a LLVM function, since we know
+             * getCallee() will return a function.
+             */
+            llvmFunction = std::shared_ptr<llvm::Function>{
+                llvm::dyn_cast<llvm::Function>(
+                    llvmModuleBuffer->getOrInsertFunction(
+                        construct->name,
+                        llvmFunctionType
+                    ).getCallee()
+                )
+            };
 
             // Set the function's linkage.
             llvmFunction->setLinkage(llvm::GlobalValue::LinkageTypes::ExternalLinkage);
@@ -159,7 +166,7 @@ namespace ionir {
         }
 
         std::shared_ptr<llvm::Function> llvmFunction =
-            this->valueSafeEarlyVisitOrLookup<llvm::Function>(construct->prototype);
+            this->eagerVisitValue<llvm::Function>(construct->prototype);
 
         this->llvmBuffers.functions.push(llvmFunction);
 
