@@ -3,17 +3,22 @@
 #include <ionir/test/bootstrap.h>
 
 namespace ionir::test::bootstrap {
-    std::shared_ptr<ionshared::LlvmModule> llvmModule(const std::string &identifier) {
-        llvm::LLVMContext *llvmContext = new llvm::LLVMContext();
-        llvm::Module *llvmModule = new llvm::Module("test", *llvmContext);
-
-        return std::make_shared<ionshared::LlvmModule>(llvmModule);
+    std::shared_ptr<ionshared::LlvmModule> llvmModule(const std::string& identifier) {
+        return std::make_shared<ionshared::LlvmModule>(
+            new llvm::Module(identifier, *new llvm::LLVMContext())
+        );
     }
 
-    std::shared_ptr<LlvmLoweringPass> llvmLoweringPass(const std::shared_ptr<ionshared::LlvmModule>& module) {
-        std::shared_ptr<ionshared::SymbolTable<llvm::Module*>> modules = std::make_shared<ionshared::SymbolTable<llvm::Module*>>(ionshared::SymbolTable<llvm::Module*>({
-            {module->getId(), module->unwrap()}
-        }));
+    std::shared_ptr<LlvmLoweringPass> llvmLoweringPass(
+        const std::shared_ptr<ionshared::LlvmModule>& module
+    ) {
+        std::shared_ptr<ionshared::SymbolTable<llvm::Module*>> modules =
+            std::make_shared<ionshared::SymbolTable<llvm::Module*>>(
+                ionshared::SymbolTable<llvm::Module*>({
+                    {module->getId(), module->unwrap()}
+                }
+            )
+        );
 
         // TODO: PassContext isn't associated with the calling scope/function in any way.
         std::shared_ptr<LlvmLoweringPass> llvmLoweringPass = std::make_shared<LlvmLoweringPass>(
@@ -28,7 +33,9 @@ namespace ionir::test::bootstrap {
         return llvmLoweringPass;
     }
 
-    std::shared_ptr<Function> emptyFunction(std::vector<std::shared_ptr<Instruction>> insts) {
+    std::shared_ptr<Function> emptyFunction(
+        std::vector<std::shared_ptr<Instruction>> instructions
+    ) {
         std::shared_ptr<VoidType> returnType = TypeFactory::typeVoid();
 
         // TODO: Consider support for module here.
@@ -43,7 +50,7 @@ namespace ionir::test::bootstrap {
             nullptr,
             BasicBlockKind::Entry,
             Const::basicBlockEntryId,
-            std::move(insts)
+            std::move(instructions)
         });
 
         // TODO: Fix mumbo-jumbo debugging code. -------------

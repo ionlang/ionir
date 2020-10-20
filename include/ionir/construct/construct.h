@@ -136,5 +136,7 @@ namespace ionir {
         [[nodiscard]] virtual bool verify();
 
         [[nodiscard]] std::optional<std::string> findConstructKindName();
+
+        [[nodiscard]] std::shared_ptr<Construct> fetchRootConstruct();
     };
 }

@@ -55,9 +55,57 @@ namespace ionir {
 
         LlvmBuffers llvmBuffers;
 
-        ionshared::LoweringSymbolTable<std::shared_ptr<Construct>, std::shared_ptr<llvm::Value>> valueSymbolTable;
+        ionshared::LoweringSymbolTable<
+            std::shared_ptr<Construct>,
+            std::shared_ptr<llvm::Value>
+        > valueSymbolTable;
 
-        ionshared::LoweringSymbolTable<std::shared_ptr<Construct>, std::shared_ptr<llvm::Type>> typeSymbolTable;
+        ionshared::LoweringSymbolTable<
+            std::shared_ptr<Construct>,
+            std::shared_ptr<llvm::Type>
+        > typeSymbolTable;
+
+        void eagerVisit(const std::shared_ptr<Construct>& construct) {
+            std::shared_ptr<Construct> rootConstruct = construct->fetchRootConstruct();
+
+            if (rootConstruct->constructKind != ConstructKind::Module) {
+                // TODO: Use diagnostics API (internal error).
+                throw std::runtime_error("Expected root construct to be a module");
+            }
+            /**
+             * If the root construct is verified to be a module, and
+             * has not been (or started being) emitted, visit it. This
+             * also conveniently means that the specified construct will
+             * be visited, since it is a child of the module.
+             */
+            else if (!this->valueSymbolTable.contains(rootConstruct)) {
+                this->visit(rootConstruct);
+            }
+            /**
+             * At this point we know that the root construct is verified
+             * to be a module, which has been (or is in the process of being)
+             * visited and emitted. The only two possibilities left are that the
+             * construct is part of the current module being visited, in which
+             * case it should simply be visited, and the other being that the
+             * construct is part of another module which has previously been
+             * visited and emitted entirely, in which case the construct does
+             * not need to be visited because it should be already present in
+             * the symbol table. If the root construct is a the same module than
+             * the current module being emitted, visit the construct. If, during
+             * the visitation, the construct has previously been visited, a check
+             * exists to prevent it from being emitted twice. If the construct has
+             * not been emitted already, it will be emitted during this visit.
+             */
+            else if (this->llvmBuffers.modules.forceGetTopItem().get()
+                == this->valueSymbolTable.find<llvm::Module>(rootConstruct)->get()) {
+                this->visit(construct);
+            }
+
+            if (!this->valueSymbolTable.contains(construct)) {
+                // TODO: Use diagnostics API (internal error).
+                throw std::runtime_error("Visiting construct did not create an entry in the local symbol table");
+            }
+        }
 
         /**
          * Visit and emit a construct if it has not been already
@@ -72,17 +120,7 @@ namespace ionir {
             std::shared_ptr<Construct> construct,
             bool useDynamicCast = true
         ) {
-            // TODO: If the root (module) hasn't been emitted, emit it early. That would also emit the target along the way.
-
-            /**
-             * NOTE: Construct is protected from being emitted more
-             * than once during this call.
-             */
-            this->visit(construct);
-
-            if (!this->valueSymbolTable.contains(construct)) {
-                throw std::runtime_error("Visiting construct did not create an entry in the local symbol table");
-            }
+            this->eagerVisit(construct);
 
             return *this->valueSymbolTable.find<T>(construct, useDynamicCast);
         }
@@ -100,17 +138,7 @@ namespace ionir {
             std::shared_ptr<Construct> construct,
             bool useDynamicCast = true
         ) {
-            // TODO: If the root (module) hasn't been emitted, emit it early. That would also emit the target along the way.
-
-            /**
-             * NOTE: Construct is protected from being emitted more
-             * than once during this call.
-             */
-            this->visit(construct);
-
-            if (!this->typeSymbolTable.contains(construct)) {
-                throw std::runtime_error("Visiting construct did not create an entry in the local symbol table");
-            }
+            this->eagerVisit(construct);
 
             return *this->typeSymbolTable.find<T>(construct, useDynamicCast);
         }
@@ -127,7 +155,9 @@ namespace ionir {
 
         ~LlvmLoweringPass();
 
-        [[nodiscard]] std::shared_ptr<ionshared::SymbolTable<llvm::Module*>> getModules() const;
+        [[nodiscard]] std::shared_ptr<
+            ionshared::SymbolTable<llvm::Module*>
+        > getModules() const;
 
         void visit(std::shared_ptr<Construct> node) override;
 
@@ -181,6 +211,8 @@ namespace ionir {
 
         void visitStruct(std::shared_ptr<Struct> construct) override;
 
-        void visitStructDefinition(std::shared_ptr<StructDefinition> construct) override;
+        void visitStructDefinition(
+            std::shared_ptr<StructDefinition> construct
+        ) override;
     };
 }

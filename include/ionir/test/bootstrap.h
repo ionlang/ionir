@@ -8,7 +8,7 @@
 
 namespace ionir::test::bootstrap {
     [[nodiscard]] std::shared_ptr<ionshared::LlvmModule> llvmModule(
-        const std::string &identifier = "test"
+        const std::string& identifier = "test"
     );
 
     [[nodiscard]] std::shared_ptr<LlvmLoweringPass> llvmLoweringPass(
@@ -16,6 +16,6 @@ namespace ionir::test::bootstrap {
     );
 
     [[nodiscard]] std::shared_ptr<Function> emptyFunction(
-        std::vector<std::shared_ptr<Instruction>> insts = {}
+        std::vector<std::shared_ptr<Instruction>> instructions = {}
     );
 }

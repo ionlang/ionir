@@ -32,7 +32,9 @@ namespace ionir::test::comparison {
         const std::shared_ptr<LlvmLoweringPass>& llvmLoweringPass,
         const std::string& fileName
     ) {
-        std::optional<llvm::Module*> llvmModuleBuffer = llvmLoweringPass->getModuleBuffer();
+        // TODO: Verify that a module was emitted / contained there.
+        std::optional<llvm::Module*> llvmModuleBuffer =
+            llvmLoweringPass->getModules()->unwrap().begin()->second;
 
         if (!ionshared::util::hasValue(llvmModuleBuffer)) {
             throw std::runtime_error("Module buffer in LlvmCodegenPass is not set");
