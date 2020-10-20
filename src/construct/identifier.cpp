@@ -1,7 +1,10 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    Identifier::Identifier(std::string name, std::vector<std::string> scopePath) :
+    Identifier::Identifier(
+        std::string name,
+        std::vector<std::string> scopePath
+    ) noexcept :
         Construct(ConstructKind::Identifier),
         ionshared::Named{std::move(name)},
         scopePath(std::move(scopePath)) {

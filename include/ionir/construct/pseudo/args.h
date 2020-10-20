@@ -19,6 +19,6 @@ namespace ionir {
                 std::make_shared<ionshared::SymbolTable<Arg>>(),
 
             bool isVariable = false
-        );
+        ) noexcept;
     };
 }

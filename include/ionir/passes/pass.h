@@ -8,12 +8,12 @@
 #include <ionir/construct/value/char_literal.h>
 #include <ionir/construct/value/string_literal.h>
 #include <ionir/construct/value/boolean_literal.h>
-#include <ionir/construct/inst/alloca.h>
-#include <ionir/construct/inst/branch.h>
-#include <ionir/construct/inst/return.h>
-#include <ionir/construct/inst/store.h>
-#include <ionir/construct/inst/call.h>
-#include <ionir/construct/inst/jump.h>
+#include <ionir/construct/instruction/alloca.h>
+#include <ionir/construct/instruction/branch.h>
+#include <ionir/construct/instruction/return.h>
+#include <ionir/construct/instruction/store.h>
+#include <ionir/construct/instruction/call.h>
+#include <ionir/construct/instruction/jump.h>
 #include <ionir/construct/value/operation.h>
 #include <ionir/construct/type/integer_type.h>
 #include <ionir/construct/type/void_type.h>
@@ -29,7 +29,7 @@
 #include <ionir/construct/global.h>
 #include <ionir/construct/module.h>
 #include <ionir/construct/value.h>
-#include <ionir/construct/inst.h>
+#include <ionir/construct/instruction.h>
 #include <ionir/construct/identifier.h>
 #include <ionir/construct/struct.h>
 #include <ionir/construct/struct_definition.h>

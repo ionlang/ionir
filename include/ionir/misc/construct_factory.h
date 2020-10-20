@@ -1,8 +1,7 @@
 #pragma once
 
 namespace ionir {
-    class ConstructFactory {
-    public:
+    struct ConstructFactory {
         // TODO
     };
 }

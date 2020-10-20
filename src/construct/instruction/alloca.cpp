@@ -2,9 +2,12 @@
 
 namespace ionir {
     // TODO: Finish init. implementation.
-    AllocaInst::AllocaInst(const AllocaInstOpts &opts) :
-        Instruction(opts.parent, InstKind::Alloca),
-        type(opts.type) {
+    AllocaInst::AllocaInst(
+        const std::shared_ptr<BasicBlock>& parent,
+        std::shared_ptr<Type> type
+    ) noexcept :
+        Instruction(parent, InstKind::Alloca),
+        type(std::move(type)) {
         //
     }
 

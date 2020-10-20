@@ -15,7 +15,7 @@ namespace ionir {
     struct Method : ConstructWithParent<Struct> {
         std::shared_ptr<Function> function;
 
-        Prototype(
+        Method(
             std::string id,
             std::shared_ptr<Args> args,
             std::shared_ptr<Type> returnType,

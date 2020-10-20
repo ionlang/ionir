@@ -1,9 +1,12 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    ReturnInst::ReturnInst(const ReturnInstOpts& opts) :
-        Instruction(opts.parent, InstKind::Return),
-        value(opts.value) {
+    ReturnInst::ReturnInst(
+        const std::shared_ptr<BasicBlock>& parent,
+        ionshared::OptPtr<Value<>> value
+    ) noexcept :
+        Instruction(parent, InstKind::Return),
+        value(std::move(value)) {
         //
     }
 

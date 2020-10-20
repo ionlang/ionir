@@ -12,23 +12,14 @@ namespace ionir::test::bootstrap {
     std::shared_ptr<LlvmLoweringPass> llvmLoweringPass(
         const std::shared_ptr<ionshared::LlvmModule>& module
     ) {
-        std::shared_ptr<ionshared::SymbolTable<llvm::Module*>> modules =
-            std::make_shared<ionshared::SymbolTable<llvm::Module*>>(
-                ionshared::SymbolTable<llvm::Module*>({
-                    {module->getId(), module->unwrap()}
-                }
-            )
-        );
-
         // TODO: PassContext isn't associated with the calling scope/function in any way.
         std::shared_ptr<LlvmLoweringPass> llvmLoweringPass = std::make_shared<LlvmLoweringPass>(
-            std::make_shared<ionshared::PassContext>(),
-            modules
+            std::make_shared<ionshared::PassContext>()
         );
 
-        if (!llvmLoweringPass->setModuleBuffer(module->getId())) {
-            throw std::runtime_error("Could not set active module buffer during bootstrap process");
-        }
+//        if (!llvmLoweringPass->setModuleBuffer(module->getId())) {
+//            throw std::runtime_error("Could not set active module buffer during bootstrap process");
+//        }
 
         return llvmLoweringPass;
     }
@@ -55,19 +46,20 @@ namespace ionir::test::bootstrap {
 
         // TODO: Fix mumbo-jumbo debugging code. -------------
 
-        typedef PtrSymbolTable<BasicBlock> t;
-        typedef ionshared::SymbolTable<std::shared_ptr<BasicBlock>> tt;
-
         auto t1 = std::map<std::string, std::shared_ptr<BasicBlock>>{
             {entrySection->name, entrySection}
         };
 
-        t sections = std::make_shared<tt>(t1);
+        PtrSymbolTable<BasicBlock> sections =
+            std::make_shared<ionshared::SymbolTable<std::shared_ptr<BasicBlock>>>(t1);
 
         // --------------------
 
-        std::shared_ptr<Function> function = std::make_shared<Function>(prototype, nullptr);
-        std::shared_ptr<FunctionBody> body = std::make_shared<FunctionBody>(function, sections);
+        std::shared_ptr<Function> function =
+            std::make_shared<Function>(prototype, nullptr);
+
+        std::shared_ptr<FunctionBody> body =
+            std::make_shared<FunctionBody>(function, sections);
 
         entrySection->parent = body;
         function->body = body;

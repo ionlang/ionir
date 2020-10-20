@@ -2,7 +2,7 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    CompareInst::CompareInst(const CompareInstOpts &opts) :
+    CompareInst::CompareInst(const CompareInstOpts &opts) noexcept :
         Instruction(opts.parent, InstKind::Compare) {
         //
     }

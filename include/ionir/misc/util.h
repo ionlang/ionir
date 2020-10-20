@@ -12,18 +12,12 @@
 #include <ionir/const/const_name.h>
 
 namespace ionir::util {
-    struct Inst;
-
     struct IntegerType;
 
     template<typename T>
     struct ParentMixin {
         T parent;
     };
-
-    template<typename T = Construct>
-//        requires std::derived_from<T, Construct> // TODO: Cannot work in the current system because ConstructParentMixin<T> is used where T is a forward decl.
-    using ConstructParentMixin = ParentMixin<std::shared_ptr<T>>;
 
     [[nodiscard]] std::string resolveIntegerKindName(IntegerKind kind);
 

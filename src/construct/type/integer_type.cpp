@@ -1,7 +1,7 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    IntegerType::IntegerType(IntegerKind kind, bool isSigned) :
+    IntegerType::IntegerType(IntegerKind kind, bool isSigned) noexcept :
         Type(TypeKind::Integer, util::resolveIntegerKindName(kind)),
         integerKind(kind),
         isSigned(isSigned) {

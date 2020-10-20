@@ -1,8 +1,7 @@
 #include <ionir/construct/pseudo/comment.h>
 
 namespace ionir {
-    Comment::Comment(bool isMultiline, std::optional<std::string> text) :
-        isMultiline(isMultiline),
+    Comment::Comment(std::optional<std::string> text) noexcept :
         text(std::move(text)) {
         //
     }

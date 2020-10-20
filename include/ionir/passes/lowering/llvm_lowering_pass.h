@@ -13,7 +13,7 @@
 #include <ionir/construct/value/integer_literal.h>
 #include <ionir/construct/value/char_literal.h>
 #include <ionir/construct/value/string_literal.h>
-#include <ionir/construct/inst.h>
+#include <ionir/construct/instruction.h>
 #include <ionir/construct/inst/branch.h>
 #include <ionir/construct/inst/alloca.h>
 #include <ionir/construct/inst/return.h>
@@ -96,8 +96,8 @@ namespace ionir {
              * exists to prevent it from being emitted twice. If the construct has
              * not been emitted already, it will be emitted during this visit.
              */
-            else if (this->llvmBuffers.modules.forceGetTopItem().get()
-                == this->valueSymbolTable.find<llvm::Module>(rootConstruct)->get()) {
+            else if (this->llvmBuffers.modules.forceGetTopItem()
+                == *this->valueSymbolTable.find<llvm::Module>(rootConstruct)) {
                 this->visit(construct);
             }
 

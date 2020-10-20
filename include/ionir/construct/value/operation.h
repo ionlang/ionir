@@ -48,7 +48,7 @@ namespace ionir {
          * side values' types are the same, since there are no
          * implicit conversions done by the compiler.
          */
-        explicit OperationValue(
+        OperationValue(
             OperatorKind operatorKind,
             std::shared_ptr<Value<>> leftSideValue,
             ionshared::OptPtr<Value<>> rightSideValue = std::nullopt

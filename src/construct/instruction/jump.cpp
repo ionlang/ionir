@@ -1,9 +1,12 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    JumpInst::JumpInst(const JumpInstOpts& opts) :
-        Instruction(opts.parent, InstKind::Jump),
-        basicBlockTarget(opts.basicBlockTarget) {
+    JumpInst::JumpInst(
+        const std::shared_ptr<BasicBlock>& parent,
+        std::shared_ptr<BasicBlock> basicBlockTarget
+    ) noexcept :
+        Instruction(parent, InstKind::Jump),
+        basicBlockTarget(std::move(basicBlockTarget)) {
         //
     }
 

@@ -8,7 +8,7 @@
 #include <ionir/tracking/scope_anchor.h>
 #include <ionir/construct/pseudo/child_construct.h>
 #include "pseudo/args.h"
-#include "inst.h"
+#include "instruction.h"
 #include "type.h"
 
 namespace ionir {
@@ -39,25 +39,22 @@ namespace ionir {
         Internal
     };
 
-    struct BasicBlockOpts : util::ConstructParentMixin<FunctionBody> {
-        const BasicBlockKind kind;
-
-        const std::string id;
-
-        std::vector<std::shared_ptr<Instruction>> insts = {};
-
-        PtrSymbolTable<Instruction> symbolTable = ionshared::util::makePtrSymbolTable<Instruction>();
-    };
-
     // TODO: Must be verified to contain a single terminal instruction at the end.
-    struct BasicBlock : ConstructWithParent<FunctionBody>, ScopeAnchor<Instruction>, ionshared::Named {
+    struct BasicBlock : ConstructWithParent<FunctionBody>, ScopeAnchor<Instruction> {
         const BasicBlockKind basicBlockKind;
 
         std::vector<std::shared_ptr<Instruction>> instructions;
 
-        explicit BasicBlock(const BasicBlockOpts& opts);
+        BasicBlock(
+            std::shared_ptr<FunctionBody> parent,
+            BasicBlockKind kind,
+            std::vector<std::shared_ptr<Instruction>> instructions = {},
 
-        void accept(Pass &visitor) override;
+            PtrSymbolTable<Instruction> symbolTable =
+                ionshared::util::makePtrSymbolTable<Instruction>()
+        ) noexcept;
+
+        void accept(Pass& visitor) override;
 
         [[nodiscard]] Ast getChildrenNodes() override;
 
@@ -98,7 +95,7 @@ namespace ionir {
          * Attempt to find the index location of an instruction.
          * Returns std::nullopt if not found.
          */
-        [[nodiscard]] std::optional<uint32_t> locate(std::shared_ptr<Instruction> inst);
+        [[nodiscard]] std::optional<uint32_t> locate(std::shared_ptr<Instruction> inst) const;
 
         [[nodiscard]] ionshared::OptPtr<Instruction> findInstByOrder(uint32_t order) const noexcept;
 

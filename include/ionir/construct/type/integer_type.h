@@ -22,7 +22,7 @@ namespace ionir {
 
         bool isSigned;
 
-        explicit IntegerType(IntegerKind kind, bool isSigned = true);
+        explicit IntegerType(IntegerKind kind, bool isSigned = true) noexcept;
 
         void accept(Pass& pass) override;
     };

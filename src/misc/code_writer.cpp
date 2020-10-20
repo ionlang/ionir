@@ -10,7 +10,10 @@ namespace ionir {
         // TODO
     }
 
-    CodeWriter::CodeWriter() noexcept = default;
+    CodeWriter::CodeWriter() noexcept :
+        buffer() {
+        //
+    }
 
     std::string CodeWriter::make(const std::shared_ptr<Construct>& rootConstruct) const {
         std::queue<std::shared_ptr<Construct>> queue = {};

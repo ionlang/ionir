@@ -7,14 +7,13 @@ namespace ionir {
 
     struct BasicBlock;
 
-    struct JumpInstOpts : InstOpts {
-        std::shared_ptr<BasicBlock> basicBlockTarget;
-    };
-
     struct JumpInst : Instruction {
         std::shared_ptr<BasicBlock> basicBlockTarget;
 
-        explicit JumpInst(const JumpInstOpts& opts);
+        JumpInst(
+            const std::shared_ptr<BasicBlock>& parent,
+            std::shared_ptr<BasicBlock> basicBlockTarget
+        ) noexcept;
 
         void accept(Pass& visitor) override;
 

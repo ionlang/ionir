@@ -1,7 +1,7 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    BooleanLiteral::BooleanLiteral(bool value) :
+    BooleanLiteral::BooleanLiteral(bool value) noexcept :
         Value(ValueKind::Boolean, TypeFactory::typeBoolean()),
         value(value) {
         //

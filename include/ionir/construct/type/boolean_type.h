@@ -6,7 +6,7 @@ namespace ionir {
     struct Pass;
 
     struct BooleanType : Type {
-        BooleanType();
+        BooleanType() noexcept;
 
         void accept(Pass& pass) override;
     };

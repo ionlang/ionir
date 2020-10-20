@@ -2,19 +2,18 @@
 
 #include <string>
 #include <ionir/construct/type.h>
-#include <ionir/construct/inst.h>
+#include <ionir/construct/instruction.h>
 
 namespace ionir {
     struct Pass;
 
-    struct ReturnInstOpts : InstOpts {
-        ionshared::OptPtr<Value<>> value = std::nullopt;
-    };
-
     struct ReturnInst : Instruction {
         ionshared::OptPtr<Value<>> value;
 
-        explicit ReturnInst(const ReturnInstOpts& opts);
+        explicit ReturnInst(
+            const std::shared_ptr<BasicBlock>& parent,
+            ionshared::OptPtr<Value<>> value = std::nullopt
+        ) noexcept;
 
         void accept(Pass& visitor) override;
 

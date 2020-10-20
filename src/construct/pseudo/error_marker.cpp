@@ -2,7 +2,7 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    ErrorMarker::ErrorMarker(std::string message) :
+    ErrorMarker::ErrorMarker(std::string message) noexcept :
         Construct(ConstructKind::ErrorMarker),
         message(std::move(message)) {
         //

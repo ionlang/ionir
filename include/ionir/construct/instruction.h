@@ -8,10 +8,6 @@ namespace ionir {
 
     struct BasicBlock;
 
-    struct InstOpts {
-        const std::shared_ptr<BasicBlock> parent;
-    };
-
     enum struct InstKind {
         Alloca,
 
@@ -37,8 +33,6 @@ namespace ionir {
 
         // TODO: Isn't this redundant?
         void accept(Pass& visitor) override = 0;
-
-        [[nodiscard]] InstKind getInstKind() const noexcept;
 
         [[nodiscard]] bool isTerminal() const noexcept;
 

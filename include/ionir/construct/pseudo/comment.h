@@ -5,10 +5,10 @@
 
 namespace ionir {
     struct Comment {
-        bool isMultiline;
-
         std::optional<std::string> text;
 
-        Comment(bool isMultiline, std::optional<std::string> text);
+        explicit Comment(
+            std::optional<std::string> text
+        ) noexcept;
     };
 }

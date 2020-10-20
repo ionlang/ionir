@@ -13,8 +13,12 @@ namespace ionir {
         ConstructKind kind,
         std::optional<ionshared::SourceLocation> sourceLocation,
         ionshared::OptPtr<Construct> parent
-    ) :
-        ionshared::BaseConstruct<Construct, ConstructKind>(kind, sourceLocation, std::move(parent)) {
+    ) noexcept :
+        ionshared::BaseConstruct<Construct, ConstructKind>(
+            kind,
+            sourceLocation,
+            std::move(parent)
+        ) {
         //
     }
 

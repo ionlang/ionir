@@ -1,6 +1,6 @@
 #include <sstream>
 #include <ionir/misc/util.h>
-#include <ionir/construct/inst.h>
+#include <ionir/construct/instruction.h>
 #include <ionir/construct/function.h>
 #include <ionir/construct/extern.h>
 #include <ionir/construct/global.h>

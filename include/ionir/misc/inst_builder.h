@@ -1,13 +1,13 @@
 #pragma once
 
-#include <ionir/construct/inst.h>
+#include <ionir/construct/instruction.h>
 #include <ionir/construct/basic_block.h>
-#include <ionir/construct/inst/alloca.h>
-#include <ionir/construct/inst/store.h>
-#include <ionir/construct/inst/branch.h>
-#include <ionir/construct/inst/return.h>
-#include <ionir/construct/inst/call.h>
-#include <ionir/construct/inst/jump.h>
+#include <ionir/construct/instruction/alloca.h>
+#include <ionir/construct/instruction/store.h>
+#include <ionir/construct/instruction/branch.h>
+#include <ionir/construct/instruction/return.h>
+#include <ionir/construct/instruction/call.h>
+#include <ionir/construct/instruction/jump.h>
 #include <ionir/construct/value/operation.h>
 
 namespace ionir {

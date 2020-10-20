@@ -3,8 +3,7 @@
 #include <string>
 
 namespace ionir {
-    class ConstName {
-    public:
+    struct ConstName {
         static const std::string anonymous;
 
         static const std::string main;

@@ -2,16 +2,20 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    BasicBlock::BasicBlock(const BasicBlockOpts &opts) :
-        ConstructWithParent(opts.parent, ConstructKind::BasicBlock),
-        ScopeAnchor<Instruction>(opts.symbolTable),
-        Named{opts.id},
-        basicBlockKind(opts.kind),
-        instructions(opts.insts) {
+    BasicBlock::BasicBlock(
+        std::shared_ptr<FunctionBody> parent,
+        BasicBlockKind kind,
+        std::vector<std::shared_ptr<Instruction>> instructions,
+        PtrSymbolTable<Instruction> symbolTable
+    ) noexcept :
+        ConstructWithParent(std::move(parent), ConstructKind::BasicBlock),
+        ScopeAnchor<Instruction>(std::move(symbolTable)),
+        basicBlockKind(kind),
+        instructions(std::move(instructions)) {
         //
     }
 
-    void BasicBlock::accept(Pass &visitor) {
+    void BasicBlock::accept(Pass& visitor) {
         // TODO: Casting fails. CRITICAL: This needs to work! LlvmCodegen's contextBuffer depends on it.
 //        visitor.visitScopeAnchor(this->dynamicCast<ScopeAnchor<>>());
         visitor.visitBasicBlock(this->dynamicCast<BasicBlock>());
@@ -113,7 +117,7 @@ namespace ionir {
         return this->createBuilder()->createJump(basicBlock);
     }
 
-    std::optional<uint32_t> BasicBlock::locate(std::shared_ptr<Instruction> inst) {
+    std::optional<uint32_t> BasicBlock::locate(std::shared_ptr<Instruction> inst) const {
         return ionshared::util::locateInVector(this->instructions, std::move(inst));
     }
 

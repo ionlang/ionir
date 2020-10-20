@@ -9,9 +9,9 @@ namespace ionir {
     struct Pass;
 
     struct ErrorMarker : Construct {
-        std::string message;
+        std::string message{};
 
-        explicit ErrorMarker(std::string message);
+        explicit ErrorMarker(std::string message) noexcept;
 
         void accept(Pass& visitor) override;
     };

@@ -17,7 +17,7 @@ namespace ionir {
         Function(
             std::shared_ptr<Prototype> prototype,
             std::shared_ptr<FunctionBody> body
-        );
+        ) noexcept;
 
         void accept(Pass& visitor) override;
 

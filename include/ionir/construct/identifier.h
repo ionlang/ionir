@@ -14,7 +14,7 @@ namespace ionir {
         explicit Identifier(
             std::string name,
             std::vector<std::string> scopePath = {}
-        );
+        ) noexcept;
 
         [[nodiscard]] explicit operator std::string() const;
 

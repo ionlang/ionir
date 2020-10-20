@@ -117,7 +117,7 @@ namespace ionir {
             ConstructKind kind,
             std::optional<ionshared::SourceLocation> sourceLocation = std::nullopt,
             ionshared::OptPtr<Construct> parent = std::nullopt
-        );
+        ) noexcept;
 
         virtual void accept(Pass& visitor) = 0;
 

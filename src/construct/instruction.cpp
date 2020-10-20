@@ -2,14 +2,13 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    Instruction::Instruction(std::shared_ptr<BasicBlock> parent, InstKind kind) noexcept :
+    Instruction::Instruction(
+        std::shared_ptr<BasicBlock> parent,
+        InstKind kind
+    ) noexcept :
         ConstructWithParent(std::move(parent), ConstructKind::Inst),
         instKind(kind) {
         //
-    }
-
-    InstKind Instruction::getInstKind() const noexcept {
-        return this->instKind;
     }
 
     bool Instruction::isTerminal() const noexcept {

@@ -7,14 +7,6 @@ namespace ionir {
 
     struct BasicBlock;
 
-    struct BranchInstOpts : InstOpts {
-        std::shared_ptr<Construct> condition;
-
-        std::shared_ptr<BasicBlock> consequentBasicBlock;
-
-        std::shared_ptr<BasicBlock> alternativeBasicBlock;
-    };
-
     struct BranchInst : Instruction {
         std::shared_ptr<Construct> condition;
 
@@ -22,7 +14,12 @@ namespace ionir {
 
         std::shared_ptr<BasicBlock> alternativeBasicBlock;
 
-        explicit BranchInst(const BranchInstOpts& opts);
+        BranchInst(
+            const std::shared_ptr<BasicBlock>& parent,
+            std::shared_ptr<Construct> condition,
+            std::shared_ptr<BasicBlock> consequentBasicBlock,
+            std::shared_ptr<BasicBlock> alternativeBasicBlock
+        ) noexcept;
 
         void accept(Pass& visitor) override;
 

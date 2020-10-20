@@ -8,7 +8,7 @@ namespace ionir {
     struct BooleanLiteral : Value<> {
         bool value;
 
-        explicit BooleanLiteral(bool value);
+        explicit BooleanLiteral(bool value) noexcept;
 
         void accept(Pass& visitor) override;
     };

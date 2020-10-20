@@ -12,14 +12,12 @@ namespace ionir {
     struct Pass;
 
     struct Prototype : ConstructWithParent<Module>, ionshared::Named {
-        std::string id;
-
         std::shared_ptr<Args> args;
 
         std::shared_ptr<Type> returnType;
 
         Prototype(
-            std::string id,
+            std::string name,
             std::shared_ptr<Args> args,
             std::shared_ptr<Type> returnType,
             std::shared_ptr<Module> parent

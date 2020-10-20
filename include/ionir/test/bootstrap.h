@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <ionshared/llvm/llvm_module.h>
-#include <ionir/construct/inst.h>
+#include <ionir/construct/instruction.h>
 #include <ionir/passes/lowering/llvm_lowering_pass.h>
 #include "util.h"
 
