@@ -5,6 +5,6 @@
 namespace ionir {
     class NameMangler {
     public:
-        static std::string internal(const std::string &id);
+        static std::string internal(const std::string& id);
     };
 }

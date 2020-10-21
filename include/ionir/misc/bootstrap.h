@@ -15,8 +15,7 @@ namespace ionir {
 
         [[nodiscard]] static std::shared_ptr<BasicBlock> basicBlock(
             const std::shared_ptr<FunctionBody>& parent = nullptr,
-            const std::string& id = ConstName::anonymous,
-            BasicBlockKind basicBlockKind = BasicBlockKind::Entry
+            BasicBlockKind basicBlockKind = BasicBlockKind::Internal
         );
     };
 }

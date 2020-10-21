@@ -40,9 +40,9 @@ namespace ionir {
 
         [[nodiscard]] Ast make() const noexcept;
 
-        AstBuilder& module(const std::string &id);
+        AstBuilder& module(const std::string& id);
 
-        AstBuilder& function(const std::string &id);
+        AstBuilder& function(const std::string& id);
 
         AstBuilder& functionReturnType(std::shared_ptr<Type> returnType);
 

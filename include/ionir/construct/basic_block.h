@@ -22,11 +22,6 @@ namespace ionir {
 
     enum class BasicBlockKind {
         /**
-         * The entry basic block of a function body.
-         */
-        Entry,
-
-        /**
          * A basic block defined by the user. Can be jumped to
          * using a goto instruction.
          */
@@ -45,9 +40,9 @@ namespace ionir {
 
         std::vector<std::shared_ptr<Instruction>> instructions;
 
-        BasicBlock(
+        explicit BasicBlock(
             std::shared_ptr<FunctionBody> parent,
-            BasicBlockKind kind,
+            BasicBlockKind kind = BasicBlockKind::Internal,
             std::vector<std::shared_ptr<Instruction>> instructions = {},
 
             PtrSymbolTable<Instruction> symbolTable =

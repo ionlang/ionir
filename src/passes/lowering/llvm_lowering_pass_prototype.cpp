@@ -8,8 +8,16 @@
 
 namespace ionir {
     void LlvmLoweringPass::visit(std::shared_ptr<Construct> node) {
-        // Prevent construct from being emitted more than once.
-        if (this->valueSymbolTable.contains(node)) {
+        // TODO: Verify '||' vs. ('==' & '&&') precedence.
+        bool visited =
+            node->constructKind == ConstructKind::Module
+                && this->moduleSymbolTable.contains(node->dynamicCast<Module>())
+
+            || this->valueSymbolTable.contains(node)
+            || this->typeSymbolTable.contains(node);
+
+        // Do not visit any construct more than once.
+        if (visited) {
             return;
         }
 
@@ -61,7 +69,7 @@ namespace ionir {
         this->valueSymbolTable.set(
             construct,
 
-            this->eagerVisitValue<llvm::Function>(
+            this->eagerVisitValue(
                 construct->prototype
             )
         );

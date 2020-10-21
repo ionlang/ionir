@@ -16,11 +16,13 @@ namespace ionir {
     }
 
     void TypeCheckPass::visitFunction(std::shared_ptr<Function> node) {
-        ionshared::OptPtr<FunctionBody> functionBody = node->body;
+        ionshared::OptPtr<BasicBlock> entryBasicBlock = std::nullopt;
 
-        IONIR_PASS_INTERNAL_ASSERT(ionshared::util::hasValue(functionBody))
-
-        ionshared::OptPtr<BasicBlock> entryBasicBlock = functionBody->get()->findEntryBasicBlock();
+        if (!node->body->basicBlocks.empty()) {
+            entryBasicBlock = std::shared_ptr<BasicBlock>{
+                node->body->basicBlocks.begin()->get()
+            };
+        }
 
         if (!ionshared::util::hasValue(entryBasicBlock)) {
             this->context->diagnosticBuilder
@@ -30,8 +32,8 @@ namespace ionir {
             return;
         }
 
-        TypeKind parentFunctionPrototypeReturnTypeKind = functionBody
-            ->get()
+        TypeKind parentFunctionPrototypeReturnTypeKind = node
+            ->body
             ->getUnboxedParent()
             ->prototype
             ->returnType

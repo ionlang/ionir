@@ -42,27 +42,19 @@ namespace ionir {
     }
 
     void LlvmLoweringPass::visitBranchInst(std::shared_ptr<BranchInst> construct) {
-        std::shared_ptr<llvm::Value> llvmCondition =
-            this->eagerVisitValue(construct->condition);
-
-        std::shared_ptr<llvm::BasicBlock> llvmConsequentBasicBlock;
-        std::shared_ptr<llvm::BasicBlock> llvmAlternativeBasicBlock;
-
-        llvmConsequentBasicBlock =
-            this->eagerVisitValue<llvm::BasicBlock>(construct->consequentBasicBlock);
-
-        llvmAlternativeBasicBlock =
-            this->eagerVisitValue<llvm::BasicBlock>(construct->alternativeBasicBlock);
-
         this->valueSymbolTable.set(construct, std::shared_ptr<llvm::Value>(
             this->llvmBuffers.makeBuilder().CreateCondBr(
-                llvmCondition.get(),
-                llvmConsequentBasicBlock.get(),
-                llvmAlternativeBasicBlock.get()
+                this->eagerVisitValue(construct->condition).get(),
+
+                this->eagerVisitValue<llvm::BasicBlock>(
+                    construct->consequentBasicBlock
+                ).get(),
+
+                this->eagerVisitValue<llvm::BasicBlock>(
+                    construct->alternativeBasicBlock
+                ).get()
             ))
         );
-
-//        this->addToScope(node, llvmBranchInst);
     }
 
     void LlvmLoweringPass::visitCallInst(std::shared_ptr<CallInst> construct) {

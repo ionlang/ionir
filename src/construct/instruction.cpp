@@ -16,7 +16,7 @@ namespace ionir {
             || this->instKind == InstKind::Branch;
     }
 
-    size_t Instruction::getOrder() {
+    size_t Instruction::fetchOrder() {
         std::optional<uint32_t> order =
             this->getUnboxedParent()->locate(this->dynamicCast<Instruction>());
 

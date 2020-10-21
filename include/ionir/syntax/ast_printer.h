@@ -15,7 +15,7 @@ namespace ionir {
 
     class AstPrinter {
     private:
-        const Ast &ast;
+        const Ast& ast;
 
         std::stringstream tree;
 

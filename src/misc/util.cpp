@@ -80,7 +80,7 @@ namespace ionir::util {
     }
 
     std::optional<std::string> findInstId(const std::shared_ptr<ionir::Instruction>& inst) noexcept {
-        switch (inst->getInstKind()) {
+        switch (inst->instKind) {
             // TODO: Implement.
 
             default: {

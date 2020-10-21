@@ -14,9 +14,9 @@
 #include <ionir/construct/value/char_literal.h>
 #include <ionir/construct/value/string_literal.h>
 #include <ionir/construct/instruction.h>
-#include <ionir/construct/inst/branch.h>
-#include <ionir/construct/inst/alloca.h>
-#include <ionir/construct/inst/return.h>
+#include <ionir/construct/instruction/branch.h>
+#include <ionir/construct/instruction/alloca.h>
+#include <ionir/construct/instruction/return.h>
 #include <ionir/construct/construct.h>
 #include <ionir/construct/function.h>
 #include <ionir/construct/type.h>
@@ -25,7 +25,6 @@
 #include <ionir/construct/prototype.h>
 #include <ionir/construct/global.h>
 #include <ionir/tracking/context.h>
-#include <ionir/llvm/llvm_emitted_entities.h>
 #include <ionir/passes/pass.h>
 
 namespace ionir {
@@ -56,6 +55,11 @@ namespace ionir {
         LlvmBuffers llvmBuffers;
 
         ionshared::LoweringSymbolTable<
+            std::shared_ptr<Module>,
+            std::shared_ptr<llvm::Module>
+        > moduleSymbolTable;
+
+        ionshared::LoweringSymbolTable<
             std::shared_ptr<Construct>,
             std::shared_ptr<llvm::Value>
         > valueSymbolTable;
@@ -72,14 +76,17 @@ namespace ionir {
                 // TODO: Use diagnostics API (internal error).
                 throw std::runtime_error("Expected root construct to be a module");
             }
+
+            std::shared_ptr<Module> rootModule = rootConstruct->dynamicCast<Module>();
+
             /**
              * If the root construct is verified to be a module, and
              * has not been (or started being) emitted, visit it. This
              * also conveniently means that the specified construct will
              * be visited, since it is a child of the module.
              */
-            else if (!this->valueSymbolTable.contains(rootConstruct)) {
-                this->visit(rootConstruct);
+            if (!this->moduleSymbolTable.contains(rootModule)) {
+                this->visit(rootModule);
             }
             /**
              * At this point we know that the root construct is verified
@@ -97,7 +104,7 @@ namespace ionir {
              * not been emitted already, it will be emitted during this visit.
              */
             else if (this->llvmBuffers.modules.forceGetTopItem()
-                == *this->valueSymbolTable.find<llvm::Module>(rootConstruct)) {
+                == *this->moduleSymbolTable.find<llvm::Module>(rootModule)) {
                 this->visit(construct);
             }
 
@@ -117,12 +124,14 @@ namespace ionir {
         template<typename T = llvm::Value>
             requires std::derived_from<T, llvm::Value>
         std::shared_ptr<T> eagerVisitValue(
-            std::shared_ptr<Construct> construct,
-            bool useDynamicCast = true
+            std::shared_ptr<Construct> construct
         ) {
             this->eagerVisit(construct);
 
-            return *this->valueSymbolTable.find<T>(construct, useDynamicCast);
+            return *this->valueSymbolTable.find<T>(
+                construct,
+                ionshared::CastKind::DynamicPointerCast
+            );
         }
 
         /**
@@ -135,12 +144,14 @@ namespace ionir {
         template<typename T = llvm::Type>
             requires std::derived_from<T, llvm::Type>
         std::shared_ptr<T> eagerVisitType(
-            std::shared_ptr<Construct> construct,
-            bool useDynamicCast = true
+            std::shared_ptr<Construct> construct
         ) {
             this->eagerVisit(construct);
 
-            return *this->typeSymbolTable.find<T>(construct, useDynamicCast);
+            return *this->typeSymbolTable.find<T>(
+                construct,
+                ionshared::CastKind::DynamicPointerCast
+            );
         }
 
     public:

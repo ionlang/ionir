@@ -36,6 +36,6 @@ namespace ionir {
 
         [[nodiscard]] bool isTerminal() const noexcept;
 
-        [[nodiscard]] size_t getOrder();
+        [[nodiscard]] size_t fetchOrder();
     };
 }

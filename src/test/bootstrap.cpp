@@ -37,29 +37,20 @@ namespace ionir::test::bootstrap {
             nullptr
         );
 
-        std::shared_ptr<BasicBlock> entrySection = std::make_shared<BasicBlock>(BasicBlockOpts{
+        std::shared_ptr<BasicBlock> entrySection = std::make_shared<BasicBlock>(
             nullptr,
-            BasicBlockKind::Entry,
-            Const::basicBlockEntryId,
+            BasicBlockKind::Internal,
             std::move(instructions)
-        });
-
-        // TODO: Fix mumbo-jumbo debugging code. -------------
-
-        auto t1 = std::map<std::string, std::shared_ptr<BasicBlock>>{
-            {entrySection->name, entrySection}
-        };
-
-        PtrSymbolTable<BasicBlock> sections =
-            std::make_shared<ionshared::SymbolTable<std::shared_ptr<BasicBlock>>>(t1);
-
-        // --------------------
+        );
 
         std::shared_ptr<Function> function =
             std::make_shared<Function>(prototype, nullptr);
 
         std::shared_ptr<FunctionBody> body =
-            std::make_shared<FunctionBody>(function, sections);
+            std::make_shared<FunctionBody>(
+                function,
+                std::set<std::shared_ptr<BasicBlock>>{entrySection}
+            );
 
         entrySection->parent = body;
         function->body = body;

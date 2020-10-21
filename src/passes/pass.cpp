@@ -85,6 +85,10 @@ namespace ionir {
         //
     }
 
+    void Pass::visitCompareInst(std::shared_ptr<CompareInst> construct) {
+        //
+    }
+
     void Pass::visitOperationValue(std::shared_ptr<OperationValue> node) {
         //
     }

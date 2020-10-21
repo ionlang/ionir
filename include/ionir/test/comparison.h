@@ -18,7 +18,7 @@ namespace ionir::test::comparison {
      * file. Both inputs are trimmed before comparison. Returns
      * false if the stored LLVM IR file does not exist.
      */
-    [[nodiscard]] bool ir(std::string output, const std::string &fileName);
+    [[nodiscard]] bool ir(std::string output, const std::string& fileName);
 
     [[nodiscard]] bool ir(
         const std::shared_ptr<LlvmLoweringPass>& llvmLoweringPass,

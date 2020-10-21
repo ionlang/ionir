@@ -9,7 +9,9 @@ namespace ionir {
         //
     }
 
-    void InstBuilder::appendInst(const std::shared_ptr<Instruction>& inst) {
+    void InstBuilder::appendInst(
+        const std::shared_ptr<Instruction>& inst
+    ) {
         this->basicBlock->instructions.push_back(inst);
     }
 

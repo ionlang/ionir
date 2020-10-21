@@ -5,6 +5,7 @@
 
 namespace ionir {
     bool Construct::verify(const std::shared_ptr<Construct>& construct) noexcept {
+        // TODO: Verify that if the parent is has value, its not nullptr, and that its not the same as the construct.
         return construct != nullptr
             && construct->verify();
     }

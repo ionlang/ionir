@@ -85,24 +85,23 @@ namespace ionir {
             throw std::out_of_range("Provided order is outsize of bounds");
         }
 
-        std::vector<std::shared_ptr<Instruction>> insts = {};
+        std::vector<std::shared_ptr<Instruction>> instructions{};
 
         if (!this->instructions.empty()) {
             auto from = this->instructions.begin() + atOrder;
             auto to = this->instructions.end();
 
-            insts = std::vector<std::shared_ptr<Instruction>>(from, to);
+            instructions = std::vector<std::shared_ptr<Instruction>>(from, to);
 
             // Erase the instructions from the local basic block.
             this->instructions.erase(from, to);
         }
 
-        std::shared_ptr<BasicBlock> newBasicBlock = std::make_shared<BasicBlock>(BasicBlockOpts{
+        std::shared_ptr<BasicBlock> newBasicBlock = std::make_shared<BasicBlock>(
             this->getUnboxedParent(),
             this->basicBlockKind,
-            std::move(id),
-            insts
-        });
+            instructions
+        );
 
         /**
          * Register the newly created basic block on the parent's

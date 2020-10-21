@@ -4,5 +4,5 @@
 #include <ionshared/llvm/llvm_module.h>
 
 namespace ionir::driver {
-    ionshared::LlvmIrString run(const std::string &input);
+    ionshared::LlvmIrString run(const std::string& input);
 }

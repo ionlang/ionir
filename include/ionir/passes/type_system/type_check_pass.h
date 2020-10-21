@@ -8,7 +8,7 @@ namespace ionir {
 
         explicit TypeCheckPass(std::shared_ptr<ionshared::PassContext> context);
 
-        bool initialize(ionshared::PassInfo &info) override;
+        bool initialize(ionshared::PassInfo& info) override;
 
         void visitFunction(std::shared_ptr<Function> node) override;
 

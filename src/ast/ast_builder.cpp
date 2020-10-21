@@ -57,7 +57,7 @@ namespace ionir {
         return this->ast;
     }
 
-    AstBuilder &AstBuilder::module(const std::string &id) {
+    AstBuilder& AstBuilder::module(const std::string& id) {
         std::shared_ptr<Module> module =
             std::make_shared<Module>(std::make_shared<Identifier>(id));
 
@@ -68,17 +68,15 @@ namespace ionir {
         return *this;
     }
 
-    AstBuilder &AstBuilder::function(const std::string &id) {
+    AstBuilder& AstBuilder::function(const std::string& id) {
         this->requireModule();
 
         // Parent will be filled in below.
         std::shared_ptr<FunctionBody> functionBody = std::make_shared<FunctionBody>(nullptr);
 
-        std::shared_ptr<BasicBlock> entrySection = std::make_shared<BasicBlock>(BasicBlockOpts{
-            functionBody,
-            BasicBlockKind::Entry,
-            Const::basicBlockEntryId
-        });
+        std::shared_ptr<BasicBlock> entrySection = std::make_shared<BasicBlock>(
+            functionBody
+        );
 
         functionBody->insertBasicBlock(entrySection);
         this->setBasicBlockBuffer(entrySection);
@@ -97,14 +95,17 @@ namespace ionir {
         return *this;
     }
 
-    AstBuilder &AstBuilder::functionReturnType(std::shared_ptr<Type> returnType) {
+    AstBuilder& AstBuilder::functionReturnType(std::shared_ptr<Type> returnType) {
         this->requireFunction();
         this->functionBuffer->get()->prototype->returnType = std::move(returnType);
 
         return *this;
     }
 
-    AstBuilder &AstBuilder::instAlloca(const std::string &id, std::shared_ptr<Type> type) {
+    AstBuilder& AstBuilder::instAlloca(
+        const std::string& id,
+        std::shared_ptr<Type> type
+    ) {
         this->requireBasicBlock();
         this->instBuilder->get()->createAlloca(id, std::move(type));
 

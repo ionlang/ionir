@@ -1,6 +1,5 @@
 #pragma once
 
-#include <ionir/tracking/local_var_descriptor.h>
 #include <ionir/tracking/symbol_table.h>
 #include "construct.h"
 #include "prototype.h"

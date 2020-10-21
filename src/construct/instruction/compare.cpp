@@ -1,14 +1,14 @@
-#include <ionir/construct/inst/compare.h>
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    CompareInst::CompareInst(const CompareInstOpts &opts) noexcept :
-        Instruction(opts.parent, InstKind::Compare) {
+    CompareInst::CompareInst(
+        const std::shared_ptr<BasicBlock>& parent
+    ) noexcept :
+        Instruction(parent, InstKind::Compare) {
         //
     }
 
-    void CompareInst::accept(Pass &visitor) {
-        // TODO: Implement.
-//        visitor.visitCallInst(this->dynamicCast<CallInst>());
+    void CompareInst::accept(Pass& visitor) {
+        visitor.visitCompareInst(this->dynamicCast<CompareInst>());
     }
 }

@@ -38,6 +38,7 @@ namespace ionir {
         Pass(std::move(context)),
         modules(std::move(modules)),
         llvmBuffers(),
+        moduleSymbolTable(),
         valueSymbolTable(),
         typeSymbolTable() {
         //
@@ -61,7 +62,9 @@ namespace ionir {
         std::shared_ptr<llvm::BasicBlock> llvmBasicBlock = std::shared_ptr<llvm::BasicBlock>(
             llvm::BasicBlock::Create(
                 this->llvmBuffers.modules.forceGetTopItem()->getContext(),
-                construct->name,
+
+                // TODO: Does LLVM require 'entry' name for the entry basic block?
+                "",
                 this->llvmBuffers.functions.forceGetTopItem().get()
             )
         );
@@ -82,19 +85,15 @@ namespace ionir {
 
     void LlvmLoweringPass::visitFunctionBody(std::shared_ptr<FunctionBody> node) {
         /**
-         * Retrieve the entry section from the block. At this point, it
-         * should be guaranteed to be set.
-         */
-        ionshared::OptPtr<BasicBlock> entryBasicBlock = node->findEntryBasicBlock();
-
-        /**
          * Entry section must be set. Redundant check, since the verify should
          * function ensure that the block contains a single entry section, but
          * just to make sure.
          */
-        if (!ionshared::util::hasValue(entryBasicBlock)) {
+        if (node->basicBlocks.empty()) {
             throw std::runtime_error("No entry basic block exists for block");
         }
+
+        ionshared::OptPtr<BasicBlock> entryBasicBlock{node->basicBlocks.begin()->get()};
 
         TypeKind parentFunctionPrototypeReturnKind =
             node->getUnboxedParent()->prototype->returnType->typeKind;
@@ -105,12 +104,12 @@ namespace ionir {
          * a return void instruction to satisfy LLVM's terminal instruction requirement.
          */
         if (!entryBasicBlock->get()->hasTerminalInst() && parentFunctionPrototypeReturnKind == TypeKind::Void) {
-            entryBasicBlock->get()->appendInst(std::make_shared<ReturnInst>(ReturnInstOpts{
+            entryBasicBlock->get()->appendInst(std::make_shared<ReturnInst>(
                 *entryBasicBlock
-            }));
+            ));
         }
 
-        for (const auto& [key, basicBlock] : node->getSymbolTable()->unwrap()) {
+        for (const auto& basicBlock : node->basicBlocks) {
             this->visit(basicBlock);
         }
     }
@@ -231,12 +230,13 @@ namespace ionir {
     }
 
     void LlvmLoweringPass::visitModule(std::shared_ptr<Module> node) {
-        this->llvmBuffers.modules.push(std::make_shared<llvm::Module>(
+        std::shared_ptr<llvm::Module> llvmModule = std::make_shared<llvm::Module>(
             **node->identifier,
             *new llvm::LLVMContext()
-        ));
+        );
 
-        this->modules->set(**node->identifier, this->llvmBuffers.modules.forceGetTopItem().get());
+        this->llvmBuffers.modules.push(llvmModule);
+        this->modules->set(**node->identifier, llvmModule.get());
 
         // Proceed to visit all the module's children (top-level constructs).
         std::map<std::string, std::shared_ptr<Construct>> moduleNativeSymbolTable =
