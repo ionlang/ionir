@@ -93,6 +93,20 @@ namespace ionir::diagnostic {
     );
 
     IONIR_NOTICE_DEFINE(
+        instCallWrongArgCount,
+        ionshared::DiagnosticKind::Error,
+        "Calling function '%' with the wrong amount of arguments: expected %s, but got %s",
+        std::nullopt
+    );
+
+    IONIR_NOTICE_DEFINE(
+        instCallIncompatibleArg,
+        ionshared::DiagnosticKind::Error,
+        "Argument type mismatch when calling function '%s': expected '%s', but got '%s'",
+        std::nullopt
+    );
+
+    IONIR_NOTICE_DEFINE(
         constructFailedVerification,
         ionshared::DiagnosticKind::InternalError,
         "Construct failed verification",

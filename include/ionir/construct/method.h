@@ -6,7 +6,7 @@
 #include <ionir/construct/pseudo/args.h>
 #include "ionir/construct/pseudo/child_construct.h"
 #include "type.h"
-#include "struct.h"
+#include "ionir/construct/type/struct.h"
 #include "function.h"
 
 namespace ionir {

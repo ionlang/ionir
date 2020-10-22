@@ -5,8 +5,7 @@ namespace ionir {
         std::shared_ptr<Struct> declaration,
         std::vector<std::shared_ptr<Value<>>> values
     ) noexcept :
-        Construct(ConstructKind::Struct),
-        declaration(std::move(declaration)),
+        Value<Struct>(ValueKind::StructDefinition, std::move(declaration)),
         values(std::move(values)) {
         //
     }

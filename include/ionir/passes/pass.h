@@ -32,8 +32,8 @@
 #include <ionir/construct/value.h>
 #include <ionir/construct/instruction.h>
 #include <ionir/construct/identifier.h>
-#include <ionir/construct/struct.h>
-#include <ionir/construct/struct_definition.h>
+#include <ionir/construct/type/struct.h>
+#include <ionir/construct/value/struct_definition.h>
 
 #define IONIR_PASS_INTERNAL_ASSERT(condition) \
     if (!this->context->diagnosticBuilder->internalAssert(condition)) { return; }

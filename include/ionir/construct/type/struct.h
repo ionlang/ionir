@@ -1,14 +1,13 @@
 #pragma once
 
-#include <ionshared/misc/named.h>
-#include "construct.h"
+#include <ionir/construct/type.h>
 
 namespace ionir {
     struct Pass;
 
     typedef ionshared::PtrSymbolTable<Type> Fields;
 
-    struct Struct : Construct, ionshared::Named {
+    struct Struct : Type {
         Fields fields;
 
         Struct(std::string name, Fields fields) noexcept;
@@ -16,7 +15,5 @@ namespace ionir {
         void accept(Pass& visitor) override;
 
         [[nodiscard]] Ast getChildrenNodes() override;
-
-        [[nodiscard]] bool containsField(std::string name) const;
     };
 }

@@ -9,11 +9,6 @@ namespace ionir::type_util {
         TypeKind typeKindB
     );
 
-    bool isSameType(
-        const std::shared_ptr<Type>& typeA,
-        const std::shared_ptr<Type>& typeB
-    );
-
     bool isIntegerType(
         std::shared_ptr<Type> type,
         IntegerKind integerKind

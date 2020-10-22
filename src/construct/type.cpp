@@ -3,7 +3,7 @@
 namespace ionir {
     Type::Type(
         TypeKind kind,
-        std::optional<std::string> name,
+        std::string name,
         std::shared_ptr<ionshared::Set<TypeQualifier>> qualifiers
     ) noexcept :
         Construct(ConstructKind::Type),
@@ -22,5 +22,60 @@ namespace ionir {
 
         return otherType->typeKind == this->typeKind
             && otherType->name == this->name;
+    }
+
+    bool Type::isSameAs(
+        const std::shared_ptr<Type>& other
+    ) {
+        if (this->typeKind != other->typeKind) {
+            return false;
+        }
+
+        switch (this->typeKind) {
+            case TypeKind::Integer: {
+                std::shared_ptr<IntegerType> localIntegerType =
+                    this->dynamicCast<IntegerType>();
+
+                std::shared_ptr<IntegerType> otherIntegerType =
+                    other->dynamicCast<IntegerType>();
+
+                return localIntegerType->integerKind == otherIntegerType->integerKind;
+            }
+
+                // TODO: Decimal types as well (copy integer code basically).
+
+            case TypeKind::Struct: {
+                std::shared_ptr<Struct> localStructType =
+                    this->dynamicCast<Struct>();
+
+                std::shared_ptr<Struct> otherStructType =
+                    other->dynamicCast<Struct>();
+
+                bool nameOrArgumentCountMismatch = localStructType->name != otherStructType->name
+                    || localStructType->fields->getSize() != otherStructType->fields->getSize();
+
+                if (nameOrArgumentCountMismatch) {
+                    return false;
+                }
+
+                auto localStructFieldsNativeMap = localStructType->fields->unwrap();
+
+                for (const auto& [name, type] : localStructFieldsNativeMap) {
+                    // TODO: CRITICAL: If the same struct is referenced, it might cause infinite loop. Research.
+                    bool fieldNameOrTypeMismatch = !otherStructType->fields->contains(name)
+                        || !otherStructType->fields->lookup(name)->get()->isSameAs(type);
+
+                    if (fieldNameOrTypeMismatch) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            default: {
+                throw std::runtime_error("Unknown type kind");
+            }
+        }
     }
 }

@@ -15,7 +15,9 @@ namespace ionir {
 
         Boolean,
 
-        Operation
+        Operation,
+
+        StructDefinition
     };
 
     template<typename T = Type>

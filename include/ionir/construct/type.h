@@ -22,7 +22,7 @@ namespace ionir {
     };
 
     enum struct TypeKind {
-        UserDefined,
+        Struct,
 
         Void,
 
@@ -42,7 +42,7 @@ namespace ionir {
     struct Type : Construct {
         const TypeKind typeKind;
 
-        const std::optional<std::string> name;
+        const std::string name;
 
         std::shared_ptr<TypeQualifiers> qualifiers;
 
@@ -51,14 +51,18 @@ namespace ionir {
          * Make 'Type' abstract and create UserDefinedType which
          * only takes 'id' (super class TypeKind::UserDefined).
          */
-        explicit Type(
-            TypeKind kind = TypeKind::UserDefined,
-            std::optional<std::string> name = std::nullopt,
+        Type(
+            TypeKind kind,
+            std::string name,
 
             std::shared_ptr<TypeQualifiers> qualifiers =
                 std::make_shared<TypeQualifiers>()
         ) noexcept;
 
         [[nodiscard]] bool equals(const std::shared_ptr<Construct>& other) override;
+
+        [[nodiscard]] bool isSameAs(
+            const std::shared_ptr<Type>& other
+        );
     };
 }

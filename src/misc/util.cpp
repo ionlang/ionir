@@ -52,7 +52,7 @@ namespace ionir::util {
             return TypeKind::String;
         }
 
-        return TypeKind::UserDefined;
+        return TypeKind::Struct;
     }
 
     std::optional<std::string> findConstructId(const std::shared_ptr<Construct>& construct) {

@@ -17,5 +17,7 @@ namespace ionir {
         void visitStoreInst(std::shared_ptr<StoreInst> node) override;
 
         void visitStructDefinition(std::shared_ptr<StructDefinition> node) override;
+
+        void visitCallInst(std::shared_ptr<CallInst> node) override;
     };
 }

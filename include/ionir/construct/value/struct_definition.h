@@ -2,16 +2,14 @@
 
 #include <vector>
 #include <ionshared/misc/named.h>
-#include "value.h"
-#include "construct.h"
-#include "struct.h"
+#include "ionir/construct/value.h"
+#include "ionir/construct/construct.h"
+#include "ionir/construct/type/struct.h"
 
 namespace ionir {
     struct Pass;
 
-    struct StructDefinition : Construct {
-        std::shared_ptr<Struct> declaration;
-
+    struct StructDefinition : Value<Struct> {
         std::vector<std::shared_ptr<Value<>>> values;
 
         explicit StructDefinition(

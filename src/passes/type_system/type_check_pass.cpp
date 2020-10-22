@@ -189,4 +189,57 @@ namespace ionir {
             }
         }
     }
+
+    void TypeCheckPass::visitCallInst(std::shared_ptr<CallInst> node) {
+        if (node->callee->constructKind == ConstructKind::Function) {
+            std::shared_ptr<Function> calleeFunction = node->callee->dynamicCast<Function>();
+            size_t expectedArgumentCount = calleeFunction->prototype->args->items->getSize();
+            size_t actualArgumentCount = node->args.size();
+
+            if (actualArgumentCount != expectedArgumentCount) {
+                this->context->diagnosticBuilder
+                    ->bootstrap(diagnostic::instCallWrongArgCount)
+
+                    ->formatMessage(
+                        calleeFunction->prototype->name,
+                        expectedArgumentCount,
+                        actualArgumentCount
+                    )
+
+                    ->finish();
+            }
+            else {
+                size_t index = 0;
+
+                auto functionDeclarationArgumentsNativeMap =
+                    calleeFunction->prototype->args->items->unwrap();
+
+                for (const auto& [name, type] : functionDeclarationArgumentsNativeMap) {
+                    if (node->args[index]->constructKind == ConstructKind::Type) {
+                        std::shared_ptr<Type> callArgumentType =
+                            node->args[index]->dynamicCast<Type>();
+
+                        if (!callArgumentType->isSameAs(type.first)) {
+                            this->context->diagnosticBuilder
+                                ->bootstrap(diagnostic::instCallIncompatibleArg)
+
+                                ->formatMessage(
+                                    calleeFunction->prototype->name,
+                                    type.first->name,
+                                    callArgumentType->name
+                                )
+
+                                ->finish();
+                        }
+                    }
+
+                    // TODO: Other construct types?
+
+                    index++;
+                }
+            }
+        }
+
+        // TODO: Extern, method, etc.
+    }
 }

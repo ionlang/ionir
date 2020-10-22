@@ -3,7 +3,7 @@
 
 namespace ionir::type_util {
     bool isAtomicTypesCompatible(TypeKind typeKindA, TypeKind typeKindB) {
-        if (typeKindA == TypeKind::UserDefined || typeKindB == TypeKind::UserDefined) {
+        if (typeKindA == TypeKind::Struct || typeKindB == TypeKind::Struct) {
             throw std::invalid_argument("Neither argument may be user-defined type kind");
         }
         // Void is incompatible with everything.
@@ -19,41 +19,6 @@ namespace ionir::type_util {
 
         // Anything remaining is compatible.
         return true;
-    }
-
-    bool isSameType(
-        const std::shared_ptr<Type>& typeA,
-        const std::shared_ptr<Type>& typeB
-    ) {
-        TypeKind typeAKind = typeA->typeKind;
-        TypeKind typeBKind = typeB->typeKind;
-
-        if (typeAKind != typeBKind) {
-            return false;
-        }
-
-        switch (typeAKind) {
-            case TypeKind::Integer: {
-                std::shared_ptr<IntegerType> integerTypeA = typeA->dynamicCast<IntegerType>();
-                std::shared_ptr<IntegerType> integerTypeB = typeB->dynamicCast<IntegerType>();
-
-                return integerTypeA->integerKind == integerTypeB->integerKind;
-            }
-
-            // TODO: Decimal types as well (copy integer code basically).
-
-            case TypeKind::UserDefined: {
-                // TODO
-
-                throw std::runtime_error("Not implemented");
-
-                break;
-            }
-
-            default: {
-                return true;
-            }
-        }
     }
 
     bool isIntegerType(

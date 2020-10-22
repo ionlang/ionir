@@ -60,9 +60,7 @@ namespace ionir {
 
         ErrorMarker,
 
-        Identifier,
-
-        Struct
+        Identifier
     };
 
     struct Construct;
@@ -73,7 +71,7 @@ namespace ionir {
         template<typename T>
             requires std::derived_from<T, Construct>
         static Ast convertChildren(std::vector<std::shared_ptr<T>> vector) {
-            Ast children = {};
+            Ast children{};
 
             for (const auto item : vector) {
                 children.push_back(item);

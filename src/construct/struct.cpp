@@ -2,8 +2,7 @@
 
 namespace ionir {
     Struct::Struct(std::string name, Fields fields) noexcept :
-        Construct(ConstructKind::Struct),
-        ionshared::Named{std::move(name)},
+        Type(TypeKind::Struct, std::move(name)),
         fields(std::move(fields)) {
         //
     }
@@ -22,9 +21,5 @@ namespace ionir {
         }
 
         return children;
-    }
-
-    bool Struct::containsField(std::string name) const {
-        return this->fields->contains(std::move(name));
     }
 }
