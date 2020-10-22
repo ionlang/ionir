@@ -46,7 +46,7 @@ namespace ionir::diagnostic {
     IONIR_NOTICE_DEFINE(
         functionMissingEntryBasicBlock,
         ionshared::DiagnosticKind::Error,
-        "Function is missing an entry basic block",
+        "Function '%s' is missing an entry basic block",
         std::nullopt
     );
 
@@ -68,6 +68,20 @@ namespace ionir::diagnostic {
         functionRedefinitionDiffArgs,
         ionshared::DiagnosticKind::Error,
         "Re-definition of function with a different amount arguments",
+        std::nullopt
+    );
+
+    IONIR_NOTICE_DEFINE(
+        structWrongValueCount,
+        ionshared::DiagnosticKind::Error,
+        "Defining struct '%s' with %s values, but the declaration has %s fields",
+        std::nullopt
+    );
+
+    IONIR_NOTICE_DEFINE(
+        structIncompatibleValueType,
+        ionshared::DiagnosticKind::Error,
+        "Defining struct '%s' with incompatible value type '%s' at index %s with declaration type '%s'",
         std::nullopt
     );
 

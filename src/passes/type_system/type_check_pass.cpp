@@ -27,6 +27,7 @@ namespace ionir {
         if (!ionshared::util::hasValue(entryBasicBlock)) {
             this->context->diagnosticBuilder
                 ->bootstrap(diagnostic::functionMissingEntryBasicBlock)
+                ->formatMessage(node->prototype->name)
                 ->finish();
 
             return;
@@ -47,14 +48,15 @@ namespace ionir {
          * with no value.
          */
         if (parentFunctionPrototypeReturnTypeKind != TypeKind::Void) {
-            std::vector<std::shared_ptr<Instruction>> insts = entryBasicBlock->get()->instructions;
+            std::vector<std::shared_ptr<Instruction>> instructions = entryBasicBlock->get()->instructions;
 
             // TODO: CRITICAL! There may be more than a single terminal statement on basic blocks? Technically speaking LLVM does not allow that to EXECUTE, however, it can OCCUR.
             ionshared::OptPtr<Instruction> terminalInst = entryBasicBlock->get()->findTerminalInst();
 
-            if (insts.empty() || !ionshared::util::hasValue(terminalInst)) {
+            if (instructions.empty() || !ionshared::util::hasValue(terminalInst)) {
                 this->context->diagnosticBuilder
                     ->bootstrap(diagnostic::functionReturnValueMissing)
+                    ->formatMessage(node->prototype->name)
                     ->finish();
             }
         }
@@ -80,10 +82,7 @@ namespace ionir {
         if ((functionReturnType->typeKind != TypeKind::Void) && !returnStatementValueSet) {
             this->context->diagnosticBuilder
                 ->bootstrap(diagnostic::functionReturnValueMissing)
-
-                // TODO: Fill in format.
-                ->formatMessage("pending")
-
+                ->formatMessage(function->prototype->name)
                 ->finish();
 
             // TODO: Can it be made optional/continue?
@@ -156,6 +155,38 @@ namespace ionir {
 
                 ->setSourceLocation(node->sourceLocation)
                 ->finish();
+        }
+    }
+
+    void TypeCheckPass::visitStructDefinition(std::shared_ptr<StructDefinition> node) {
+        if (node->values.size() != node->declaration->fields->getSize()) {
+            this->context->diagnosticBuilder
+                ->bootstrap(diagnostic::structWrongValueCount)
+
+                ->formatMessage(
+                    node->declaration->name,
+                    node->values.size(),
+                    node->declaration->fields->getSize()
+                )
+
+                ->finish();
+        }
+        else {
+            auto declarationNativeFieldsMap = node->declaration->fields->unwrap();
+            size_t index = 0;
+
+            for (const auto& [name, type] : declarationNativeFieldsMap) {
+                auto value = node->values[index];
+
+                if (!type_util::isSameType(value->type, type)) {
+                    this->context->diagnosticBuilder
+                        ->bootstrap(diagnostic::structIncompatibleValueType)
+                        ->formatMessage(node->declaration->name, "pending", index, "pending")
+                        ->finish();
+                }
+
+                index++;
+            }
         }
     }
 }
