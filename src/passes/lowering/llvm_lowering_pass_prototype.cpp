@@ -84,9 +84,7 @@ namespace ionir {
         std::shared_ptr<llvm::Module> llvmModuleBuffer =
             this->llvmBuffers.modules.forceGetTopItem();
 
-        std::shared_ptr<llvm::Function> llvmFunction{
-            llvmModuleBuffer->getFunction(construct->name)
-        };
+        llvm::Function* llvmFunction = llvmModuleBuffer->getFunction(construct->name);
 
         // A function with a matching identifier already exists.
         if (llvmFunction != nullptr) {
@@ -108,12 +106,12 @@ namespace ionir {
         else {
             for (const auto& [id, arg] : argsNativeMap) {
                 llvmArgumentTypes.push_back(
-                    this->eagerVisitType(arg.first).get()
+                    this->eagerVisitType(arg.first)
                 );
             }
 
             llvm::FunctionType* llvmFunctionType = llvm::FunctionType::get(
-                this->eagerVisitType(construct->returnType).get(),
+                this->eagerVisitType(construct->returnType),
                 llvmArgumentTypes,
                 construct->args->isVariable
             );
@@ -122,14 +120,12 @@ namespace ionir {
              * Cast the LLVM value to a LLVM function, since we know
              * getCallee() will return a function.
              */
-            llvmFunction = std::shared_ptr<llvm::Function>{
-                llvm::dyn_cast<llvm::Function>(
-                    llvmModuleBuffer->getOrInsertFunction(
-                        construct->name,
-                        llvmFunctionType
-                    ).getCallee()
-                )
-            };
+            llvmFunction = llvm::dyn_cast<llvm::Function>(
+                llvmModuleBuffer->getOrInsertFunction(
+                    construct->name,
+                    llvmFunctionType
+                ).getCallee()
+            );
 
             // Set the function's linkage.
             llvmFunction->setLinkage(llvm::GlobalValue::LinkageTypes::ExternalLinkage);
@@ -159,10 +155,7 @@ namespace ionir {
             argCounter++;
         }
 
-        this->valueSymbolTable.set(
-            construct,
-            std::shared_ptr<llvm::Value>(llvmFunction)
-        );
+        this->valueSymbolTable.set(construct, llvmFunction);
     }
 
     void LlvmLoweringPass::visitFunction(std::shared_ptr<Function> construct) {
@@ -173,7 +166,7 @@ namespace ionir {
             throw std::runtime_error("A function with the same identifier has been already previously defined");
         }
 
-        std::shared_ptr<llvm::Function> llvmFunction =
+        auto* llvmFunction =
             this->eagerVisitValue<llvm::Function>(construct->prototype);
 
         this->llvmBuffers.functions.push(llvmFunction);

@@ -5,7 +5,7 @@
 namespace ionir {
     FunctionBody::FunctionBody(
         std::shared_ptr<Function> parent,
-        std::set<std::shared_ptr<BasicBlock>> basicBlocks
+        std::vector<std::shared_ptr<BasicBlock>> basicBlocks
     ) noexcept :
         ConstructWithParent(std::move(parent),
         ConstructKind::FunctionBody),
@@ -35,6 +35,8 @@ namespace ionir {
     }
 
     void FunctionBody::insertBasicBlock(const std::shared_ptr<BasicBlock>& basicBlock) {
+        this->basicBlocks.push_back(basicBlock);
+
         // TODO: Consider making symbol table read-only so this is controlled.
         // Update the basic block's parent.
         basicBlock->parent = this->nativeCast();

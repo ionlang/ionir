@@ -74,17 +74,21 @@ namespace ionir {
         // Parent will be filled in below.
         std::shared_ptr<FunctionBody> functionBody = std::make_shared<FunctionBody>(nullptr);
 
-        std::shared_ptr<BasicBlock> entrySection = std::make_shared<BasicBlock>(
+        std::shared_ptr<BasicBlock> entryBasicBlock = std::make_shared<BasicBlock>(
             functionBody
         );
 
-        functionBody->insertBasicBlock(entrySection);
-        this->setBasicBlockBuffer(entrySection);
+        functionBody->insertBasicBlock(entryBasicBlock);
+        this->setBasicBlockBuffer(entryBasicBlock);
 
         std::shared_ptr<Type> returnType = std::make_shared<VoidType>();
         std::shared_ptr<Args> args = std::make_shared<Args>();
-        std::shared_ptr<Prototype> prototype = std::make_shared<Prototype>(id, args, returnType, *this->moduleBuffer);
-        std::shared_ptr<Function> function = std::make_shared<Function>(prototype, functionBody);
+
+        std::shared_ptr<Prototype> prototype =
+            std::make_shared<Prototype>(id, args, returnType, *this->moduleBuffer);
+
+        std::shared_ptr<Function> function =
+            std::make_shared<Function>(prototype, functionBody);
 
         // Fill in the function body's parent.
         functionBody->parent = function;

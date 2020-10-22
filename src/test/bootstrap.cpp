@@ -3,14 +3,8 @@
 #include <ionir/test/bootstrap.h>
 
 namespace ionir::test::bootstrap {
-    std::shared_ptr<ionshared::LlvmModule> llvmModule(const std::string& identifier) {
-        return std::make_shared<ionshared::LlvmModule>(
-            new llvm::Module(identifier, *new llvm::LLVMContext())
-        );
-    }
-
     std::shared_ptr<LlvmLoweringPass> llvmLoweringPass(
-        const std::shared_ptr<ionshared::LlvmModule>& module
+        std::shared_ptr<llvm::Module> module
     ) {
         // TODO: PassContext isn't associated with the calling scope/function in any way.
         std::shared_ptr<LlvmLoweringPass> llvmLoweringPass = std::make_shared<LlvmLoweringPass>(
@@ -27,6 +21,8 @@ namespace ionir::test::bootstrap {
     std::shared_ptr<Function> emptyFunction(
         std::vector<std::shared_ptr<Instruction>> instructions
     ) {
+        // TODO: Use 'module' parameter.
+
         std::shared_ptr<VoidType> returnType = TypeFactory::typeVoid();
 
         // TODO: Consider support for module here.
@@ -46,11 +42,10 @@ namespace ionir::test::bootstrap {
         std::shared_ptr<Function> function =
             std::make_shared<Function>(prototype, nullptr);
 
-        std::shared_ptr<FunctionBody> body =
-            std::make_shared<FunctionBody>(
-                function,
-                std::set<std::shared_ptr<BasicBlock>>{entrySection}
-            );
+        std::shared_ptr<FunctionBody> body = std::make_shared<FunctionBody>(
+            function,
+            std::vector<std::shared_ptr<BasicBlock>>{entrySection}
+        );
 
         entrySection->parent = body;
         function->body = body;

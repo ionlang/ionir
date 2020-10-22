@@ -7,12 +7,9 @@
 #include "util.h"
 
 namespace ionir::test::bootstrap {
-    [[nodiscard]] std::shared_ptr<ionshared::LlvmModule> llvmModule(
-        const std::string& identifier = "test"
-    );
-
     [[nodiscard]] std::shared_ptr<LlvmLoweringPass> llvmLoweringPass(
-        const std::shared_ptr<ionshared::LlvmModule>& module = llvmModule()
+        std::shared_ptr<llvm::Module> module =
+            std::make_shared<llvm::Module>("test_module", *std::make_shared<llvm::LLVMContext>())
     );
 
     [[nodiscard]] std::shared_ptr<Function> emptyFunction(

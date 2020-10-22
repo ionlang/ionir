@@ -32,29 +32,7 @@ TEST(CodeGenTest, VisitEmptyFunction) {
         std::make_shared<Prototype>(test::constant::foobar, std::make_shared<Args>(), returnType, nullptr);
 
     std::shared_ptr<FunctionBody> body = std::make_shared<FunctionBody>(nullptr);
-
-    std::shared_ptr<BasicBlock> section = std::make_shared<BasicBlock>(BasicBlockOpts{
-        body,
-        BasicBlockKind::Entry,
-        "entry"
-    });
-
-    // TODO: Fix mumbo-jumbo debugging code.
-    // --------------------------
-
-    typedef PtrSymbolTable<BasicBlock> t;
-    typedef ionshared::SymbolTable<std::shared_ptr<BasicBlock>> tt;
-
-    auto sectionsVal = std::map<std::string, std::shared_ptr<BasicBlock>>{
-        {Const::basicBlockEntryId, section}
-    };
-
-    t sectionsMap = std::make_shared<tt>(sectionsVal);
-
-    // ---------------------------
-
-    body->setSymbolTable(sectionsMap);
-
+    std::shared_ptr<BasicBlock> section = std::make_shared<BasicBlock>(body);
     std::shared_ptr<Function> function = std::make_shared<Function>(prototype, body);
 
     body->parent = function;
@@ -92,10 +70,10 @@ TEST(CodeGenTest, VisitAllocaInst) {
     std::shared_ptr<LlvmLoweringPass> llvmLoweringPass = test::bootstrap::llvmLoweringPass();
 
     std::vector<std::shared_ptr<Instruction>> insts = {
-        std::make_shared<AllocaInst>(AllocaInstOpts{
+        std::make_shared<AllocaInst>(
             nullptr,
             TypeFactory::typeInteger(IntegerKind::Int32)
-        })
+        )
     };
 
     std::shared_ptr<Function> function = test::bootstrap::emptyFunction(insts);
@@ -109,14 +87,14 @@ TEST(CodeGenTest, VisitReturnInst) {
     std::shared_ptr<LlvmLoweringPass> llvmLoweringPass = test::bootstrap::llvmLoweringPass();
 
     std::vector<std::shared_ptr<Instruction>> insts = {
-        std::make_shared<ReturnInst>(ReturnInstOpts{
+        std::make_shared<ReturnInst>(
             nullptr,
 
             std::make_shared<IntegerLiteral>(
                 TypeFactory::typeInteger(IntegerKind::Int32),
                 1
             )->flatten()
-        })
+        )
     };
 
     std::shared_ptr<Function> function = test::bootstrap::emptyFunction(insts);

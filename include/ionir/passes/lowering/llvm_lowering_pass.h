@@ -33,9 +33,9 @@ namespace ionir {
         struct LlvmBuffers {
             ionshared::Stack<std::shared_ptr<llvm::Module>> modules{};
 
-            ionshared::Stack<std::shared_ptr<llvm::Function>> functions{};
+            ionshared::Stack<llvm::Function*> functions{};
 
-            ionshared::Stack<std::shared_ptr<llvm::BasicBlock>> basicBlocks{};
+            ionshared::Stack<llvm::BasicBlock*> basicBlocks{};
 
             /**
              * Create a new LLVM IR builder instance and return it.
@@ -45,9 +45,9 @@ namespace ionir {
             llvm::IRBuilder<> makeBuilder();
         };
 
-        static std::shared_ptr<llvm::Type> processTypeQualifiers(
+        static llvm::Type* processTypeQualifiers(
             const std::shared_ptr<TypeQualifiers>& qualifiers,
-            const std::shared_ptr<llvm::Type>& llvmType
+            llvm::Type* llvmType
         );
 
         std::shared_ptr<ionshared::SymbolTable<llvm::Module*>> modules;
@@ -61,12 +61,12 @@ namespace ionir {
 
         ionshared::LoweringSymbolTable<
             std::shared_ptr<Construct>,
-            std::shared_ptr<llvm::Value>
+            llvm::Value*
         > valueSymbolTable;
 
         ionshared::LoweringSymbolTable<
             std::shared_ptr<Construct>,
-            std::shared_ptr<llvm::Type>
+            llvm::Type*
         > typeSymbolTable;
 
         void eagerVisit(const std::shared_ptr<Construct>& construct) {
@@ -123,15 +123,30 @@ namespace ionir {
          */
         template<typename T = llvm::Value>
             requires std::derived_from<T, llvm::Value>
-        std::shared_ptr<T> eagerVisitValue(
-            std::shared_ptr<Construct> construct
+        T* eagerVisitValue(
+            const std::shared_ptr<Construct>& construct
         ) {
             this->eagerVisit(construct);
 
-            return *this->valueSymbolTable.find<T>(
-                construct,
-                ionshared::CastKind::DynamicPointerCast
-            );
+            // TODO: Fix.
+//            return *this->valueSymbolTable.find<T>(
+//                construct,
+//                ionshared::CastKind::DynamicPointerCast
+//            );
+            std::optional<llvm::Value*> lookupResult =
+                this->valueSymbolTable.unwrap().lookup(construct);
+
+            if (!ionshared::util::hasValue(lookupResult)) {
+                throw std::runtime_error("Value lookup failed");
+            }
+
+            T* castResult = llvm::dyn_cast_or_null<T>(*lookupResult);
+
+            if (castResult == nullptr) {
+                throw std::runtime_error("LLVM value cast failed");
+            }
+
+            return castResult;
         }
 
         /**
@@ -143,15 +158,30 @@ namespace ionir {
          */
         template<typename T = llvm::Type>
             requires std::derived_from<T, llvm::Type>
-        std::shared_ptr<T> eagerVisitType(
-            std::shared_ptr<Construct> construct
+        T* eagerVisitType(
+            const std::shared_ptr<Construct>& construct
         ) {
             this->eagerVisit(construct);
 
-            return *this->typeSymbolTable.find<T>(
-                construct,
-                ionshared::CastKind::DynamicPointerCast
-            );
+            // TODO: Fix.
+//            return *this->typeSymbolTable.find<T>(
+//                construct,
+//                ionshared::CastKind::DynamicPointerCast
+//            );
+            std::optional<llvm::Type*> lookupResult =
+                this->typeSymbolTable.unwrap().lookup(construct);
+
+            if (!ionshared::util::hasValue(lookupResult)) {
+                throw std::runtime_error("Value lookup failed");
+            }
+
+            T* castResult = llvm::dyn_cast_or_null<T>(*lookupResult);
+
+            if (castResult == nullptr) {
+                throw std::runtime_error("LLVM value cast failed");
+            }
+
+            return castResult;
         }
 
     public:
@@ -163,8 +193,6 @@ namespace ionir {
             std::shared_ptr<ionshared::SymbolTable<llvm::Module*>> modules =
                 std::make_shared<ionshared::SymbolTable<llvm::Module*>>()
         ) noexcept;
-
-        ~LlvmLoweringPass();
 
         [[nodiscard]] std::shared_ptr<
             ionshared::SymbolTable<llvm::Module*>

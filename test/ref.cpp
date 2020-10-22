@@ -1,5 +1,5 @@
 #include <optional>
-#include <ionir/construct/inst/return.h>
+#include <ionir/construct/instruction/return.h>
 #include <ionir/test/const.h>
 #include "pch.h"
 

@@ -19,9 +19,7 @@ namespace ionir {
         ionshared::OptPtr<BasicBlock> entryBasicBlock = std::nullopt;
 
         if (!node->body->basicBlocks.empty()) {
-            entryBasicBlock = std::shared_ptr<BasicBlock>{
-                node->body->basicBlocks.begin()->get()
-            };
+            entryBasicBlock = node->body->basicBlocks.front();
         }
 
         if (!ionshared::util::hasValue(entryBasicBlock)) {
@@ -48,10 +46,12 @@ namespace ionir {
          * with no value.
          */
         if (parentFunctionPrototypeReturnTypeKind != TypeKind::Void) {
-            std::vector<std::shared_ptr<Instruction>> instructions = entryBasicBlock->get()->instructions;
+            std::vector<std::shared_ptr<Instruction>> instructions =
+                entryBasicBlock->get()->instructions;
 
             // TODO: CRITICAL! There may be more than a single terminal statement on basic blocks? Technically speaking LLVM does not allow that to EXECUTE, however, it can OCCUR.
-            ionshared::OptPtr<Instruction> terminalInst = entryBasicBlock->get()->findTerminalInst();
+            ionshared::OptPtr<Instruction> terminalInst =
+                entryBasicBlock->get()->findTerminalInst();
 
             if (instructions.empty() || !ionshared::util::hasValue(terminalInst)) {
                 this->context->diagnosticBuilder

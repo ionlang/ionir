@@ -9,7 +9,7 @@
 #include <ionir/construct/value/integer_literal.h>
 
 namespace ionir {
-    typedef llvm::IntegerType *(llvm::IntegerType::*LlvmIntTypeResolver)(llvm::LLVMContext &context);
+    typedef llvm::IntegerType* (llvm::IntegerType::*LlvmIntTypeResolver)(llvm::LLVMContext& context);
 
     class Const {
     private:

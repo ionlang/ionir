@@ -16,7 +16,9 @@ TEST(TypeCheckPassTest, Run) {
     passManager.registerPass(std::make_shared<TypeCheckPass>(passContext));
 
     Ast ast = Bootstrap::functionAst(test::constant::foobar);
-    ionshared::OptPtr<Function> function = ast[0]->dynamicCast<Module>()->lookupFunction(test::constant::foobar);
+
+    ionshared::OptPtr<Function> function =
+        ast[0]->dynamicCast<Module>()->lookupFunction(test::constant::foobar);
 
     EXPECT_TRUE(ionshared::util::hasValue(function));
 
@@ -47,7 +49,9 @@ TEST(TypeCheckPassTest, Run) {
 
     prototype->returnType = TypeFactory::typeVoid();
 
-    std::shared_ptr<BasicBlock> entrySection = *function->get()->body->findEntryBasicBlock();
+    // TODO: Verify that the body has at least one basic block.
+
+    std::shared_ptr<BasicBlock> entrySection{function->get()->body->basicBlocks.begin()->get()};
     InstBuilder instBuilder = InstBuilder(entrySection);
 
     instBuilder.createReturn();
@@ -76,7 +80,9 @@ TEST(TypeCheckPassTast, FunctionReturnTypeValueMismatch) {
 
     prototype->returnType = TypeFactory::typeInteger(IntegerKind::Int32);
 
-    std::shared_ptr<BasicBlock> entrySection = *function->get()->body->findEntryBasicBlock();
+    // TODO: Verify that the body has at least one basic block.
+
+    std::shared_ptr<BasicBlock> entrySection{function->get()->body->basicBlocks.begin()->get()};
     InstBuilder instBuilder = InstBuilder(entrySection);
 
     std::shared_ptr<ReturnInst> returnInst = instBuilder.createReturn(
