@@ -108,7 +108,7 @@ namespace ionir {
                      * types (such as different bit length integer values) no implicit conversions
                      * are made by the compiler (everything on the IR language must be explicit).
                      */
-                    if (!type_util::isSameType(returnInstValueType, functionReturnType)) {
+                    if (!returnInstValueType->isSameAs(functionReturnType)) {
                         this->context->diagnosticBuilder
                             ->bootstrap(diagnostic::functionReturnValueTypeMismatch)
 
@@ -159,29 +159,29 @@ namespace ionir {
     }
 
     void TypeCheckPass::visitStructDefinition(std::shared_ptr<StructDefinition> node) {
-        if (node->values.size() != node->declaration->fields->getSize()) {
+        if (node->values.size() != node->type->fields->getSize()) {
             this->context->diagnosticBuilder
                 ->bootstrap(diagnostic::structWrongValueCount)
 
                 ->formatMessage(
-                    node->declaration->name,
+                    node->type->name,
                     node->values.size(),
-                    node->declaration->fields->getSize()
+                    node->type->fields->getSize()
                 )
 
                 ->finish();
         }
         else {
-            auto declarationNativeFieldsMap = node->declaration->fields->unwrap();
+            auto declarationNativeFieldsMap = node->type->fields->unwrap();
             size_t index = 0;
 
             for (const auto& [name, type] : declarationNativeFieldsMap) {
                 auto value = node->values[index];
 
-                if (!type_util::isSameType(value->type, type)) {
+                if (!value->type->isSameAs(type)) {
                     this->context->diagnosticBuilder
                         ->bootstrap(diagnostic::structIncompatibleValueType)
-                        ->formatMessage(node->declaration->name, "pending", index, "pending")
+                        ->formatMessage(node->type->name, "pending", index, "pending")
                         ->finish();
                 }
 
