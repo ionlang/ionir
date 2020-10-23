@@ -9,9 +9,7 @@ namespace ionir {
 
     // TODO: Implement properly.
     struct CompareInst : Instruction {
-        explicit CompareInst(
-            const std::shared_ptr<BasicBlock>& parent
-        ) noexcept;
+        explicit CompareInst() noexcept;
 
         void accept(Pass& visitor) override;
     };

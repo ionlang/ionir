@@ -33,7 +33,7 @@ namespace ionir {
 
         TypeKind parentFunctionPrototypeReturnTypeKind = node
             ->body
-            ->getUnboxedParent()
+            ->forceGetUnboxedParent()
             ->prototype
             ->returnType
             ->typeKind;
@@ -64,7 +64,7 @@ namespace ionir {
 
     void TypeCheckPass::visitReturnInst(std::shared_ptr<ReturnInst> node) {
         std::shared_ptr<Construct> possibleFunctionParent =
-            node->getUnboxedParent()->getUnboxedParent()->getUnboxedParent();
+            node->forceGetUnboxedParent()->forceGetUnboxedParent()->forceGetUnboxedParent();
 
         IONIR_PASS_INTERNAL_ASSERT(
             possibleFunctionParent->constructKind == ConstructKind::Function
@@ -194,7 +194,7 @@ namespace ionir {
         if (node->callee->constructKind == ConstructKind::Function) {
             std::shared_ptr<Function> calleeFunction = node->callee->dynamicCast<Function>();
             size_t expectedArgumentCount = calleeFunction->prototype->args->items->getSize();
-            size_t actualArgumentCount = node->args.size();
+            size_t actualArgumentCount = node->arguments.size();
 
             if (actualArgumentCount != expectedArgumentCount) {
                 this->context->diagnosticBuilder
@@ -215,9 +215,9 @@ namespace ionir {
                     calleeFunction->prototype->args->items->unwrap();
 
                 for (const auto& [name, type] : functionDeclarationArgumentsNativeMap) {
-                    if (node->args[index]->constructKind == ConstructKind::Type) {
+                    if (node->arguments[index]->constructKind == ConstructKind::Type) {
                         std::shared_ptr<Type> callArgumentType =
-                            node->args[index]->dynamicCast<Type>();
+                            node->arguments[index]->dynamicCast<Type>();
 
                         if (!callArgumentType->isSameAs(type.first)) {
                             this->context->diagnosticBuilder

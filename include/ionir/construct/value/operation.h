@@ -55,5 +55,7 @@ namespace ionir {
         ) noexcept;
 
         void accept(Pass& visitor) override;
+
+        [[nodiscard]] Ast getChildrenNodes() override;
     };
 }

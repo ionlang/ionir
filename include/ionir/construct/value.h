@@ -34,6 +34,12 @@ namespace ionir {
             //
         }
 
+        [[nodiscard]] Ast getChildrenNodes() override {
+            return {
+                this->type
+            };
+        }
+
         std::shared_ptr<Value<>> flatten() {
             return this->staticCast<Value<>>();
         }

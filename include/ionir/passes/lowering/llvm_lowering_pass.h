@@ -246,7 +246,7 @@ namespace ionir {
 
         void visitVoidType(std::shared_ptr<VoidType> construct) override;
 
-        void visitModule(std::shared_ptr<Module> node) override;
+        void visitModule(std::shared_ptr<Module> construct) override;
 
         void visitStruct(std::shared_ptr<Struct> construct) override;
 

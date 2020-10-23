@@ -13,7 +13,6 @@ namespace ionir {
         std::shared_ptr<AllocaInst> target;
 
         explicit StoreInst(
-            const std::shared_ptr<BasicBlock>& parent,
             std::shared_ptr<Value<>> value,
             std::shared_ptr<AllocaInst> target
         ) noexcept;

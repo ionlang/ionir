@@ -17,7 +17,7 @@ namespace ionir {
     template<typename T>
     struct Value;
 
-    enum class ConstructKind {
+    enum struct ConstructKind {
         Type,
 
         /**
@@ -107,6 +107,23 @@ namespace ionir {
             }
 
             return children;
+        }
+
+        /**
+         * Create a shared pointer to a construct, while setting its
+         * parent.
+         */
+        template<typename TConstruct, typename ...TArgs>
+            requires std::derived_from<TConstruct, Construct>
+        static std::shared_ptr<TConstruct> make(std::shared_ptr<Construct> parent, TArgs&&... args) {
+            std::shared_ptr<TConstruct> construct =
+                std::make_shared<TConstruct>(std::forward<TArgs>(args)...);
+
+            construct->parent = parent;
+
+            // TODO: Consider having a virtual default-empty 'acceptChild(<ConstructTypeHere> child)' which inserts it into a corresponding list (if any)
+
+            return construct;
         }
 
         [[nodiscard]] static bool verify(const std::shared_ptr<Construct>& construct) noexcept;

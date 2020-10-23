@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <ionir/construct/instruction.h>
 
 namespace ionir {
     struct Pass;
@@ -10,12 +11,11 @@ namespace ionir {
     struct CallInst : Instruction {
         std::shared_ptr<Construct> callee;
 
-        std::vector<std::shared_ptr<Construct>> args;
+        std::vector<std::shared_ptr<Construct>> arguments;
 
-        CallInst(
-            const std::shared_ptr<BasicBlock>& parent,
+        explicit CallInst(
             std::shared_ptr<Construct> callee,
-            std::vector<std::shared_ptr<Construct>> args = {}
+            std::vector<std::shared_ptr<Construct>> arguments = {}
         ) noexcept;
 
         void accept(Pass& visitor) override;

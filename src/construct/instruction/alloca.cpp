@@ -2,13 +2,10 @@
 
 namespace ionir {
     // TODO: Finish init. implementation.
-    AllocaInst::AllocaInst(
-        const std::shared_ptr<BasicBlock>& parent,
-        std::shared_ptr<Type> type
-    ) noexcept :
-        Instruction(parent, InstKind::Alloca),
+    AllocaInst::AllocaInst(std::shared_ptr<Type> type) noexcept :
+        Instruction(InstKind::Alloca),
         type(std::move(type)) {
-        //
+        this->type->parent = this->nativeCast();
     }
 
     void AllocaInst::accept(Pass& visitor) {

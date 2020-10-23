@@ -72,29 +72,26 @@ namespace ionir {
         this->requireModule();
 
         // Parent will be filled in below.
-        std::shared_ptr<FunctionBody> functionBody = std::make_shared<FunctionBody>(nullptr);
+        std::shared_ptr<FunctionBody> functionBody =
+            Construct::make<FunctionBody>(nullptr);
 
-        std::shared_ptr<BasicBlock> entryBasicBlock = std::make_shared<BasicBlock>(
+        std::shared_ptr<BasicBlock> entryBasicBlock = Construct::make<BasicBlock>(
             functionBody
         );
 
-        functionBody->insertBasicBlock(entryBasicBlock);
+        functionBody->basicBlocks.push_back(entryBasicBlock);
         this->setBasicBlockBuffer(entryBasicBlock);
 
-        std::shared_ptr<Type> returnType = std::make_shared<VoidType>();
-        std::shared_ptr<Args> args = std::make_shared<Args>();
-
-        std::shared_ptr<Prototype> prototype =
-            std::make_shared<Prototype>(id, args, returnType, *this->moduleBuffer);
+        std::shared_ptr<Prototype> prototype = std::make_shared<Prototype>(
+            id,
+            std::make_shared<Args>(),
+            std::make_shared<VoidType>()
+        );
 
         std::shared_ptr<Function> function =
-            std::make_shared<Function>(prototype, functionBody);
-
-        // Fill in the function body's parent.
-        functionBody->parent = function;
+            Construct::make<Function>(*this->moduleBuffer, prototype, functionBody);
         
         this->functionBuffer = function;
-        this->moduleBuffer->get()->insertFunction(function);
 
         return *this;
     }

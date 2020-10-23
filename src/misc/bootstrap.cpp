@@ -26,9 +26,6 @@ namespace ionir {
         const std::shared_ptr<FunctionBody>& parent,
         BasicBlockKind basicBlockKind
     ) {
-        return std::make_shared<BasicBlock>(
-            parent,
-            basicBlockKind
-        );
+        return Construct::make<BasicBlock>(parent, basicBlockKind);
     }
 }

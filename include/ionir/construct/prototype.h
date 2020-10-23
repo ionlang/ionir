@@ -19,8 +19,7 @@ namespace ionir {
         Prototype(
             std::string name,
             std::shared_ptr<Args> args,
-            std::shared_ptr<Type> returnType,
-            std::shared_ptr<Module> parent
+            std::shared_ptr<Type> returnType
         ) noexcept;
 
         void accept(Pass& visitor) override;

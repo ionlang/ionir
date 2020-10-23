@@ -5,9 +5,14 @@
 
 namespace ionir {
     bool Construct::verify(const std::shared_ptr<Construct>& construct) noexcept {
+        if (construct == nullptr
+            || construct->constructKind != ConstructKind::Module
+            && !ionshared::util::hasValue(construct->parent)) {
+            return false;
+        }
+
         // TODO: Verify that if the parent is has value, its not nullptr, and that its not the same as the construct.
-        return construct != nullptr
-            && construct->verify();
+        return construct->verify();
     }
 
     Construct::Construct(
@@ -52,7 +57,7 @@ namespace ionir {
 
     std::shared_ptr<Construct> Construct::fetchRootConstruct() {
         if (!ionshared::util::hasValue(this->parent)) {
-            this->shared_from_this();
+            return this->nativeCast();
         }
 
         std::queue<std::shared_ptr<Construct>> parentQueue{};

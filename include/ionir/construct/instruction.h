@@ -29,7 +29,7 @@ namespace ionir {
     struct Instruction : ConstructWithParent<BasicBlock> {
         const InstKind instKind;
 
-        Instruction(std::shared_ptr<BasicBlock> parent, InstKind kind) noexcept;
+        explicit Instruction(InstKind kind) noexcept;
 
         // TODO: Isn't this redundant?
         void accept(Pass& visitor) override = 0;

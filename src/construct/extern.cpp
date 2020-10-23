@@ -2,12 +2,11 @@
 
 namespace ionir {
     Extern::Extern(
-        std::shared_ptr<Module> parent,
         std::shared_ptr<Prototype> prototype
     ) noexcept :
-        ConstructWithParent<Module>(std::move(parent), ConstructKind::Extern),
+        ConstructWithParent<Module>(ConstructKind::Extern),
         prototype(std::move(prototype)) {
-        //
+        prototype->parent = this->nativeCast();
     }
 
     void Extern::accept(Pass& visitor) {

@@ -8,7 +8,10 @@ namespace ionir {
         Construct(ConstructKind::Function),
         prototype(std::move(prototype)),
         body(std::move(body)) {
-        //
+        std::shared_ptr<Construct> self = this->nativeCast();
+
+        prototype->parent = self;
+        body->parent = self;
     }
 
     void Function::accept(Pass& visitor) {

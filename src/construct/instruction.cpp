@@ -2,11 +2,8 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    Instruction::Instruction(
-        std::shared_ptr<BasicBlock> parent,
-        InstKind kind
-    ) noexcept :
-        ConstructWithParent(std::move(parent), ConstructKind::Inst),
+    Instruction::Instruction(InstKind kind) noexcept :
+        ConstructWithParent<BasicBlock>(ConstructKind::Inst),
         instKind(kind) {
         //
     }
@@ -18,7 +15,7 @@ namespace ionir {
 
     size_t Instruction::fetchOrder() {
         std::optional<uint32_t> order =
-            this->getUnboxedParent()->locate(this->dynamicCast<Instruction>());
+            this->forceGetUnboxedParent()->locate(this->dynamicCast<Instruction>());
 
         if (!order.has_value()) {
             // TODO: Should be internal error diagnostic.

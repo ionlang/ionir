@@ -88,7 +88,7 @@ namespace ionir {
         ionshared::OptPtr<BasicBlock> entryBasicBlock{node->basicBlocks.begin()->get()};
 
         TypeKind parentFunctionPrototypeReturnKind =
-            node->getUnboxedParent()->prototype->returnType->typeKind;
+            node->forceGetUnboxedParent()->prototype->returnType->typeKind;
 
         /**
          * The function body's entry basic block contains no terminal instruction.
@@ -209,18 +209,20 @@ namespace ionir {
         ));
     }
 
-    void LlvmLoweringPass::visitModule(std::shared_ptr<Module> node) {
+    void LlvmLoweringPass::visitModule(std::shared_ptr<Module> construct) {
+        // TODO: Should the context be manually freed? Remember, whoever allocates must free.
         std::shared_ptr<llvm::Module> llvmModule = std::make_shared<llvm::Module>(
-            **node->identifier,
-            *std::make_shared<llvm::LLVMContext>()
+            **construct->identifier,
+            *new llvm::LLVMContext()
         );
 
         this->llvmBuffers.modules.push(llvmModule);
-        this->modules->set(**node->identifier, llvmModule.get());
+        this->moduleSymbolTable.set(construct, llvmModule);
+        this->modules->set(**construct->identifier, llvmModule.get());
 
         // Proceed to visit all the module's children (top-level constructs).
         std::map<std::string, std::shared_ptr<Construct>> moduleNativeSymbolTable =
-            node->context->getGlobalScope()->unwrap();
+            construct->context->getGlobalScope()->unwrap();
 
         for (const auto& [id, topLevelConstruct] : moduleNativeSymbolTable) {
             this->visit(topLevelConstruct);

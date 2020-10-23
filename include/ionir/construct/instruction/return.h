@@ -11,7 +11,6 @@ namespace ionir {
         ionshared::OptPtr<Value<>> value;
 
         explicit ReturnInst(
-            const std::shared_ptr<BasicBlock>& parent,
             ionshared::OptPtr<Value<>> value = std::nullopt
         ) noexcept;
 

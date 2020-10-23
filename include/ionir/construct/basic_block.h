@@ -38,10 +38,18 @@ namespace ionir {
     struct BasicBlock : ConstructWithParent<FunctionBody>, ScopeAnchor<Instruction> {
         const BasicBlockKind basicBlockKind;
 
+        /**
+         * The basic block's instructions. Note that when inserting
+         * instructions into a basic block, it should not be done
+         * by directly accessing this instructions vector, because
+         * once an instruction is associated with this basic block,
+         * its parent must be updated, and this procedure is done
+         * through a corresponding method such as the append or prepend
+         * instruction methods.
+         */
         std::vector<std::shared_ptr<Instruction>> instructions;
 
         explicit BasicBlock(
-            std::shared_ptr<FunctionBody> parent,
             BasicBlockKind kind = BasicBlockKind::Internal,
             std::vector<std::shared_ptr<Instruction>> instructions = {},
 

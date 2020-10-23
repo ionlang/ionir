@@ -2,16 +2,15 @@
 
 namespace ionir {
     BranchInst::BranchInst(
-        const std::shared_ptr<BasicBlock>& parent,
         std::shared_ptr<Construct> condition,
         std::shared_ptr<BasicBlock> consequentBasicBlock,
         std::shared_ptr<BasicBlock> alternativeBasicBlock
     ) noexcept :
-        Instruction(parent, InstKind::Branch),
+        Instruction(InstKind::Branch),
         condition(std::move(condition)),
         consequentBasicBlock(std::move(consequentBasicBlock)),
         alternativeBasicBlock(std::move(alternativeBasicBlock)) {
-        //
+        this->condition->parent = this->nativeCast();
     }
 
     void BranchInst::accept(Pass& visitor) {

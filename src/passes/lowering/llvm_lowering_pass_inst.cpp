@@ -70,7 +70,7 @@ namespace ionir {
             throw std::runtime_error("Call instruction referenced an undefined function");
         }
 
-        std::vector<std::shared_ptr<Construct>> args = construct->args;
+        std::vector<std::shared_ptr<Construct>> args = construct->arguments;
         std::vector<llvm::Value*> llvmArgs{};
 
         llvmArgs.reserve(args.size());

@@ -11,12 +11,12 @@
 namespace ionir {
     struct Pass;
 
+    // TODO: Why have FunctionBody when you can just have Function with basicBlocks field?
     struct FunctionBody : ConstructWithParent<Function> {
         // TODO: Should be a set? But sets are weakly ordered (no concept of position, and .being() returns any element).
         std::vector<std::shared_ptr<BasicBlock>> basicBlocks;
 
         explicit FunctionBody(
-            std::shared_ptr<Function> parent,
             std::vector<std::shared_ptr<BasicBlock>> basicBlocks = {}
         ) noexcept;
 
@@ -25,7 +25,5 @@ namespace ionir {
         [[nodiscard]] Ast getChildrenNodes() override;
 
         [[nodiscard]] bool verify() override;
-
-        void insertBasicBlock(const std::shared_ptr<BasicBlock>& basicBlock);
     };
 }

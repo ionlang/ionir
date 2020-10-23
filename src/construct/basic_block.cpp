@@ -3,16 +3,19 @@
 
 namespace ionir {
     BasicBlock::BasicBlock(
-        std::shared_ptr<FunctionBody> parent,
         BasicBlockKind kind,
         std::vector<std::shared_ptr<Instruction>> instructions,
         PtrSymbolTable<Instruction> symbolTable
     ) noexcept :
-        ConstructWithParent(std::move(parent), ConstructKind::BasicBlock),
+        ConstructWithParent<FunctionBody>(ConstructKind::BasicBlock),
         ScopeAnchor<Instruction>(std::move(symbolTable)),
         basicBlockKind(kind),
         instructions(std::move(instructions)) {
-        //
+        std::shared_ptr<Construct> self = this->nativeCast();
+
+        for (const auto& instruction : instructions) {
+            instruction->parent = self;
+        }
     }
 
     void BasicBlock::accept(Pass& visitor) {
@@ -97,17 +100,18 @@ namespace ionir {
             this->instructions.erase(from, to);
         }
 
-        std::shared_ptr<BasicBlock> newBasicBlock = std::make_shared<BasicBlock>(
-            this->getUnboxedParent(),
+        std::shared_ptr<BasicBlock> newBasicBlock = Construct::make<BasicBlock>(
+            this->forceGetUnboxedParent(),
             this->basicBlockKind,
             instructions
         );
 
+        // TODO: Changed. Review.
         /**
          * Register the newly created basic block on the parent's
          * symbol table (parent is a function body).
          */
-        this->getUnboxedParent()->insertBasicBlock(newBasicBlock);
+        this->forceGetUnboxedParent()->basicBlocks.push_back(newBasicBlock);
 
         return newBasicBlock;
     }

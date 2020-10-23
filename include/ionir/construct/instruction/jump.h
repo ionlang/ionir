@@ -10,13 +10,10 @@ namespace ionir {
     struct JumpInst : Instruction {
         std::shared_ptr<BasicBlock> basicBlockTarget;
 
-        JumpInst(
-            const std::shared_ptr<BasicBlock>& parent,
+        explicit JumpInst(
             std::shared_ptr<BasicBlock> basicBlockTarget
         ) noexcept;
 
         void accept(Pass& visitor) override;
-
-        [[nodiscard]] Ast getChildrenNodes() override;
     };
 }

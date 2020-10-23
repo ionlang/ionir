@@ -25,11 +25,11 @@ namespace ionir {
         std::shared_ptr<TInst> make(TArgs... args) {
             // TODO: Ensure T inherits from Inst or derived.
 
-            std::shared_ptr<TInst> inst = std::make_shared<TInst>(args...);
+            std::shared_ptr<TInst> instruction = std::make_shared<TInst>(args...);
 
-            this->appendInst(inst);
+            this->appendInst(instruction);
 
-            return inst;
+            return instruction;
         }
 
         std::shared_ptr<AllocaInst> createAlloca(

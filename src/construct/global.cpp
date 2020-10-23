@@ -10,7 +10,13 @@ namespace ionir {
         Named{std::move(id)},
         type(std::move(type)),
         value(std::move(value)) {
-        //
+        std::shared_ptr<Construct> self = this->nativeCast();
+
+        type->parent = self;
+
+        if (ionshared::util::hasValue(this->value)) {
+            this->value->get()->parent = self;
+        }
     }
 
     void Global::accept(Pass& visitor) {

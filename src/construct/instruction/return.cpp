@@ -2,12 +2,13 @@
 
 namespace ionir {
     ReturnInst::ReturnInst(
-        const std::shared_ptr<BasicBlock>& parent,
         ionshared::OptPtr<Value<>> value
     ) noexcept :
-        Instruction(parent, InstKind::Return),
+        Instruction(InstKind::Return),
         value(std::move(value)) {
-        //
+        if (ionshared::util::hasValue(this->value)) {
+            this->value->get()->parent = this->nativeCast();
+        }
     }
 
     void ReturnInst::accept(Pass& visitor) {
