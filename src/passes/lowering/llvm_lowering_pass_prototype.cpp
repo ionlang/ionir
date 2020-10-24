@@ -171,8 +171,34 @@ namespace ionir {
 
         this->llvmBuffers.functions.push(llvmFunction);
 
-        // Visiting the function body's yields no value to the value stack.
-        this->visit(construct->body);
+        /**
+         * Entry section must be set. Redundant check, since the verify should
+         * function ensure that the block contains a single entry section, but
+         * just to make sure.
+         */
+        if (construct->basicBlocks.empty()) {
+            throw std::runtime_error("No entry basic block exists for block");
+        }
+
+        std::shared_ptr<BasicBlock> entryBasicBlock =
+            construct->basicBlocks.front();
+
+        // TODO: What about the other basic blocks?
+        /**
+         * The function body's entry basic block contains no terminal instruction.
+         * The parent function's prototype's return type is void. Implicitly append
+         * a return void instruction to satisfy LLVM's terminal instruction requirement.
+         */
+        if (!entryBasicBlock->hasTerminalInst()
+            && construct->prototype->returnType->typeKind == TypeKind::Void) {
+            entryBasicBlock->appendInst(Construct::makeChild<ReturnInst>(
+                entryBasicBlock
+            ));
+        }
+
+        for (const auto& basicBlock : construct->basicBlocks) {
+            this->visit(basicBlock);
+        }
 
         // TODO: Verify the resulting LLVM function (through LLVM)?
 

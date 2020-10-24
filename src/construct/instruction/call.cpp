@@ -1,6 +1,20 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
+    std::shared_ptr<CallInst> CallInst::make(
+        const std::shared_ptr<Construct>& callee,
+        const std::vector<std::shared_ptr<Construct>>& arguments
+    ) noexcept {
+        std::shared_ptr<CallInst> result =
+            std::make_shared<CallInst>(callee, arguments);
+
+        for (const auto& argument : arguments) {
+            argument->parent = result;
+        }
+
+        return result;
+    }
+
     CallInst::CallInst(
         std::shared_ptr<Construct> callee,
         std::vector<std::shared_ptr<Construct>> arguments
@@ -8,11 +22,7 @@ namespace ionir {
         Instruction(InstKind::Call),
         callee(std::move(callee)),
         arguments(std::move(arguments)) {
-        std::shared_ptr<Construct> self = this->nativeCast();
-
-        for (const auto& argument : this->arguments) {
-            argument->parent = self;
-        }
+        //
     }
 
     void CallInst::accept(Pass& visitor) {

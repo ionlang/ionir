@@ -68,6 +68,9 @@ namespace ionir {
     typedef ionshared::Ast<Construct> Ast;
 
     struct Construct : ionshared::BaseConstruct<Construct, ConstructKind> {
+        /**
+         * Map children from a vector to an ast.
+         */
         template<typename T>
             requires std::derived_from<T, Construct>
         static Ast convertChildren(std::vector<std::shared_ptr<T>> vector) {
@@ -111,11 +114,16 @@ namespace ionir {
 
         /**
          * Create a shared pointer to a construct, while setting its
-         * parent.
+         * parent. Should be preferred instead of creating the shared
+         * pointer and then setting its parent manually for consistency
+         * and error-preventing measures.
          */
         template<typename TConstruct, typename ...TArgs>
             requires std::derived_from<TConstruct, Construct>
-        static std::shared_ptr<TConstruct> make(std::shared_ptr<Construct> parent, TArgs&&... args) {
+        static std::shared_ptr<TConstruct> makeChild(
+            const std::shared_ptr<Construct>& parent,
+            TArgs&&... args
+        ) {
             std::shared_ptr<TConstruct> construct =
                 std::make_shared<TConstruct>(std::forward<TArgs>(args)...);
 
@@ -126,6 +134,10 @@ namespace ionir {
             return construct;
         }
 
+        /**
+         * Serves as a proxy to safely invoke the verification method
+         * of a possibly nullptr construct.
+         */
         [[nodiscard]] static bool verify(const std::shared_ptr<Construct>& construct) noexcept;
 
         explicit Construct(

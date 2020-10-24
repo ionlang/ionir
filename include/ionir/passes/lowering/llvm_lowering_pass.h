@@ -20,7 +20,6 @@
 #include <ionir/construct/construct.h>
 #include <ionir/construct/function.h>
 #include <ionir/construct/type.h>
-#include <ionir/construct/function_body.h>
 #include <ionir/construct/extern.h>
 #include <ionir/construct/prototype.h>
 #include <ionir/construct/global.h>
@@ -211,8 +210,6 @@ namespace ionir {
         void visitExtern(std::shared_ptr<Extern> construct) override;
 
         void visitBasicBlock(std::shared_ptr<BasicBlock> construct) override;
-
-        void visitFunctionBody(std::shared_ptr<FunctionBody> node) override;
 
         void visitPrototype(std::shared_ptr<Prototype> construct) override;
 

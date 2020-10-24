@@ -31,20 +31,13 @@ namespace ionir {
         this->require(this->functionBuffer);
     }
 
-    void AstBuilder::requireFunctionBody() const {
-        this->requireFunction();
-        this->require(this->blockBuffer);
-    }
-
     void AstBuilder::requireBasicBlock() const {
-        this->requireFunctionBody();
         this->require(this->basicBlockBuffer);
     }
 
     void AstBuilder::clearBuffers() {
         this->moduleBuffer = std::nullopt;
         this->functionBuffer = std::nullopt;
-        this->blockBuffer = std::nullopt;
         setBasicBlockBuffer(std::nullopt);
     }
 
@@ -71,26 +64,28 @@ namespace ionir {
     AstBuilder& AstBuilder::function(const std::string& id) {
         this->requireModule();
 
-        // Parent will be filled in below.
-        std::shared_ptr<FunctionBody> functionBody =
-            Construct::make<FunctionBody>(nullptr);
+        std::shared_ptr<Type> returnType = std::make_shared<VoidType>();
 
-        std::shared_ptr<BasicBlock> entryBasicBlock = Construct::make<BasicBlock>(
-            functionBody
-        );
-
-        functionBody->basicBlocks.push_back(entryBasicBlock);
-        this->setBasicBlockBuffer(entryBasicBlock);
-
-        std::shared_ptr<Prototype> prototype = std::make_shared<Prototype>(
+        std::shared_ptr<Prototype> prototype = Construct::makeChild<Prototype>(
+            *this->moduleBuffer,
             id,
             std::make_shared<Args>(),
-            std::make_shared<VoidType>()
+            returnType
         );
 
+        returnType->parent = prototype;
+
+        std::shared_ptr<BasicBlock> entryBasicBlock = BasicBlock::make();
+
         std::shared_ptr<Function> function =
-            Construct::make<Function>(*this->moduleBuffer, prototype, functionBody);
-        
+            Construct::makeChild<Function>(
+                *this->moduleBuffer,
+                prototype,
+                std::vector<std::shared_ptr<BasicBlock>>{entryBasicBlock}
+            );
+
+        entryBasicBlock->parent = function;
+        this->setBasicBlockBuffer(entryBasicBlock);
         this->functionBuffer = function;
 
         return *this;

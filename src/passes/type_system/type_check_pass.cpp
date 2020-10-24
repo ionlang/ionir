@@ -18,8 +18,8 @@ namespace ionir {
     void TypeCheckPass::visitFunction(std::shared_ptr<Function> node) {
         ionshared::OptPtr<BasicBlock> entryBasicBlock = std::nullopt;
 
-        if (!node->body->basicBlocks.empty()) {
-            entryBasicBlock = node->body->basicBlocks.front();
+        if (!node->basicBlocks.empty()) {
+            entryBasicBlock = node->basicBlocks.front();
         }
 
         if (!ionshared::util::hasValue(entryBasicBlock)) {
@@ -31,13 +31,7 @@ namespace ionir {
             return;
         }
 
-        TypeKind parentFunctionPrototypeReturnTypeKind = node
-            ->body
-            ->forceGetUnboxedParent()
-            ->prototype
-            ->returnType
-            ->typeKind;
-
+        // TODO: Update doc.
         /**
          * Entry basic blocks must contain at least a single terminal
          * instruction if the parent function does not return void. If
@@ -45,7 +39,7 @@ namespace ionir {
          * LLVM codegen pass will implicitly append a return instruction
          * with no value.
          */
-        if (parentFunctionPrototypeReturnTypeKind != TypeKind::Void) {
+        if (node->prototype->returnType->typeKind != TypeKind::Void) {
             std::vector<std::shared_ptr<Instruction>> instructions =
                 entryBasicBlock->get()->instructions;
 
@@ -64,7 +58,7 @@ namespace ionir {
 
     void TypeCheckPass::visitReturnInst(std::shared_ptr<ReturnInst> node) {
         std::shared_ptr<Construct> possibleFunctionParent =
-            node->forceGetUnboxedParent()->forceGetUnboxedParent()->forceGetUnboxedParent();
+            node->forceGetUnboxedParent()->forceGetUnboxedParent();
 
         IONIR_PASS_INTERNAL_ASSERT(
             possibleFunctionParent->constructKind == ConstructKind::Function

@@ -23,13 +23,7 @@ namespace ionir {
         template<class TInst, typename... TArgs>
             requires std::derived_from<TInst, Instruction>
         std::shared_ptr<TInst> make(TArgs... args) {
-            // TODO: Ensure T inherits from Inst or derived.
-
-            std::shared_ptr<TInst> instruction = std::make_shared<TInst>(args...);
-
-            this->appendInst(instruction);
-
-            return instruction;
+            return Construct::makeChild<TInst>(this->basicBlock, args...);
         }
 
         std::shared_ptr<AllocaInst> createAlloca(

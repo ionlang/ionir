@@ -14,13 +14,11 @@
 namespace ionir {
     struct Pass;
 
-    struct FunctionBody;
-
     struct InstBuilder;
 
     struct JumpInst;
 
-    enum class BasicBlockKind {
+    enum struct BasicBlockKind {
         /**
          * A basic block defined by the user. Can be jumped to
          * using a goto instruction.
@@ -35,7 +33,15 @@ namespace ionir {
     };
 
     // TODO: Must be verified to contain a single terminal instruction at the end.
-    struct BasicBlock : ConstructWithParent<FunctionBody>, ScopeAnchor<Instruction> {
+    struct BasicBlock : ConstructWithParent<Function>, ScopeAnchor<Instruction> {
+        static std::shared_ptr<BasicBlock> make(
+            const std::vector<std::shared_ptr<Instruction>>& instructions = {},
+            BasicBlockKind kind = BasicBlockKind::Internal,
+
+            const PtrSymbolTable<Instruction>& symbolTable =
+            ionshared::util::makePtrSymbolTable<Instruction>()
+        ) noexcept;
+
         const BasicBlockKind basicBlockKind;
 
         /**
@@ -50,8 +56,8 @@ namespace ionir {
         std::vector<std::shared_ptr<Instruction>> instructions;
 
         explicit BasicBlock(
-            BasicBlockKind kind = BasicBlockKind::Internal,
             std::vector<std::shared_ptr<Instruction>> instructions = {},
+            BasicBlockKind kind = BasicBlockKind::Internal,
 
             PtrSymbolTable<Instruction> symbolTable =
                 ionshared::util::makePtrSymbolTable<Instruction>()
@@ -65,6 +71,7 @@ namespace ionir {
 
         void insertInst(uint32_t order, const std::shared_ptr<Instruction>& inst);
 
+        // TODO: Redundant? No symbol table is used anymore?
         /**
          * Inserts an instruction at the end of the instructions
          * list.
@@ -85,7 +92,7 @@ namespace ionir {
          * the provided id, having the same parent as the local basic
          * block.
          */
-        [[nodiscard]] std::shared_ptr<BasicBlock> split(uint32_t atOrder, std::string id);
+        [[nodiscard]] std::shared_ptr<BasicBlock> split(uint32_t atOrder);
 
         /**
          * Create a jump instruction at the end of the local block

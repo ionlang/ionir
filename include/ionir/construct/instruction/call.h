@@ -9,6 +9,11 @@ namespace ionir {
     struct Function;
 
     struct CallInst : Instruction {
+        static std::shared_ptr<CallInst> make(
+            const std::shared_ptr<Construct>& callee,
+            const std::vector<std::shared_ptr<Construct>>& arguments = {}
+        ) noexcept;
+
         std::shared_ptr<Construct> callee;
 
         std::vector<std::shared_ptr<Construct>> arguments;

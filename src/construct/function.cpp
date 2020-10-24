@@ -1,17 +1,30 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
+    std::shared_ptr<Function> Function::make(
+        const std::shared_ptr<Prototype>& prototype,
+        const std::vector<std::shared_ptr<BasicBlock>>& basicBlocks
+    ) noexcept {
+        std::shared_ptr<Function> result =
+            std::make_shared<Function>(prototype, basicBlocks);
+
+        prototype->parent = result;
+
+        for (const auto& basicBlock : basicBlocks) {
+            basicBlock->parent = result;
+        }
+
+        return result;
+    }
+
     Function::Function(
         std::shared_ptr<Prototype> prototype,
-        std::shared_ptr<FunctionBody> body
+        std::vector<std::shared_ptr<BasicBlock>> basicBlocks
     ) noexcept :
         Construct(ConstructKind::Function),
         prototype(std::move(prototype)),
-        body(std::move(body)) {
-        std::shared_ptr<Construct> self = this->nativeCast();
-
-        prototype->parent = self;
-        body->parent = self;
+        basicBlocks(std::move(basicBlocks)) {
+        //
     }
 
     void Function::accept(Pass& visitor) {
@@ -19,9 +32,15 @@ namespace ionir {
     }
 
     Ast Function::getChildrenNodes() {
-        return {
-            this->prototype,
-            this->body
-        };
+        Ast children = Construct::convertChildren(this->basicBlocks);
+
+        children.push_back(this->prototype);
+
+        return children;
+    }
+
+    bool Function::verify() {
+        return !this->basicBlocks.empty()
+            && Construct::verify();
     }
 }

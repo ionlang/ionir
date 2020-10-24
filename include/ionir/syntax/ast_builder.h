@@ -2,7 +2,6 @@
 
 #include <string>
 #include <ionir/construct/function.h>
-#include <ionir/construct/function_body.h>
 #include <ionir/construct/module.h>
 #include "ionir/misc/inst_builder.h"
 
@@ -15,8 +14,6 @@ namespace ionir {
 
         ionshared::OptPtr<Function> functionBuffer;
 
-        ionshared::OptPtr<FunctionBody> blockBuffer;
-
         ionshared::OptPtr<BasicBlock> basicBlockBuffer;
 
         ionshared::OptPtr<InstBuilder> instBuilder;
@@ -28,8 +25,6 @@ namespace ionir {
         void requireModule() const;
 
         void requireFunction() const;
-
-        void requireFunctionBody() const;
 
         void requireBasicBlock() const;
 

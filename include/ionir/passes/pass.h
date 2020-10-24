@@ -25,7 +25,6 @@
 #include <ionir/construct/function.h>
 #include <ionir/construct/prototype.h>
 #include <ionir/construct/extern.h>
-#include <ionir/construct/function_body.h>
 #include <ionir/construct/type.h>
 #include <ionir/construct/global.h>
 #include <ionir/construct/module.h>
@@ -51,8 +50,6 @@ namespace ionir {
         virtual void visitExtern(std::shared_ptr<Extern> node);
 
         virtual void visitBasicBlock(std::shared_ptr<BasicBlock> node);
-
-        virtual void visitFunctionBody(std::shared_ptr<FunctionBody> node);
 
         virtual void visitPrototype(std::shared_ptr<Prototype> node);
 

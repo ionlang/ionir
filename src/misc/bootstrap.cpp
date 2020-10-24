@@ -23,9 +23,13 @@ namespace ionir {
     }
 
     std::shared_ptr<BasicBlock> Bootstrap::basicBlock(
-        const std::shared_ptr<FunctionBody>& parent,
+        const std::shared_ptr<Function>& parent,
         BasicBlockKind basicBlockKind
     ) {
-        return Construct::make<BasicBlock>(parent, basicBlockKind);
+        return Construct::makeChild<BasicBlock>(
+            parent,
+            std::vector<std::shared_ptr<Instruction>>{},
+            basicBlockKind
+        );
     }
 }

@@ -8,6 +8,12 @@ namespace ionir {
     struct BasicBlock;
 
     struct BranchInst : Instruction {
+        static std::shared_ptr<BranchInst> make(
+            const std::shared_ptr<Construct>& condition,
+            const std::shared_ptr<BasicBlock>& consequentBasicBlock,
+            const std::shared_ptr<BasicBlock>& alternativeBasicBlock
+        ) noexcept;
+
         std::shared_ptr<Construct> condition;
 
         std::shared_ptr<BasicBlock> consequentBasicBlock;

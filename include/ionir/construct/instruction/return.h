@@ -8,6 +8,10 @@ namespace ionir {
     struct Pass;
 
     struct ReturnInst : Instruction {
+        static std::shared_ptr<ReturnInst> make(
+            ionshared::OptPtr<Value<>> value = std::nullopt
+        ) noexcept;
+
         ionshared::OptPtr<Value<>> value;
 
         explicit ReturnInst(

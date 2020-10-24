@@ -2,20 +2,31 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    BasicBlock::BasicBlock(
+    std::shared_ptr<BasicBlock> BasicBlock::make(
+        const std::vector<std::shared_ptr<Instruction>>& instructions,
         BasicBlockKind kind,
+        const PtrSymbolTable<Instruction>& symbolTable
+    ) noexcept {
+        std::shared_ptr<BasicBlock> result =
+            std::make_shared<BasicBlock>(instructions, kind, symbolTable);
+
+        for (const auto& instruction : instructions) {
+            instruction->parent = result;
+        }
+
+        return result;
+    }
+
+    BasicBlock::BasicBlock(
         std::vector<std::shared_ptr<Instruction>> instructions,
+        BasicBlockKind kind,
         PtrSymbolTable<Instruction> symbolTable
     ) noexcept :
-        ConstructWithParent<FunctionBody>(ConstructKind::BasicBlock),
+        ConstructWithParent<Function>(ConstructKind::BasicBlock),
         ScopeAnchor<Instruction>(std::move(symbolTable)),
         basicBlockKind(kind),
         instructions(std::move(instructions)) {
-        std::shared_ptr<Construct> self = this->nativeCast();
-
-        for (const auto& instruction : instructions) {
-            instruction->parent = self;
-        }
+        //
     }
 
     void BasicBlock::accept(Pass& visitor) {
@@ -68,7 +79,7 @@ namespace ionir {
         this->insertInst(0, inst);
     }
 
-    uint32_t BasicBlock::relocateInsts(BasicBlock &target, const uint32_t from) {
+    uint32_t BasicBlock::relocateInsts(BasicBlock& target, const uint32_t from) {
         uint32_t count = 0;
 
         for (uint32_t i = from; i < this->instructions.size(); i++) {
@@ -80,7 +91,7 @@ namespace ionir {
         return count;
     }
 
-    std::shared_ptr<BasicBlock> BasicBlock::split(uint32_t atOrder, std::string id) {
+    std::shared_ptr<BasicBlock> BasicBlock::split(uint32_t atOrder) {
         // TODO: If insts are empty, atOrder parameter is ignored (useless). Address that.
         // TODO: Symbol table is not being relocated/split.
 
@@ -100,10 +111,12 @@ namespace ionir {
             this->instructions.erase(from, to);
         }
 
-        std::shared_ptr<BasicBlock> newBasicBlock = Construct::make<BasicBlock>(
-            this->forceGetUnboxedParent(),
-            this->basicBlockKind,
-            instructions
+        std::shared_ptr<Function> parent = this->forceGetUnboxedParent();
+
+        std::shared_ptr<BasicBlock> newBasicBlock = Construct::makeChild<BasicBlock>(
+            parent,
+            instructions,
+            this->basicBlockKind
         );
 
         // TODO: Changed. Review.
@@ -111,7 +124,7 @@ namespace ionir {
          * Register the newly created basic block on the parent's
          * symbol table (parent is a function body).
          */
-        this->forceGetUnboxedParent()->basicBlocks.push_back(newBasicBlock);
+        parent->basicBlocks.push_back(newBasicBlock);
 
         return newBasicBlock;
     }

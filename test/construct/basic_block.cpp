@@ -5,45 +5,43 @@
 using namespace ionir;
 
 TEST(ConstructBasicBlockTest, HasTerminalInstruction) {
-    std::shared_ptr<BasicBlock> basicBlock =
-        std::make_shared<BasicBlock>(nullptr);
-
-    basicBlock->instructions.push_back(std::make_shared<ReturnInst>(basicBlock));
+    std::shared_ptr<BasicBlock> basicBlock = BasicBlock::make(
+        std::vector<std::shared_ptr<Instruction>>{ReturnInst::make()}
+    );
 
     EXPECT_TRUE(basicBlock->hasTerminalInst());
 }
 
 TEST(ConstructBasicBlockTest, FindTerminalInstruction) {
-    std::shared_ptr<BasicBlock> basicBlock =
-        std::make_shared<BasicBlock>(nullptr);
-
-    basicBlock->instructions.push_back(std::make_shared<ReturnInst>(basicBlock));
+    std::shared_ptr<BasicBlock> basicBlock = BasicBlock::make(
+        std::vector<std::shared_ptr<Instruction>>{ReturnInst::make()}
+    );
 
     EXPECT_TRUE(ionshared::util::hasValue(basicBlock->findTerminalInst()));
 }
 
 TEST(ConstructBasicBlockTest, Link) {
     std::shared_ptr<BasicBlock> basicBlockA =
-        std::make_shared<BasicBlock>(nullptr);
+        BasicBlock::make();
 
     std::shared_ptr<BasicBlock> basicBlockB =
-        std::make_shared<BasicBlock>(nullptr);
+        BasicBlock::make();
 
     basicBlockA->link(basicBlockB);
 
     ASSERT_FALSE(basicBlockA->instructions.empty());
-    EXPECT_EQ(basicBlockA->instructions[0]->instKind, InstKind::Jump);
+    EXPECT_EQ(basicBlockA->instructions.front()->instKind, InstKind::Jump);
 }
 
 TEST(ConstructBasicBlockTest, FindFirstInstruction) {
     std::shared_ptr<BasicBlock> basicBlock =
-        std::make_shared<BasicBlock>(nullptr);
+        BasicBlock::make();
 
     std::shared_ptr<ReturnInst> returnInstA =
-        std::make_shared<ReturnInst>(basicBlock);
+        ReturnInst::make();
 
     std::shared_ptr<ReturnInst> returnInstB =
-        std::make_shared<ReturnInst>(basicBlock);
+        ReturnInst::make();
 
     basicBlock->instructions.push_back(returnInstA);
 
@@ -56,13 +54,13 @@ TEST(ConstructBasicBlockTest, FindFirstInstruction) {
 
 TEST(ConstructBasicBlockTest, FindLastInstruction) {
     std::shared_ptr<BasicBlock> basicBlock =
-        std::make_shared<BasicBlock>(nullptr);
+        BasicBlock::make();
 
     std::shared_ptr<ReturnInst> returnInstA =
-        std::make_shared<ReturnInst>(basicBlock);
+        ReturnInst::make();
 
     std::shared_ptr<ReturnInst> returnInstB =
-        std::make_shared<ReturnInst>(basicBlock);
+        ReturnInst::make();
 
     basicBlock->instructions.push_back(returnInstA);
 

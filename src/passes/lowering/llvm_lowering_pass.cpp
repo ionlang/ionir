@@ -75,37 +75,6 @@ namespace ionir {
         this->llvmBuffers.basicBlocks.forcePop();
     }
 
-    void LlvmLoweringPass::visitFunctionBody(std::shared_ptr<FunctionBody> node) {
-        /**
-         * Entry section must be set. Redundant check, since the verify should
-         * function ensure that the block contains a single entry section, but
-         * just to make sure.
-         */
-        if (node->basicBlocks.empty()) {
-            throw std::runtime_error("No entry basic block exists for block");
-        }
-
-        ionshared::OptPtr<BasicBlock> entryBasicBlock{node->basicBlocks.begin()->get()};
-
-        TypeKind parentFunctionPrototypeReturnKind =
-            node->forceGetUnboxedParent()->prototype->returnType->typeKind;
-
-        /**
-         * The function body's entry basic block contains no terminal instruction.
-         * The parent function's prototype's return type is void. Implicitly append
-         * a return void instruction to satisfy LLVM's terminal instruction requirement.
-         */
-        if (!entryBasicBlock->get()->hasTerminalInst() && parentFunctionPrototypeReturnKind == TypeKind::Void) {
-            entryBasicBlock->get()->appendInst(std::make_shared<ReturnInst>(
-                *entryBasicBlock
-            ));
-        }
-
-        for (const auto& basicBlock : node->basicBlocks) {
-            this->visit(basicBlock);
-        }
-    }
-
     void LlvmLoweringPass::visitGlobal(std::shared_ptr<Global> construct) {
         llvm::Type* llvmType = this->eagerVisitType(construct->type);
 

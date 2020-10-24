@@ -14,10 +14,10 @@ TEST(CodeGenTest, VisitExtern) {
     std::shared_ptr<Args> args = std::make_shared<Args>();
 
     std::shared_ptr<Prototype> prototype =
-        std::make_shared<Prototype>(test::constant::foobar, args, returnType, nullptr);
+        Prototype::make(test::constant::foobar, args, returnType);
 
     // TODO: Nullptr parent.
-    std::shared_ptr<Extern> externConstruct = std::make_shared<Extern>(nullptr, prototype);
+    std::shared_ptr<Extern> externConstruct = Extern::make(prototype);
 
     llvmLoweringPass->visitExtern(externConstruct);
 
@@ -26,16 +26,18 @@ TEST(CodeGenTest, VisitExtern) {
 
 TEST(CodeGenTest, VisitEmptyFunction) {
     std::shared_ptr<LlvmLoweringPass> llvmLoweringPass = test::bootstrap::llvmLoweringPass();
-    std::shared_ptr<VoidType> returnType = TypeFactory::typeVoid();
 
-    std::shared_ptr<Prototype> prototype =
-        std::make_shared<Prototype>(test::constant::foobar, std::make_shared<Args>(), returnType, nullptr);
+    std::shared_ptr<Prototype> prototype = Prototype::make(
+        test::constant::foobar,
+        std::make_shared<Args>(),
+        TypeFactory::typeVoid()
+    );
 
-    std::shared_ptr<FunctionBody> body = std::make_shared<FunctionBody>(nullptr);
-    std::shared_ptr<BasicBlock> section = std::make_shared<BasicBlock>(body);
-    std::shared_ptr<Function> function = std::make_shared<Function>(prototype, body);
+    std::shared_ptr<Function> function = Function::make(
+        prototype,
+        std::vector<std::shared_ptr<BasicBlock>>{BasicBlock::make()}
+    );
 
-    body->parent = function;
     llvmLoweringPass->visitFunction(function);
 
     EXPECT_TRUE(test::comparison::ir(llvmLoweringPass, "function_empty"));
@@ -44,7 +46,7 @@ TEST(CodeGenTest, VisitEmptyFunction) {
 TEST(CodeGenTest, VisitEmptyGlobal) {
     std::shared_ptr<LlvmLoweringPass> llvmLoweringPass = test::bootstrap::llvmLoweringPass();
     std::shared_ptr<IntegerType> type = TypeFactory::typeInteger(IntegerKind::Int32);
-    std::shared_ptr<Global> globalVar = std::make_shared<Global>(type, test::constant::foobar);
+    std::shared_ptr<Global> globalVar = Global::make(type, test::constant::foobar);
 
     llvmLoweringPass->visitGlobal(globalVar);
 
@@ -55,7 +57,7 @@ TEST(CodeGenTest, VisitGlobalWithValue) {
     std::shared_ptr<LlvmLoweringPass> llvmLoweringPass = test::bootstrap::llvmLoweringPass();
     std::shared_ptr<IntegerType> type = TypeFactory::typeInteger(IntegerKind::Int32);
 
-    std::shared_ptr<Global> globalVar = std::make_shared<Global>(
+    std::shared_ptr<Global> globalVar = Global::make(
         type,
         test::constant::foobar,
         std::make_shared<IntegerLiteral>(type, 123)->staticCast<Value<>>()
@@ -70,8 +72,7 @@ TEST(CodeGenTest, VisitAllocaInst) {
     std::shared_ptr<LlvmLoweringPass> llvmLoweringPass = test::bootstrap::llvmLoweringPass();
 
     std::vector<std::shared_ptr<Instruction>> insts = {
-        std::make_shared<AllocaInst>(
-            nullptr,
+        AllocaInst::make(
             TypeFactory::typeInteger(IntegerKind::Int32)
         )
     };
@@ -87,9 +88,7 @@ TEST(CodeGenTest, VisitReturnInst) {
     std::shared_ptr<LlvmLoweringPass> llvmLoweringPass = test::bootstrap::llvmLoweringPass();
 
     std::vector<std::shared_ptr<Instruction>> insts = {
-        std::make_shared<ReturnInst>(
-            nullptr,
-
+        ReturnInst::make(
             std::make_shared<IntegerLiteral>(
                 TypeFactory::typeInteger(IntegerKind::Int32),
                 1
@@ -126,7 +125,7 @@ TEST(CodeGenTest, VisitReturnInst) {
 //     */
 //    EXPECT_TRUE(ionshared::util::hasValue(functionEntryBlock));
 //
-//    std::shared_ptr<AllocaInst> allocaInst = std::make_shared<AllocaInst>(AllocaInstOpts{
+//    std::shared_ptr<AllocaInst> allocaInst = AllocaInst::make(
 //        /**
 //         * The alloca instruction needs it's parent to be set in order
 //         * to be resolved.
@@ -134,7 +133,7 @@ TEST(CodeGenTest, VisitReturnInst) {
 //        *functionEntryBlock,
 //
 //        returnValueType
-//    });
+//    );
 //
 //    PtrRef<AllocaInst> allocaInstRef1 = std::make_shared<Ref<AllocaInst>>(
 //        RefKind::Inst,
@@ -143,13 +142,13 @@ TEST(CodeGenTest, VisitReturnInst) {
 //        allocaInst
 //    );
 //
-//    std::shared_ptr<StoreInst> storeInst = std::make_shared<StoreInst>(StoreInstOpts{
+//    std::shared_ptr<StoreInst> storeInst = StoreInst::make(
 //        // No need for parent to be set.
 //        nullptr,
 //
 //        std::make_shared<IntegerLiteral>(returnValueType, 1)->staticCast<Value<>>(),
 //        allocaInstRef1
-//    });
+//    );
 //
 //    allocaInstRef1->setOwner(storeInst);
 //
@@ -160,7 +159,7 @@ TEST(CodeGenTest, VisitReturnInst) {
 //        allocaInst
 //    );
 //
-//    std::shared_ptr<ReturnInst> returnInst = std::make_shared<ReturnInst>(ReturnInstOpts{
+//    std::shared_ptr<ReturnInst> returnInst = ReturnInst::make(ReturnInstOpts{
 //        /**
 //         * The return instruction needs it's parent to be set in order
 //         * for its return value reference to be resolved.
@@ -201,18 +200,18 @@ TEST(CodeGenTest, VisitReturnInst) {
 //
 //    passManager.registerPass(std::make_shared<NameResolutionPass>());
 //
-//    std::shared_ptr<BasicBlock> body = std::make_shared<BasicBlock>(BasicBlockOpts{
+//    std::shared_ptr<BasicBlock> body = BasicBlock::make(
 //        nullptr,
 //        BasicBlockKind::Label,
 //        "if_body",
 //        {}
-//    });
+//    );
 //
 //    std::shared_ptr<BooleanLiteral> condition = std::make_shared<BooleanLiteral>(true);
 //    PtrRef<BasicBlock> bodyBasicBlockRef = std::make_shared<Ref<BasicBlock>>(body);
 //
 //    // TODO: Use some sort of factory design pattern.
-//    auto branchInst = std::make_shared<BranchInst>(BranchInstOpts{
+//    auto branchInst = BranchInst::make(
 //        body,
 //        condition,
 //
@@ -227,7 +226,7 @@ TEST(CodeGenTest, VisitReturnInst) {
 //         */
 //        bodyBasicBlockRef,
 //        bodyBasicBlockRef
-//    });
+//    );
 //
 //    branchInst->getConsequentBasicBlockRef()->setOwner(branchInst);
 //    branchInst->getAlternativeBasicBlockRef()->setOwner(branchInst);

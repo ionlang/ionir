@@ -10,6 +10,11 @@ namespace ionir {
     struct Pass;
 
     struct StructDefinition : Value<Struct> {
+        static std::shared_ptr<StructDefinition> make(
+            const std::shared_ptr<Struct>& declaration,
+            const std::vector<std::shared_ptr<Value<>>>& values = {}
+        ) noexcept;
+
         std::vector<std::shared_ptr<Value<>>> values;
 
         explicit StructDefinition(

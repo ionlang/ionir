@@ -1,15 +1,26 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    Struct::Struct(std::string name, Fields fields) noexcept :
-        Type(TypeKind::Struct, std::move(name)),
-        fields(std::move(fields)) {
-        std::shared_ptr<Construct> self = this->nativeCast();
+    std::shared_ptr<Struct> Struct::make(
+        const std::string& name,
+        const Fields& fields
+    ) noexcept {
+        std::shared_ptr<Struct> result =
+            std::make_shared<Struct>(name, fields);
+
         auto fieldsNativeMap = fields->unwrap();
 
         for (const auto& [name, type] : fieldsNativeMap) {
-            type->parent = self;
+            type->parent = result;
         }
+
+        return result;
+    }
+
+    Struct::Struct(std::string name, Fields fields) noexcept :
+        Type(TypeKind::Struct, std::move(name)),
+        fields(std::move(fields)) {
+        //
     }
 
     void Struct::accept(Pass& visitor) {

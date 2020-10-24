@@ -18,9 +18,9 @@ TEST(TypeCheckPassTest, Run) {
     Ast ast = Bootstrap::functionAst(test::constant::foobar);
 
     ionshared::OptPtr<Function> function =
-        ast[0]->dynamicCast<Module>()->lookupFunction(test::constant::foobar);
+        ast.front()->dynamicCast<Module>()->lookupFunction(test::constant::foobar);
 
-    EXPECT_TRUE(ionshared::util::hasValue(function));
+    ASSERT_TRUE(ionshared::util::hasValue(function));
 
     std::shared_ptr<Prototype> prototype = function->get()->prototype;
 
@@ -40,7 +40,7 @@ TEST(TypeCheckPassTest, Run) {
     EXPECT_EQ(passContext->diagnostics->getSize(), 1);
 
     ionshared::Diagnostic functionReturnValueMissingDiagnostic =
-        (*passContext->diagnostics.get())[0];
+        (*passContext->diagnostics)[0];
 
     EXPECT_EQ(
         functionReturnValueMissingDiagnostic.code.value(),
@@ -51,7 +51,7 @@ TEST(TypeCheckPassTest, Run) {
 
     // TODO: Verify that the body has at least one basic block.
 
-    std::shared_ptr<BasicBlock> entrySection{function->get()->body->basicBlocks.begin()->get()};
+    std::shared_ptr<BasicBlock> entrySection{function->get()->basicBlocks.begin()->get()};
     InstBuilder instBuilder = InstBuilder(entrySection);
 
     instBuilder.createReturn();
@@ -69,10 +69,13 @@ TEST(TypeCheckPassTast, FunctionReturnTypeValueMismatch) {
     std::shared_ptr<ionshared::PassContext> passContext =
         std::make_shared<ionshared::PassContext>();
 
-    std::shared_ptr<TypeCheckPass> typeCheckPass = std::make_shared<TypeCheckPass>(passContext);
+    std::shared_ptr<TypeCheckPass> typeCheckPass =
+        std::make_shared<TypeCheckPass>(passContext);
 
     Ast ast = Bootstrap::functionAst(test::constant::foobar);
-    ionshared::OptPtr<Function> function = ast[0]->dynamicCast<Module>()->lookupFunction(test::constant::foobar);
+
+    ionshared::OptPtr<Function> function =
+        ast[0]->dynamicCast<Module>()->lookupFunction(test::constant::foobar);
 
     EXPECT_TRUE(function.has_value());
 
@@ -82,7 +85,7 @@ TEST(TypeCheckPassTast, FunctionReturnTypeValueMismatch) {
 
     // TODO: Verify that the body has at least one basic block.
 
-    std::shared_ptr<BasicBlock> entrySection{function->get()->body->basicBlocks.begin()->get()};
+    std::shared_ptr<BasicBlock> entrySection{function->get()->basicBlocks.begin()->get()};
     InstBuilder instBuilder = InstBuilder(entrySection);
 
     std::shared_ptr<ReturnInst> returnInst = instBuilder.createReturn(
@@ -97,7 +100,7 @@ TEST(TypeCheckPassTast, FunctionReturnTypeValueMismatch) {
     EXPECT_EQ(passContext->diagnostics->getSize(), 1);
 
     ionshared::Diagnostic functionReturnValueTypeMismatchDiagnostic =
-        (*passContext->diagnostics.get())[0];
+        (*passContext->diagnostics)[0];
 
     EXPECT_EQ(
         functionReturnValueTypeMismatchDiagnostic.code.value(),

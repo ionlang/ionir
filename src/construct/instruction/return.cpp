@@ -1,14 +1,25 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
+    std::shared_ptr<ReturnInst> ReturnInst::make(
+        ionshared::OptPtr<Value<>> value
+    ) noexcept {
+        std::shared_ptr<ReturnInst> result =
+            std::make_shared<ReturnInst>(value);
+
+        if (ionshared::util::hasValue(value)) {
+            value->get()->parent = result;
+        }
+
+        return result;
+    }
+
     ReturnInst::ReturnInst(
         ionshared::OptPtr<Value<>> value
     ) noexcept :
         Instruction(InstKind::Return),
         value(std::move(value)) {
-        if (ionshared::util::hasValue(this->value)) {
-            this->value->get()->parent = this->nativeCast();
-        }
+        //
     }
 
     void ReturnInst::accept(Pass& visitor) {

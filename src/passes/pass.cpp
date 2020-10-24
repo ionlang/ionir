@@ -37,10 +37,6 @@ namespace ionir {
         //
     }
 
-    void Pass::visitFunctionBody(std::shared_ptr<FunctionBody> node) {
-        //
-    }
-
     void Pass::visitPrototype(std::shared_ptr<Prototype> node) {
         //
     }

@@ -37,6 +37,12 @@ namespace ionir {
 
     // TODO: Consider making template<T type>, to constrain left & right side values' types.
     struct OperationValue : Value<> {
+        static std::shared_ptr<OperationValue> make(
+            OperatorKind operatorKind,
+            const std::shared_ptr<Value<>>& leftSideValue,
+            ionshared::OptPtr<Value<>> rightSideValue = std::nullopt
+        ) noexcept;
+
         const OperatorKind operatorKind;
 
         std::shared_ptr<Value<>> leftSideValue;

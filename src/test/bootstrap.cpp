@@ -26,29 +26,22 @@ namespace ionir::test::bootstrap {
         std::shared_ptr<VoidType> returnType = TypeFactory::typeVoid();
 
         // TODO: Consider support for module here.
-        std::shared_ptr<Prototype> prototype = std::make_shared<Prototype>(
+        std::shared_ptr<Prototype> prototype = Prototype::make(
             test::constant::foobar,
             std::make_shared<Args>(),
-            returnType,
-            nullptr
+            returnType
         );
 
-        std::shared_ptr<BasicBlock> entrySection = std::make_shared<BasicBlock>(
-            nullptr,
-            BasicBlockKind::Internal,
-            std::move(instructions)
+        returnType->parent = prototype;
+
+        std::shared_ptr<BasicBlock> entrySection = BasicBlock::make(
+            instructions
         );
 
-        std::shared_ptr<Function> function =
-            std::make_shared<Function>(prototype, nullptr);
-
-        std::shared_ptr<FunctionBody> body = std::make_shared<FunctionBody>(
-            function,
+        std::shared_ptr<Function> function = Function::make(
+            prototype,
             std::vector<std::shared_ptr<BasicBlock>>{entrySection}
         );
-
-        entrySection->parent = body;
-        function->body = body;
 
         return function;
     }

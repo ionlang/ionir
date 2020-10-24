@@ -8,6 +8,11 @@ namespace ionir {
     typedef ionshared::PtrSymbolTable<Type> Fields;
 
     struct Struct : Type {
+        static std::shared_ptr<Struct> make(
+            const std::string& name,
+            const Fields& fields
+        ) noexcept;
+
         Fields fields;
 
         Struct(std::string name, Fields fields) noexcept;

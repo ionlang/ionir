@@ -5,14 +5,8 @@
 
 namespace ionir {
     bool Construct::verify(const std::shared_ptr<Construct>& construct) noexcept {
-        if (construct == nullptr
-            || construct->constructKind != ConstructKind::Module
-            && !ionshared::util::hasValue(construct->parent)) {
-            return false;
-        }
-
-        // TODO: Verify that if the parent is has value, its not nullptr, and that its not the same as the construct.
-        return construct->verify();
+        return construct != nullptr
+            && construct->verify();
     }
 
     Construct::Construct(
@@ -33,6 +27,8 @@ namespace ionir {
     }
 
     bool Construct::verify() {
+        // TODO: Isn't Construct::verify() supposed to be used here?
+
         Ast children = this->getChildrenNodes();
 
         /**
@@ -48,7 +44,9 @@ namespace ionir {
             }
         }
 
-        return true;
+        return this->constructKind != ConstructKind::Module
+            ? ionshared::util::hasValue(this->parent)
+            : true;
     }
 
     std::optional<std::string> Construct::findConstructKindName() {
