@@ -4,7 +4,7 @@
 #include <ionir/passes/lowering/llvm_lowering_pass.h>
 
 namespace ionir {
-    llvm::IRBuilder<> LlvmLoweringPass::LlvmBuffers::makeBuilder() {
+    llvm::IRBuilder<> LlvmBuffers::makeBuilder() {
         return llvm::IRBuilder<>(this->basicBlocks.forceGetTopItem());
     }
 
@@ -25,16 +25,11 @@ namespace ionir {
         return result;
     }
 
-    std::shared_ptr<ionshared::SymbolTable<llvm::Module*>> LlvmLoweringPass::getModules() const {
-        return this->modules;
-    }
-
     LlvmLoweringPass::LlvmLoweringPass(
-        std::shared_ptr<ionshared::PassContext> context,
-        std::shared_ptr<ionshared::SymbolTable<llvm::Module*>> modules
+        std::shared_ptr<ionshared::PassContext> context
     ) noexcept :
         Pass(std::move(context)),
-        modules(std::move(modules)),
+        llvmModules(ionshared::util::makePtrSymbolTable<llvm::Module>()),
         llvmBuffers(),
         moduleSymbolTable(),
         valueSymbolTable(),
@@ -187,7 +182,7 @@ namespace ionir {
 
         this->llvmBuffers.modules.push(llvmModule);
         this->moduleSymbolTable.set(construct, llvmModule);
-        this->modules->set(**construct->identifier, llvmModule.get());
+        this->llvmModules->set(**construct->identifier, llvmModule);
 
         // Proceed to visit all the module's children (top-level constructs).
         std::map<std::string, std::shared_ptr<Construct>> moduleNativeSymbolTable =

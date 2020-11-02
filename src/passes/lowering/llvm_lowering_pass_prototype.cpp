@@ -53,12 +53,8 @@ namespace ionir {
 
     void LlvmLoweringPass::visitExtern(std::shared_ptr<Extern> construct) {
         // TODO: Should we be checking whether a function exists/has been emitted via name/id? Or using symbol table? Investigate.
-        std::shared_ptr<llvm::Function> existingExternDefinition{
-            this->llvmBuffers.modules.forceGetTopItem()
-                ->getFunction(construct->prototype->name)
-        };
-
-        if (existingExternDefinition != nullptr) {
+        if (this->llvmBuffers.modules.forceGetTopItem()
+            ->getFunction(construct->prototype->name) != nullptr) {
             this->context->diagnosticBuilder
                 ->bootstrap(diagnostic::externRedefinition)
                 ->finish();
@@ -68,10 +64,7 @@ namespace ionir {
 
         this->valueSymbolTable.set(
             construct,
-
-            this->eagerVisitValue(
-                construct->prototype
-            )
+            this->eagerVisitValue(construct->prototype)
         );
     }
 

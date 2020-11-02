@@ -15,17 +15,17 @@ namespace ionir {
         return true;
     }
 
-    void TypeCheckPass::visitFunction(std::shared_ptr<Function> node) {
+    void TypeCheckPass::visitFunction(std::shared_ptr<Function> construct) {
         ionshared::OptPtr<BasicBlock> entryBasicBlock = std::nullopt;
 
-        if (!node->basicBlocks.empty()) {
-            entryBasicBlock = node->basicBlocks.front();
+        if (!construct->basicBlocks.empty()) {
+            entryBasicBlock = construct->basicBlocks.front();
         }
 
         if (!ionshared::util::hasValue(entryBasicBlock)) {
             this->context->diagnosticBuilder
                 ->bootstrap(diagnostic::functionMissingEntryBasicBlock)
-                ->formatMessage(node->prototype->name)
+                ->formatMessage(construct->prototype->name)
                 ->finish();
 
             return;
@@ -39,7 +39,7 @@ namespace ionir {
          * LLVM codegen pass will implicitly append a return instruction
          * with no value.
          */
-        if (node->prototype->returnType->typeKind != TypeKind::Void) {
+        if (construct->prototype->returnType->typeKind != TypeKind::Void) {
             std::vector<std::shared_ptr<Instruction>> instructions =
                 entryBasicBlock->get()->instructions;
 
@@ -50,15 +50,15 @@ namespace ionir {
             if (instructions.empty() || !ionshared::util::hasValue(terminalInst)) {
                 this->context->diagnosticBuilder
                     ->bootstrap(diagnostic::functionReturnValueMissing)
-                    ->formatMessage(node->prototype->name)
+                    ->formatMessage(construct->prototype->name)
                     ->finish();
             }
         }
     }
 
-    void TypeCheckPass::visitReturnInst(std::shared_ptr<ReturnInst> node) {
+    void TypeCheckPass::visitReturnInst(std::shared_ptr<ReturnInst> construct) {
         std::shared_ptr<Construct> possibleFunctionParent =
-            node->forceGetUnboxedParent()->forceGetUnboxedParent();
+            construct->forceGetUnboxedParent()->forceGetUnboxedParent();
 
         IONIR_PASS_INTERNAL_ASSERT(
             possibleFunctionParent->constructKind == ConstructKind::Function
@@ -66,7 +66,7 @@ namespace ionir {
 
         std::shared_ptr<Function> function = possibleFunctionParent->dynamicCast<Function>();
         std::shared_ptr<Type> functionReturnType = function->prototype->returnType;
-        ionshared::OptPtr<Construct> returnStatementValue = node->value;
+        ionshared::OptPtr<Construct> returnStatementValue = construct->value;
         bool returnStatementValueSet = ionshared::util::hasValue(returnStatementValue);
 
         /**
@@ -135,9 +135,9 @@ namespace ionir {
         }
     }
 
-    void TypeCheckPass::visitStoreInst(std::shared_ptr<StoreInst> node) {
-        TypeKind storeInstValueTypeKind = node->value->type->typeKind;
-        std::shared_ptr<AllocaInst> targetValue = node->target;
+    void TypeCheckPass::visitStoreInst(std::shared_ptr<StoreInst> construct) {
+        TypeKind storeInstValueTypeKind = construct->value->type->typeKind;
+        std::shared_ptr<AllocaInst> targetValue = construct->target;
 
         // Attempting to store a value with a different type than what was allocated.
         if (storeInstValueTypeKind != targetValue->type->typeKind) {
@@ -147,35 +147,35 @@ namespace ionir {
                 // TODO: Get names for types to display on the error message.
                 ->formatMessage("pending", "pending")
 
-                ->setSourceLocation(node->sourceLocation)
+                ->setSourceLocation(construct->sourceLocation)
                 ->finish();
         }
     }
 
-    void TypeCheckPass::visitStructDefinition(std::shared_ptr<StructDefinition> node) {
-        if (node->values.size() != node->type->fields->getSize()) {
+    void TypeCheckPass::visitStructDefinition(std::shared_ptr<StructDefinition> construct) {
+        if (construct->values.size() != construct->type->fields->getSize()) {
             this->context->diagnosticBuilder
                 ->bootstrap(diagnostic::structWrongValueCount)
 
                 ->formatMessage(
-                    node->type->name,
-                    node->values.size(),
-                    node->type->fields->getSize()
+                    construct->type->name,
+                    construct->values.size(),
+                    construct->type->fields->getSize()
                 )
 
                 ->finish();
         }
         else {
-            auto declarationNativeFieldsMap = node->type->fields->unwrap();
+            auto declarationNativeFieldsMap = construct->type->fields->unwrap();
             size_t index = 0;
 
             for (const auto& [name, type] : declarationNativeFieldsMap) {
-                auto value = node->values[index];
+                auto value = construct->values[index];
 
                 if (!value->type->isSameAs(type)) {
                     this->context->diagnosticBuilder
                         ->bootstrap(diagnostic::structIncompatibleValueType)
-                        ->formatMessage(node->type->name, "pending", index, "pending")
+                        ->formatMessage(construct->type->name, "pending", index, "pending")
                         ->finish();
                 }
 
@@ -184,11 +184,11 @@ namespace ionir {
         }
     }
 
-    void TypeCheckPass::visitCallInst(std::shared_ptr<CallInst> node) {
-        if (node->callee->constructKind == ConstructKind::Function) {
-            std::shared_ptr<Function> calleeFunction = node->callee->dynamicCast<Function>();
+    void TypeCheckPass::visitCallInst(std::shared_ptr<CallInst> construct) {
+        if (construct->callee->constructKind == ConstructKind::Function) {
+            std::shared_ptr<Function> calleeFunction = construct->callee->dynamicCast<Function>();
             size_t expectedArgumentCount = calleeFunction->prototype->args->items->getSize();
-            size_t actualArgumentCount = node->arguments.size();
+            size_t actualArgumentCount = construct->arguments.size();
 
             if (actualArgumentCount != expectedArgumentCount) {
                 this->context->diagnosticBuilder
@@ -209,9 +209,9 @@ namespace ionir {
                     calleeFunction->prototype->args->items->unwrap();
 
                 for (const auto& [name, type] : functionDeclarationArgumentsNativeMap) {
-                    if (node->arguments[index]->constructKind == ConstructKind::Type) {
+                    if (construct->arguments[index]->constructKind == ConstructKind::Type) {
                         std::shared_ptr<Type> callArgumentType =
-                            node->arguments[index]->dynamicCast<Type>();
+                            construct->arguments[index]->dynamicCast<Type>();
 
                         if (!callArgumentType->isSameAs(type.first)) {
                             this->context->diagnosticBuilder

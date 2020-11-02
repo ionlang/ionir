@@ -10,7 +10,7 @@ namespace ionir::type_util {
     );
 
     bool isIntegerType(
-        std::shared_ptr<Type> type,
+        const std::shared_ptr<Type>& type,
         IntegerKind integerKind
     );
 }

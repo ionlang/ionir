@@ -1,8 +1,7 @@
-; ModuleID = 'test'
-source_filename = "test"
+; ModuleID = 'bar'
+source_filename = "bar"
 
-define void @foobar() {
-entry:
-  %0 = alloca i32
+define void @foo() {
+  %1 = alloca i32
   ret void
 }

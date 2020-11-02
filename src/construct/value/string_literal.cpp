@@ -2,9 +2,10 @@
 
 namespace ionir {
     StringLiteral::StringLiteral(std::string value) noexcept :
-        Value(ValueKind::String, TypeFactory::typeString()),
+        // TODO: Type has no parent. Type is wrong. Awaiting StringType.
+        Value(ValueKind::String, std::make_shared<BooleanType>()),
         value(std::move(value)) {
-        this->type->parent = this->nativeCast();
+        //
     }
 
     void StringLiteral::accept(Pass& visitor) {

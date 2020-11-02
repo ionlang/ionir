@@ -3,7 +3,6 @@
 #include <optional>
 #include <string>
 #include <vector>
-#include <ionir/misc/type_factory.h>
 #include <ionir/misc/util.h>
 #include <ionir/tracking/scope_anchor.h>
 #include <ionir/construct/pseudo/child_construct.h>
@@ -18,7 +17,21 @@ namespace ionir {
 
     struct JumpInst;
 
+    // TODO: Use other basic block kinds (and emit their corresponding names).
     enum struct BasicBlockKind {
+        /**
+         * A basic block containing intrinsic declarations used by the
+         * compiler to keep track of the return value, among others.
+         * Cannot be directly accessed by the user.
+         */
+        Declarations,
+
+        /**
+         * The first body basic block executed after declarations
+         * are setup (if any). Cannot be directly accessed by the user.
+         */
+        Entry,
+
         /**
          * A basic block defined by the user. Can be jumped to
          * using a goto instruction.
@@ -29,14 +42,14 @@ namespace ionir {
          * A basic block which forms part of a construct. Cannot be
          * directly accessed by the user.
          */
-        Internal
+        Intrinsic
     };
 
     // TODO: Must be verified to contain a single terminal instruction at the end.
     struct BasicBlock : ConstructWithParent<Function>, ScopeAnchor<Instruction> {
         static std::shared_ptr<BasicBlock> make(
             const std::vector<std::shared_ptr<Instruction>>& instructions = {},
-            BasicBlockKind kind = BasicBlockKind::Internal,
+            BasicBlockKind kind = BasicBlockKind::Intrinsic,
 
             const PtrSymbolTable<Instruction>& symbolTable =
             ionshared::util::makePtrSymbolTable<Instruction>()
@@ -57,7 +70,7 @@ namespace ionir {
 
         explicit BasicBlock(
             std::vector<std::shared_ptr<Instruction>> instructions = {},
-            BasicBlockKind kind = BasicBlockKind::Internal,
+            BasicBlockKind kind = BasicBlockKind::Intrinsic,
 
             PtrSymbolTable<Instruction> symbolTable =
                 ionshared::util::makePtrSymbolTable<Instruction>()

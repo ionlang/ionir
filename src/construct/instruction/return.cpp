@@ -27,16 +27,12 @@ namespace ionir {
     }
 
     Ast ReturnInst::getChildrenNodes() {
-        if (!this->hasValue()) {
+        if (!ionshared::util::hasValue(this->value)) {
             return Construct::getChildrenNodes();
         }
 
         return {
             *this->value
         };
-    }
-
-    bool ReturnInst::hasValue() noexcept {
-        return ionshared::util::hasValue(this->value);
     }
 }

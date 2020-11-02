@@ -4,7 +4,6 @@
 #include <ionshared/misc/util.h>
 #include <ionir/construct/construct.h>
 #include <ionir/tracking/symbol_table.h>
-#include <ionir/misc/type_factory.h>
 
 namespace ionir {
     // TODO: Implement concepts to ensure T is or derives of Construct.

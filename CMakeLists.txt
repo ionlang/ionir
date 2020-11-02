@@ -4,7 +4,7 @@ project(ionir VERSION 1.0.0 LANGUAGES CXX)
 
 # Setup compiler flag(s) & standard(s).
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_EXE_LINKER_FLAGS "-ftime-report")
+#set(CMAKE_EXE_LINKER_FLAGS "-ftime-report")
 
 # General project information.
 set(PROJECT_URL "https://github.com/ionlang/ionir")
@@ -48,11 +48,19 @@ endif()
 # Option to use MD.
 option(USE_MD "Use MD instead of MTd" OFF)
 
-if (USE_MD)
+if(USE_MD)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MD")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
     message(STATUS "Using /MD flag")
-endif (USE_MD)
+endif(USE_MD)
+
+option(IONIR_BUILD_STATIC_LIB "Build static library" ON)
+
+if (IONIR_BUILD_STATIC_LIB)
+    set(IONIR_OPTION_LIB_TYPE STATIC)
+else()
+    set(IONIR_OPTION_LIB_TYPE SHARED)
+endif()
 
 # Setup versioning.
 set(VERSION_MAJOR "1")
@@ -84,7 +92,7 @@ file(
 )
 
 # Specify that this project is a library.
-add_library("${PROJECT_NAME}" ${SOURCES})
+add_library("${PROJECT_NAME}" ${IONIR_OPTION_LIB_TYPE} ${SOURCES})
 
 # Set VERSION property. Optional, but good practice.
 set_target_properties("${PROJECT_NAME}" PROPERTIES VERSION ${PROJECT_VERSION})

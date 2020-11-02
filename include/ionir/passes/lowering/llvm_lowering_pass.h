@@ -27,31 +27,27 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
+    struct LlvmBuffers {
+        ionshared::Stack<std::shared_ptr<llvm::Module>> modules{};
+
+        ionshared::Stack<llvm::Function*> functions{};
+
+        ionshared::Stack<llvm::BasicBlock*> basicBlocks{};
+
+        /**
+         * Create a new LLVM IR builder instance and return it.
+         * Will throw a runtime exception if the basic block buffer
+         * is empty.
+         */
+        llvm::IRBuilder<> makeBuilder();
+    };
+
     class LlvmLoweringPass : public Pass {
     private:
-        struct LlvmBuffers {
-            ionshared::Stack<std::shared_ptr<llvm::Module>> modules{};
-
-            ionshared::Stack<llvm::Function*> functions{};
-
-            ionshared::Stack<llvm::BasicBlock*> basicBlocks{};
-
-            /**
-             * Create a new LLVM IR builder instance and return it.
-             * Will throw a runtime exception if the basic block buffer
-             * is empty.
-             */
-            llvm::IRBuilder<> makeBuilder();
-        };
-
         static llvm::Type* processTypeQualifiers(
             const std::shared_ptr<TypeQualifiers>& qualifiers,
             llvm::Type* llvmType
         );
-
-        std::shared_ptr<ionshared::SymbolTable<llvm::Module*>> modules;
-
-        LlvmBuffers llvmBuffers;
 
         ionshared::LoweringSymbolTable<
             std::shared_ptr<Module>,
@@ -107,7 +103,7 @@ namespace ionir {
                 this->visit(construct);
             }
 
-            if (!this->valueSymbolTable.contains(construct)) {
+            if (!this->valueSymbolTable.contains(construct) && !this->typeSymbolTable.contains(construct)) {
                 // TODO: Use diagnostics API (internal error).
                 throw std::runtime_error("Visiting construct did not create an entry in the local symbol table");
             }
@@ -186,16 +182,13 @@ namespace ionir {
     public:
         IONSHARED_PASS_ID;
 
+        ionshared::PtrSymbolTable<llvm::Module> llvmModules;
+
+        LlvmBuffers llvmBuffers;
+
         explicit LlvmLoweringPass(
-            std::shared_ptr<ionshared::PassContext> context,
-
-            std::shared_ptr<ionshared::SymbolTable<llvm::Module*>> modules =
-                std::make_shared<ionshared::SymbolTable<llvm::Module*>>()
+            std::shared_ptr<ionshared::PassContext> context
         ) noexcept;
-
-        [[nodiscard]] std::shared_ptr<
-            ionshared::SymbolTable<llvm::Module*>
-        > getModules() const;
 
         void visit(std::shared_ptr<Construct> node) override;
 

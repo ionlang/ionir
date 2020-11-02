@@ -1,4 +1,4 @@
-; ModuleID = 'test'
-source_filename = "test"
+; ModuleID = 'bar'
+source_filename = "bar"
 
-@foobar = global i32 123
+@foo = global i32 123

@@ -5,6 +5,7 @@
 #include <vector>
 #include <functional>
 #include <ionshared/construct/base_construct.h>
+#include <ionshared/construct/construct_builder.h>
 #include <ionir/tracking/symbol_table.h>
 
 namespace ionir {
@@ -138,7 +139,9 @@ namespace ionir {
          * Serves as a proxy to safely invoke the verification method
          * of a possibly nullptr construct.
          */
-        [[nodiscard]] static bool verify(const std::shared_ptr<Construct>& construct) noexcept;
+        [[nodiscard]] static bool verify(
+            const std::shared_ptr<Construct>& construct
+        ) noexcept;
 
         explicit Construct(
             ConstructKind kind,
@@ -166,4 +169,7 @@ namespace ionir {
 
         [[nodiscard]] std::shared_ptr<Construct> fetchRootConstruct();
     };
+
+    template<typename T>
+    using ConstructBuilder = ionshared::ConstructBuilder<Construct, ConstructKind, T>;
 }

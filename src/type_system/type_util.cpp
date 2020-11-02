@@ -1,5 +1,4 @@
 #include <ionir/type_system/type_util.h>
-#include <ionir/construct/type/integer_type.h>
 
 namespace ionir::type_util {
     bool isAtomicTypesCompatible(TypeKind typeKindA, TypeKind typeKindB) {
@@ -22,7 +21,7 @@ namespace ionir::type_util {
     }
 
     bool isIntegerType(
-        std::shared_ptr<Type> type,
+        const std::shared_ptr<Type>& type,
         IntegerKind integerKind
     ) {
         if (type->typeKind != TypeKind::Integer) {

@@ -21,17 +21,11 @@ namespace ionir {
     }
 
     void LlvmLoweringPass::visitReturnInst(std::shared_ptr<ReturnInst> construct) {
-        llvm::ReturnInst* llvmReturnInst =
-            this->llvmBuffers.makeBuilder().CreateRetVoid();
+        llvm::ReturnInst* llvmReturnInst = ionshared::util::hasValue(construct->value)
+            ? this->llvmBuffers.makeBuilder()
+                .CreateRet(this->eagerVisitValue(*construct->value))
 
-        if (ionshared::util::hasValue(construct->value)) {
-            /**
-             * Create the LLVM equivalent return instruction
-             * using the buffered builder.
-             */
-            llvmReturnInst = this->llvmBuffers.makeBuilder()
-                .CreateRet(this->eagerVisitValue(*construct->value));
-        }
+            : this->llvmBuffers.makeBuilder().CreateRetVoid();
 
         this->valueSymbolTable.set(construct, llvmReturnInst);
     }

@@ -24,7 +24,7 @@ TEST(TypeCheckPassTest, Run) {
 
     std::shared_ptr<Prototype> prototype = function->get()->prototype;
 
-    prototype->returnType = TypeFactory::typeInteger(IntegerKind::Int32);
+    prototype->returnType = Construct::makeChild<IntegerType>(prototype, IntegerKind::Int32);
 
     // TODO: For now it's throwing, but soon instead check for produced semantic error.
 
@@ -47,14 +47,13 @@ TEST(TypeCheckPassTest, Run) {
         diagnostic::functionReturnValueMissing.code.value()
     );
 
-    prototype->returnType = TypeFactory::typeVoid();
+    prototype->returnType = Construct::makeChild<VoidType>(prototype);
 
     // TODO: Verify that the body has at least one basic block.
 
-    std::shared_ptr<BasicBlock> entrySection{function->get()->basicBlocks.begin()->get()};
-    InstBuilder instBuilder = InstBuilder(entrySection);
+    std::shared_ptr<BasicBlock> entrySection = function->get()->basicBlocks.front();
 
-    instBuilder.createReturn();
+    InstBuilder(entrySection).createReturn();
 
     // TODO: Compare diagnostics instead.
     /**
@@ -65,7 +64,7 @@ TEST(TypeCheckPassTest, Run) {
     EXPECT_NO_THROW(passManager.run(ast));
 }
 
-TEST(TypeCheckPassTast, FunctionReturnTypeValueMismatch) {
+TEST(TypeCheckPassTest, FunctionReturnTypeValueMismatch) {
     std::shared_ptr<ionshared::PassContext> passContext =
         std::make_shared<ionshared::PassContext>();
 
@@ -77,20 +76,19 @@ TEST(TypeCheckPassTast, FunctionReturnTypeValueMismatch) {
     ionshared::OptPtr<Function> function =
         ast[0]->dynamicCast<Module>()->lookupFunction(test::constant::foobar);
 
-    EXPECT_TRUE(function.has_value());
+    ASSERT_TRUE(function.has_value());
 
     std::shared_ptr<Prototype> prototype = function->get()->prototype;
 
-    prototype->returnType = TypeFactory::typeInteger(IntegerKind::Int32);
+    prototype->returnType = Construct::makeChild<IntegerType>(prototype, IntegerKind::Int32);
 
     // TODO: Verify that the body has at least one basic block.
 
     std::shared_ptr<BasicBlock> entrySection{function->get()->basicBlocks.begin()->get()};
-    InstBuilder instBuilder = InstBuilder(entrySection);
 
-    std::shared_ptr<ReturnInst> returnInst = instBuilder.createReturn(
-        std::make_shared<IntegerLiteral>(
-            TypeFactory::typeInteger(IntegerKind::Int8),
+    std::shared_ptr<ReturnInst> returnInst = InstBuilder(entrySection).createReturn(
+        IntegerLiteral::make(
+            std::make_shared<IntegerType>(IntegerKind::Int8),
             2
         )->flatten()
     );

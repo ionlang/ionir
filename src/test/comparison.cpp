@@ -24,6 +24,9 @@ namespace ionir::test::comparison {
             return false;
         }
 
+        // TODO: Debugging.
+        std::cout << util::trim(output) << std::endl;
+
         // Trim and compare expected output and actual file content.
         return util::trim(std::move(output)) == util::trim(*contents);
     }
@@ -33,13 +36,16 @@ namespace ionir::test::comparison {
         const std::string& fileName
     ) {
         // TODO: Verify that a module was emitted / contained there.
-        std::optional<llvm::Module*> llvmModuleBuffer =
-            llvmLoweringPass->getModules()->unwrap().begin()->second;
+        std::shared_ptr<llvm::Module> llvmModuleBuffer =
+            llvmLoweringPass->llvmModules->unwrap().begin()->second;
 
-        if (!ionshared::util::hasValue(llvmModuleBuffer)) {
+        if (llvmModuleBuffer == nullptr) {
             throw std::runtime_error("Module buffer in LlvmCodegenPass is not set");
         }
 
-        return comparison::ir(ionshared::LlvmModule(*llvmModuleBuffer).makeIr(), fileName);
+        return comparison::ir(
+            ionshared::LlvmModule(llvmModuleBuffer.get()).makeIr(),
+            fileName
+        );
     }
 }

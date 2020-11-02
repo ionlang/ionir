@@ -10,14 +10,14 @@ namespace ionir {
 
         bool initialize(ionshared::PassInfo& info) override;
 
-        void visitFunction(std::shared_ptr<Function> node) override;
+        void visitFunction(std::shared_ptr<Function> construct) override;
 
-        void visitReturnInst(std::shared_ptr<ReturnInst> node) override;
+        void visitReturnInst(std::shared_ptr<ReturnInst> construct) override;
 
-        void visitStoreInst(std::shared_ptr<StoreInst> node) override;
+        void visitStoreInst(std::shared_ptr<StoreInst> construct) override;
 
-        void visitStructDefinition(std::shared_ptr<StructDefinition> node) override;
+        void visitStructDefinition(std::shared_ptr<StructDefinition> construct) override;
 
-        void visitCallInst(std::shared_ptr<CallInst> node) override;
+        void visitCallInst(std::shared_ptr<CallInst> construct) override;
     };
 }

@@ -1,4 +1,4 @@
-; ModuleID = 'test'
-source_filename = "test"
+; ModuleID = 'bar'
+source_filename = "bar"
 
-declare void @foobar()
+declare void @foo()

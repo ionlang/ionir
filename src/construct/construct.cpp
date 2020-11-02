@@ -4,7 +4,9 @@
 #include <ionir/const/const.h>
 
 namespace ionir {
-    bool Construct::verify(const std::shared_ptr<Construct>& construct) noexcept {
+    bool Construct::verify(
+        const std::shared_ptr<Construct>& construct
+    ) noexcept {
         return construct != nullptr
             && construct->verify();
     }

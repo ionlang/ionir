@@ -2,9 +2,14 @@
 
 namespace ionir {
     CharLiteral::CharLiteral(char value) noexcept :
-        Value(ValueKind::Character, TypeFactory::typeChar()),
+        // TODO: Type has no parent.
+        Value(
+            ValueKind::Character,
+            std::make_shared<IntegerType>(IntegerKind::Int8, false)
+        ),
+
         value(value) {
-        this->type->parent = this->nativeCast();
+        //
     }
 
     void CharLiteral::accept(Pass& visitor) {

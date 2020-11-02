@@ -155,9 +155,9 @@ namespace ionir {
 
     ionshared::OptPtr<Instruction> BasicBlock::findTerminalInst() const noexcept {
         // TODO: There can only be a single return instruction.
-        for (const auto& inst : this->instructions) {
-            if (inst->isTerminal()) {
-                return inst;
+        for (const auto& instruction : this->instructions) {
+            if (instruction->isTerminal()) {
+                return instruction;
             }
         }
 

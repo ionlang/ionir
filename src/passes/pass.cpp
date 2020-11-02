@@ -6,17 +6,17 @@ namespace ionir {
         //
     }
 
-    void Pass::visit(std::shared_ptr<Construct> node) {
-        node->accept(*this);
-        this->visitChildren(node);
+    void Pass::visit(std::shared_ptr<Construct> construct) {
+        construct->accept(*this);
+        this->visitChildren(construct);
     }
 
-    void Pass::visitChildren(std::shared_ptr<Construct> node) {
+    void Pass::visitChildren(std::shared_ptr<Construct> construct) {
         // TODO: Will it cause StackOverflow error with large ASTs?
-        Ast children = node->getChildrenNodes();
+        Ast children = construct->getChildrenNodes();
 
         /**
-         * After visiting the node, attempt to
+         * After visiting the construct, attempt to
          * visit all its children as well.
          */
         for (const auto& child : children) {
@@ -25,59 +25,59 @@ namespace ionir {
         }
     }
 
-    void Pass::visitFunction(std::shared_ptr<Function> node) {
+    void Pass::visitFunction(std::shared_ptr<Function> construct) {
         //
     }
 
-    void Pass::visitExtern(std::shared_ptr<Extern> node) {
+    void Pass::visitExtern(std::shared_ptr<Extern> construct) {
         //
     }
 
-    void Pass::visitBasicBlock(std::shared_ptr<BasicBlock> node) {
+    void Pass::visitBasicBlock(std::shared_ptr<BasicBlock> construct) {
         //
     }
 
-    void Pass::visitPrototype(std::shared_ptr<Prototype> node) {
+    void Pass::visitPrototype(std::shared_ptr<Prototype> construct) {
         //
     }
 
-    void Pass::visitIntegerLiteral(std::shared_ptr<IntegerLiteral> node) {
+    void Pass::visitIntegerLiteral(std::shared_ptr<IntegerLiteral> construct) {
         //
     }
 
-    void Pass::visitCharLiteral(std::shared_ptr<CharLiteral> node) {
+    void Pass::visitCharLiteral(std::shared_ptr<CharLiteral> construct) {
         //
     }
 
-    void Pass::visitStringLiteral(std::shared_ptr<StringLiteral> node) {
+    void Pass::visitStringLiteral(std::shared_ptr<StringLiteral> construct) {
         //
     }
 
-    void Pass::visitBooleanLiteral(std::shared_ptr<BooleanLiteral> node) {
+    void Pass::visitBooleanLiteral(std::shared_ptr<BooleanLiteral> construct) {
         //
     }
 
-    void Pass::visitAllocaInst(std::shared_ptr<AllocaInst> node) {
+    void Pass::visitAllocaInst(std::shared_ptr<AllocaInst> construct) {
         //
     }
 
-    void Pass::visitReturnInst(std::shared_ptr<ReturnInst> node) {
+    void Pass::visitReturnInst(std::shared_ptr<ReturnInst> construct) {
         //
     }
 
-    void Pass::visitBranchInst(std::shared_ptr<BranchInst> node) {
+    void Pass::visitBranchInst(std::shared_ptr<BranchInst> construct) {
         //
     }
 
-    void Pass::visitCallInst(std::shared_ptr<CallInst> node) {
+    void Pass::visitCallInst(std::shared_ptr<CallInst> construct) {
         //
     }
 
-    void Pass::visitStoreInst(std::shared_ptr<StoreInst> node) {
+    void Pass::visitStoreInst(std::shared_ptr<StoreInst> construct) {
         //
     }
 
-    void Pass::visitJumpInst(std::shared_ptr<JumpInst> node) {
+    void Pass::visitJumpInst(std::shared_ptr<JumpInst> construct) {
         //
     }
 
@@ -85,55 +85,55 @@ namespace ionir {
         //
     }
 
-    void Pass::visitOperationValue(std::shared_ptr<OperationValue> node) {
+    void Pass::visitOperationValue(std::shared_ptr<OperationValue> construct) {
         //
     }
 
-    void Pass::visitGlobal(std::shared_ptr<Global> node) {
+    void Pass::visitGlobal(std::shared_ptr<Global> construct) {
         //
     }
 
-    void Pass::visitIntegerType(std::shared_ptr<IntegerType> node) {
+    void Pass::visitIntegerType(std::shared_ptr<IntegerType> construct) {
         //
     }
 
-    void Pass::visitVoidType(std::shared_ptr<VoidType> node) {
+    void Pass::visitVoidType(std::shared_ptr<VoidType> construct) {
         //
     }
 
-    void Pass::visitBooleanType(std::shared_ptr<BooleanType> node) {
+    void Pass::visitBooleanType(std::shared_ptr<BooleanType> construct) {
         //
     }
 
-    void Pass::visitPointerType(std::shared_ptr<PointerType> node) {
+    void Pass::visitPointerType(std::shared_ptr<PointerType> construct) {
         //
     }
 
-    void Pass::visitModule(std::shared_ptr<Module> node) {
+    void Pass::visitModule(std::shared_ptr<Module> construct) {
         //
     }
 
-    void Pass::visitDirective(Directive node) {
+    void Pass::visitDirective(Directive construct) {
         //
     }
 
-    void Pass::visitScopeAnchor(std::shared_ptr<ScopeAnchor<>> node) {
+    void Pass::visitScopeAnchor(std::shared_ptr<ScopeAnchor<>> construct) {
         //
     }
 
-    void Pass::visitErrorMarker(std::shared_ptr<ErrorMarker> node) {
+    void Pass::visitErrorMarker(std::shared_ptr<ErrorMarker> construct) {
         //
     }
 
-    void Pass::visitIdentifier(std::shared_ptr<Identifier> node) {
+    void Pass::visitIdentifier(std::shared_ptr<Identifier> construct) {
         //
     }
 
-    void Pass::visitStruct(std::shared_ptr<Struct> node) {
+    void Pass::visitStruct(std::shared_ptr<Struct> construct) {
         //
     }
 
-    void Pass::visitStructDefinition(std::shared_ptr<StructDefinition> node) {
+    void Pass::visitStructDefinition(std::shared_ptr<StructDefinition> construct) {
         //
     }
 }

@@ -1,7 +1,6 @@
-; ModuleID = 'test'
-source_filename = "test"
+; ModuleID = 'bar'
+source_filename = "bar"
 
-define void @foobar() {
-entry:
+define void @foo() {
   ret void
 }

@@ -9,15 +9,22 @@
 using namespace ionir;
 
 TEST(CodeGenTest, VisitExtern) {
-    std::shared_ptr<LlvmLoweringPass> llvmLoweringPass = test::bootstrap::llvmLoweringPass();
-    std::shared_ptr<VoidType> returnType = TypeFactory::typeVoid();
-    std::shared_ptr<Args> args = std::make_shared<Args>();
+    std::shared_ptr<Module> module = std::make_shared<Module>(
+        std::make_shared<Identifier>(test::constant::bar)
+    );
 
-    std::shared_ptr<Prototype> prototype =
-        Prototype::make(test::constant::foobar, args, returnType);
+    std::shared_ptr<LlvmLoweringPass> llvmLoweringPass =
+        test::bootstrap::llvmLoweringPass(module);
 
-    // TODO: Nullptr parent.
-    std::shared_ptr<Extern> externConstruct = Extern::make(prototype);
+    std::shared_ptr<Extern> externConstruct = Extern::make(
+        Prototype::make(
+            test::constant::foo,
+            std::make_shared<Args>(),
+            std::make_shared<VoidType>()
+        )
+    );
+
+    externConstruct->parent = module;
 
     llvmLoweringPass->visitExtern(externConstruct);
 
@@ -25,72 +32,104 @@ TEST(CodeGenTest, VisitExtern) {
 }
 
 TEST(CodeGenTest, VisitEmptyFunction) {
-    std::shared_ptr<LlvmLoweringPass> llvmLoweringPass = test::bootstrap::llvmLoweringPass();
-
-    std::shared_ptr<Prototype> prototype = Prototype::make(
-        test::constant::foobar,
-        std::make_shared<Args>(),
-        TypeFactory::typeVoid()
+    std::shared_ptr<Module> module = std::make_shared<Module>(
+        std::make_shared<Identifier>(test::constant::bar)
     );
 
+    std::shared_ptr<LlvmLoweringPass> llvmLoweringPass =
+        test::bootstrap::llvmLoweringPass(module);
+
     std::shared_ptr<Function> function = Function::make(
-        prototype,
+        Prototype::make(
+            test::constant::foo,
+            std::make_shared<Args>(),
+            std::make_shared<VoidType>()
+        ),
+
         std::vector<std::shared_ptr<BasicBlock>>{BasicBlock::make()}
     );
 
+    function->parent = module;
     llvmLoweringPass->visitFunction(function);
 
     EXPECT_TRUE(test::comparison::ir(llvmLoweringPass, "function_empty"));
 }
 
 TEST(CodeGenTest, VisitEmptyGlobal) {
-    std::shared_ptr<LlvmLoweringPass> llvmLoweringPass = test::bootstrap::llvmLoweringPass();
-    std::shared_ptr<IntegerType> type = TypeFactory::typeInteger(IntegerKind::Int32);
-    std::shared_ptr<Global> globalVar = Global::make(type, test::constant::foobar);
+    std::shared_ptr<Module> module = std::make_shared<Module>(
+        std::make_shared<Identifier>(test::constant::bar)
+    );
 
+    std::shared_ptr<LlvmLoweringPass> llvmLoweringPass =
+        test::bootstrap::llvmLoweringPass(module);
+
+    std::shared_ptr<Global> globalVar = Global::make(
+        std::make_shared<IntegerType>(IntegerKind::Int32),
+        test::constant::foo
+    );
+
+    globalVar->parent = module;
     llvmLoweringPass->visitGlobal(globalVar);
 
     EXPECT_TRUE(test::comparison::ir(llvmLoweringPass, "global_empty"));
 }
 
 TEST(CodeGenTest, VisitGlobalWithValue) {
-    std::shared_ptr<LlvmLoweringPass> llvmLoweringPass = test::bootstrap::llvmLoweringPass();
-    std::shared_ptr<IntegerType> type = TypeFactory::typeInteger(IntegerKind::Int32);
-
-    std::shared_ptr<Global> globalVar = Global::make(
-        type,
-        test::constant::foobar,
-        std::make_shared<IntegerLiteral>(type, 123)->staticCast<Value<>>()
+    std::shared_ptr<Module> module = std::make_shared<Module>(
+        std::make_shared<Identifier>(test::constant::bar)
     );
 
+    std::shared_ptr<LlvmLoweringPass> llvmLoweringPass =
+        test::bootstrap::llvmLoweringPass(module);
+
+    std::shared_ptr<Global> globalVar = Global::make(
+        std::make_shared<IntegerType>(IntegerKind::Int32),
+        test::constant::foo,
+
+        IntegerLiteral::make(
+            std::make_shared<IntegerType>(IntegerKind::Int32),
+            123
+        )->staticCast<Value<>>()
+    );
+
+    globalVar->parent = module;
     llvmLoweringPass->visitGlobal(globalVar);
 
     EXPECT_TRUE(test::comparison::ir(llvmLoweringPass, "global_init"));
 }
 
 TEST(CodeGenTest, VisitAllocaInst) {
-    std::shared_ptr<LlvmLoweringPass> llvmLoweringPass = test::bootstrap::llvmLoweringPass();
+    std::shared_ptr<Module> module = std::make_shared<Module>(
+        std::make_shared<Identifier>(test::constant::bar)
+    );
 
-    std::vector<std::shared_ptr<Instruction>> insts = {
-        AllocaInst::make(
-            TypeFactory::typeInteger(IntegerKind::Int32)
-        )
+    std::shared_ptr<LlvmLoweringPass> llvmLoweringPass =
+        test::bootstrap::llvmLoweringPass(module);
+
+    std::vector<std::shared_ptr<Instruction>> insts{
+        AllocaInst::make(std::make_shared<IntegerType>(IntegerKind::Int32))
     };
 
     std::shared_ptr<Function> function = test::bootstrap::emptyFunction(insts);
 
+    function->parent = module;
     llvmLoweringPass->visitFunction(function);
 
     EXPECT_TRUE(test::comparison::ir(llvmLoweringPass, "inst_alloca"));
 }
 
 TEST(CodeGenTest, VisitReturnInst) {
-    std::shared_ptr<LlvmLoweringPass> llvmLoweringPass = test::bootstrap::llvmLoweringPass();
+    std::shared_ptr<Module> module = std::make_shared<Module>(
+        std::make_shared<Identifier>(test::constant::bar)
+    );
 
-    std::vector<std::shared_ptr<Instruction>> insts = {
+    std::shared_ptr<LlvmLoweringPass> llvmLoweringPass =
+        test::bootstrap::llvmLoweringPass(module);
+
+    std::vector<std::shared_ptr<Instruction>> insts{
         ReturnInst::make(
-            std::make_shared<IntegerLiteral>(
-                TypeFactory::typeInteger(IntegerKind::Int32),
+            IntegerLiteral::make(
+                std::make_shared<IntegerType>(IntegerKind::Int32),
                 1
             )->flatten()
         )
@@ -98,6 +137,7 @@ TEST(CodeGenTest, VisitReturnInst) {
 
     std::shared_ptr<Function> function = test::bootstrap::emptyFunction(insts);
 
+    function->parent = module;
     llvmLoweringPass->visitFunction(function);
 
     EXPECT_TRUE(test::comparison::ir(llvmLoweringPass, "inst_return_i32"));

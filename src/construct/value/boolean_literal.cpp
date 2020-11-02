@@ -2,9 +2,10 @@
 
 namespace ionir {
     BooleanLiteral::BooleanLiteral(bool value) noexcept :
-        Value(ValueKind::Boolean, TypeFactory::typeBoolean()),
+        // TODO: Type has no parent.
+        Value(ValueKind::Boolean, std::shared_ptr<BooleanType>()),
         value(value) {
-        this->type->parent = this->nativeCast();
+        //
     }
 
     void BooleanLiteral::accept(Pass& visitor) {

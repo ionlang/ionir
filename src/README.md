@@ -1,21 +1,10 @@
-#### Structure
+#### Directory structure
 
-`constants` - Contains constant value definitions.
-
-`constructs` - Contains all Construct nodes, including Expression, Values, Instructions and Psuedo-Constructs.
-
-`llvm` - Contains LLVM entities wrappers and LLVM IR code-generation target visitor.
-
-`misc` - Utility classes and helper type definitions used through the project.
-
-`module` - *Missing description.*
-
-`parsing` - Contains AST (Abstract Syntax Tree) code, including the Parser and Driver.
-
-`passes` - *Missing description.*
-
-`reporting` - Error reporting and analysis classes.
-
-`syntax` - Lexing entities, contains the Lexer class and Token-related code.
-
-`type_system` - *Missing description.*
+* `ast` &mdash; *Description pending*.
+* `const` &mdash; Project constants and syntax-grammar lexemes.
+* `construct` &mdash; Construct data structures, such as types, values, Function, among others.
+* `misc` &mdash; Utility classes and helper type definitions used through the project.
+* `passes` &mdash; Passes including LLVM-lowering and type-checking, among others.
+* `test` &mdash; Unit testing utility and classes.
+* `tracking` &mdash; *Description pending*.
+* `type_system` &mdash; *Missing description*.
