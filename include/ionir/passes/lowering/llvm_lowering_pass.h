@@ -99,7 +99,7 @@ namespace ionir {
              * not been emitted already, it will be emitted during this visit.
              */
             else if (this->llvmBuffers.modules.forceGetTopItem()
-                == *this->moduleSymbolTable.find<llvm::Module>(rootModule)) {
+                == *this->moduleSymbolTable.lookup<llvm::Module>(rootModule)) {
                 this->visit(construct);
             }
 
