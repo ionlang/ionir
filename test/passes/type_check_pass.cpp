@@ -17,14 +17,15 @@ TEST(TypeCheckPassTest, Run) {
 
     Ast ast = Bootstrap::functionAst(test::constant::foobar);
 
-    ionshared::OptPtr<Function> function =
+    ionshared::OptPtr<Function> functionLookupResult =
         ast.front()->dynamicCast<Module>()->lookupFunction(test::constant::foobar);
 
-    ASSERT_TRUE(ionshared::util::hasValue(function));
+    ASSERT_TRUE(ionshared::util::hasValue(functionLookupResult));
 
-    std::shared_ptr<Prototype> prototype = function->get()->prototype;
+    std::shared_ptr<Function> function = *functionLookupResult;
 
-    prototype->returnType = Construct::makeChild<IntegerType>(prototype, IntegerKind::Int32);
+    function->prototype->returnType =
+        Construct::makeChild<IntegerType>(function->prototype, IntegerKind::Int32);
 
     // TODO: For now it's throwing, but soon instead check for produced semantic error.
 
@@ -37,7 +38,7 @@ TEST(TypeCheckPassTest, Run) {
 
     passManager.run(ast);
 
-    EXPECT_EQ(passContext->diagnostics->getSize(), 1);
+    ASSERT_EQ(passContext->diagnostics->getSize(), 1);
 
     ionshared::Diagnostic functionReturnValueMissingDiagnostic =
         (*passContext->diagnostics)[0];
@@ -47,11 +48,12 @@ TEST(TypeCheckPassTest, Run) {
         diagnostic::functionReturnValueMissing.code.value()
     );
 
-    prototype->returnType = Construct::makeChild<VoidType>(prototype);
+    function->prototype->returnType =
+        Construct::makeChild<VoidType>(function->prototype);
 
     // TODO: Verify that the body has at least one basic block.
 
-    std::shared_ptr<BasicBlock> entrySection = function->get()->basicBlocks.front();
+    std::shared_ptr<BasicBlock> entrySection = functionLookupResult->get()->basicBlocks.front();
 
     InstBuilder(entrySection).createReturn();
 

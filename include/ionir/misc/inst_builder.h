@@ -11,15 +11,30 @@
 #include <ionir/construct/value/operation.h>
 
 namespace ionir {
-    struct InstBuilder {
+    class InstBuilder {
+    private:
+        template<typename T>
+            requires std::derived_from<T, Instruction>
+        std::shared_ptr<T> setParentAndAppend(
+            std::shared_ptr<T> instruction
+        ) noexcept {
+            instruction->parent = this->basicBlock;
+            this->basicBlock->instructions.push_back(instruction);
+
+            return instruction;
+        }
+
+    public:
         std::shared_ptr<BasicBlock> basicBlock;
 
         explicit InstBuilder(
             std::shared_ptr<BasicBlock> basicBlock
         ) noexcept;
 
-        void appendInst(const std::shared_ptr<Instruction>& inst);
-
+        /**
+         * Construct a instruction, append it to the buffered basic,
+         * block and set its parent.
+         */
         template<class TInst, typename... TArgs>
             requires std::derived_from<TInst, Instruction>
         std::shared_ptr<TInst> make(TArgs... args) {
@@ -33,16 +48,16 @@ namespace ionir {
 
         std::shared_ptr<AllocaInst> createAlloca(
             const std::string& id,
-            std::shared_ptr<Type> type
+            const std::shared_ptr<Type>& type
         );
 
         std::shared_ptr<StoreInst> createStore(
-            std::shared_ptr<Value<>> value,
-            std::shared_ptr<AllocaInst> target
+            const std::shared_ptr<Value<>>& value,
+            const std::shared_ptr<AllocaInst>& target
         );
 
         std::shared_ptr<BranchInst> createBranch(
-            std::shared_ptr<Construct> condition,
+            const std::shared_ptr<Construct>& condition,
             const std::shared_ptr<BasicBlock>& consequentBasicBlock,
             const std::shared_ptr<BasicBlock>& alternativeBasicBlock
         );

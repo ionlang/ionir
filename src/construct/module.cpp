@@ -42,7 +42,8 @@ namespace ionir {
         ionshared::OptPtr<Construct> functionConstruct =
             this->context->getGlobalScope()->lookup(std::move(name));
 
-        if (ionshared::util::hasValue(functionConstruct) && functionConstruct->get()->constructKind == ConstructKind::Function) {
+        if (ionshared::util::hasValue(functionConstruct)
+                && functionConstruct->get()->constructKind == ConstructKind::Function) {
             return functionConstruct->get()->dynamicCast<Function>();
         }
 
