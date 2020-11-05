@@ -54,22 +54,22 @@ namespace ionir {
 //        this->addToScope(node, value);
     }
 
-    void LlvmLoweringPass::visitBooleanLiteral(std::shared_ptr<BooleanLiteral> node) {
+    void LlvmLoweringPass::visitBooleanLiteral(std::shared_ptr<BooleanLiteral> construct) {
         // Create the boolean type along with the LLVM value.
-        this->valueSymbolTable.set(node, llvm::ConstantInt::get(
+        this->valueSymbolTable.set(construct, llvm::ConstantInt::get(
             llvm::Type::getInt1Ty(
                 this->llvmBuffers.modules.forceGetTopItem()
                     ->getContext()
             ),
 
-            llvm::APInt(1, node->value, false)
+            llvm::APInt(1, construct->value, false)
         ));
 //        this->addToScope(node, value);
     }
 
-    void LlvmLoweringPass::visitOperationValue(std::shared_ptr<OperationValue> node) {
+    void LlvmLoweringPass::visitOperationValue(std::shared_ptr<OperationValue> construct) {
         std::optional<llvm::Value*> llvmRightSideValue = std::nullopt;
-        bool isInteger = node->leftSideValue->type->typeKind == TypeKind::Integer;
+        bool isInteger = construct->leftSideValue->type->typeKind == TypeKind::Integer;
 
         /**
          * NOTE: During lowering it is assumed that both types are
@@ -77,24 +77,24 @@ namespace ionir {
          * done by the compiler. This assurance comes from the type-checking
          * pass, which must occur prior to lowering.
          */
-        if (!isInteger && node->leftSideValue->type->typeKind != TypeKind::Decimal) {
+        if (!isInteger && construct->leftSideValue->type->typeKind != TypeKind::Decimal) {
             // TODO: Internal error?
             throw std::runtime_error("Value type of operation must be numerical");
         }
 
         auto requireAndVisitRightSide = [&]{
-            if (!ionshared::util::hasValue(node->rightSideValue)) {
+            if (!ionshared::util::hasValue(construct->rightSideValue)) {
                 throw std::runtime_error("Right side must have a value for this operation");
             }
 
-            llvmRightSideValue = this->eagerVisitValue(*node->rightSideValue);
+            llvmRightSideValue = this->eagerVisitValue(*construct->rightSideValue);
         };
 
-        llvm::Value* llvmLeftSideValue = this->eagerVisitValue(node->leftSideValue);
+        llvm::Value* llvmLeftSideValue = this->eagerVisitValue(construct->leftSideValue);
         llvm::Instruction::BinaryOps llvmBinaryOperator;
         llvm::Instruction::UnaryOps llvmUnaryOperator;
 
-        switch (node->operatorKind) {
+        switch (construct->operatorKind) {
             case OperatorKind::Addition: {
                 requireAndVisitRightSide();
 
@@ -116,7 +116,7 @@ namespace ionir {
             }
 
             case OperatorKind::Subtraction: {
-                if (ionshared::util::hasValue(node->rightSideValue)) {
+                if (ionshared::util::hasValue(construct->rightSideValue)) {
                     llvmBinaryOperator = isInteger
                         ? llvm::Instruction::BinaryOps::Sub
                         : llvm::Instruction::BinaryOps::FSub;
@@ -153,7 +153,7 @@ namespace ionir {
 
         llvm::IRBuilder<> llvmBuilder = this->llvmBuffers.makeBuilder();
 
-        this->valueSymbolTable.set(node, ionshared::util::hasValue(node->rightSideValue)
+        this->valueSymbolTable.set(construct, ionshared::util::hasValue(construct->rightSideValue)
             ? llvmBuilder.CreateBinOp(
                 llvmBinaryOperator,
                 llvmLeftSideValue,

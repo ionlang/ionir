@@ -2,11 +2,13 @@
 
 namespace ionir {
     std::shared_ptr<StructDefinition> StructDefinition::make(
-        const std::shared_ptr<Struct>& declaration,
+        const std::shared_ptr<StructType>& type,
         const std::vector<std::shared_ptr<Value<>>>& values
     ) noexcept {
         std::shared_ptr<StructDefinition> result =
-            std::make_shared<StructDefinition>(declaration, values);
+            std::make_shared<StructDefinition>(type, values);
+
+        type->parent = result;
 
         for (const auto& value : values) {
             value->parent = result;
@@ -16,18 +18,16 @@ namespace ionir {
     }
 
     StructDefinition::StructDefinition(
-        std::shared_ptr<Struct> declaration,
+        const std::shared_ptr<StructType>& type,
         std::vector<std::shared_ptr<Value<>>> values
-    ) noexcept :
-        Value<Struct>(ValueKind::StructDefinition, std::move(declaration)),
+    ) :
+        Value<StructType>(
+            ValueKind::StructDefinition,
+            type
+        ),
+
         values(std::move(values)) {
-        // TODO: What about the struct type (value type)?
-
-        std::shared_ptr<Construct> self = this->nativeCast();
-
-        for (const auto& value : values) {
-            value->parent = self;
-        }
+        //
     }
 
     void StructDefinition::accept(Pass& visitor) {
@@ -35,7 +35,10 @@ namespace ionir {
     }
 
     Ast StructDefinition::getChildrenNodes() {
-        // TODO: What about the struct type (value type)?
-        return Construct::convertChildren<Value<>>(this->values);
+        Ast children = Construct::convertChildren<Value<>>(this->values);
+
+        children.push_back(this->type);
+
+        return children;
     }
 }

@@ -97,7 +97,7 @@ namespace ionir {
 
         virtual void visitIdentifier(std::shared_ptr<Identifier> construct);
 
-        virtual void visitStruct(std::shared_ptr<Struct> construct);
+        virtual void visitStructType(std::shared_ptr<StructType> construct);
 
         virtual void visitStructDefinition(std::shared_ptr<StructDefinition> construct);
     };

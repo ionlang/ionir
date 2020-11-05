@@ -8,7 +8,7 @@ namespace ionir {
     ) noexcept :
         Construct(ConstructKind::Type),
         typeKind(kind),
-        name(std::move(name)),
+        typeName(std::move(name)),
         qualifiers(std::move(qualifiers)) {
         //
     }
@@ -21,7 +21,7 @@ namespace ionir {
         std::shared_ptr<Type> otherType = other->dynamicCast<Type>();
 
         return otherType->typeKind == this->typeKind
-            && otherType->name == this->name;
+            && otherType->typeName == this->typeName;
     }
 
     bool Type::isSameAs(
@@ -45,13 +45,13 @@ namespace ionir {
                 // TODO: Decimal types as well (copy integer code basically).
 
             case TypeKind::Struct: {
-                std::shared_ptr<Struct> localStructType =
-                    this->dynamicCast<Struct>();
+                std::shared_ptr<StructType> localStructType =
+                    this->dynamicCast<StructType>();
 
-                std::shared_ptr<Struct> otherStructType =
-                    other->dynamicCast<Struct>();
+                std::shared_ptr<StructType> otherStructType =
+                    other->dynamicCast<StructType>();
 
-                bool nameOrArgumentCountMismatch = localStructType->name != otherStructType->name
+                bool nameOrArgumentCountMismatch = localStructType->typeName != otherStructType->typeName
                     || localStructType->fields->getSize() != otherStructType->fields->getSize();
 
                 if (nameOrArgumentCountMismatch) {

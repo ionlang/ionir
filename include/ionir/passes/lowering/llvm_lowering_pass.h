@@ -212,9 +212,9 @@ namespace ionir {
 
         void visitStringLiteral(std::shared_ptr<StringLiteral> construct) override;
 
-        void visitBooleanLiteral(std::shared_ptr<BooleanLiteral> node) override;
+        void visitBooleanLiteral(std::shared_ptr<BooleanLiteral> construct) override;
 
-        void visitOperationValue(std::shared_ptr<OperationValue> node) override;
+        void visitOperationValue(std::shared_ptr<OperationValue> construct) override;
 
         void visitAllocaInst(std::shared_ptr<AllocaInst> construct) override;
 
@@ -238,7 +238,7 @@ namespace ionir {
 
         void visitModule(std::shared_ptr<Module> construct) override;
 
-        void visitStruct(std::shared_ptr<Struct> construct) override;
+        void visitStructType(std::shared_ptr<StructType> construct) override;
 
         void visitStructDefinition(
             std::shared_ptr<StructDefinition> construct

@@ -195,7 +195,7 @@ namespace ionir {
         this->llvmBuffers.modules.forcePop();
     }
 
-    void LlvmLoweringPass::visitStruct(std::shared_ptr<Struct> construct) {
+    void LlvmLoweringPass::visitStructType(std::shared_ptr<StructType> construct) {
         auto fieldsNativeMap = construct->fields->unwrap();
         std::vector<llvm::Type*> llvmFields{};
 
@@ -205,13 +205,11 @@ namespace ionir {
             llvmFields.push_back(this->eagerVisitType(type));
         }
 
-        llvm::StructType* llvmStruct = llvm::StructType::get(
+        this->typeSymbolTable.set(construct, llvm::StructType::create(
             this->llvmBuffers.modules.forceGetTopItem()->getContext(),
-            llvmFields
-        );
-
-        llvmStruct->setName(construct->name);
-        this->typeSymbolTable.set(construct, llvmStruct);
+            llvmFields,
+            construct->typeName
+        ));
     }
 
     void LlvmLoweringPass::visitStructDefinition(std::shared_ptr<StructDefinition> construct) {
@@ -223,18 +221,17 @@ namespace ionir {
 
         llvm::IRBuilder<> llvmBuilder = this->llvmBuffers.makeBuilder();
 
-        llvm::AllocaInst* structAllocation = llvmBuilder.CreateAlloca(
-            this->eagerVisitType(
-                construct->type
-            )
+        llvm::AllocaInst* llvmAllocaInst = llvmBuilder.CreateAlloca(
+            this->eagerVisitType<llvm::StructType>(construct->type)
         );
 
         for (size_t i = 0; i < llvmValues.size(); i++) {
-            llvm::Value* structElement = llvmBuilder.CreateStructGEP(structAllocation, i);
-
-            llvmBuilder.CreateStore(llvmValues[i], structElement);
+            llvmBuilder.CreateStore(
+                llvmValues[i],
+                llvmBuilder.CreateStructGEP(llvmAllocaInst, i)
+            );
         }
 
-        this->valueSymbolTable.set(construct, structAllocation);
+        this->valueSymbolTable.set(construct, llvmAllocaInst);
     }
 }

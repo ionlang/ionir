@@ -1,12 +1,12 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    std::shared_ptr<Struct> Struct::make(
+    std::shared_ptr<StructType> StructType::make(
         const std::string& name,
         const Fields& fields
     ) noexcept {
-        std::shared_ptr<Struct> result =
-            std::make_shared<Struct>(name, fields);
+        std::shared_ptr<StructType> result =
+            std::make_shared<StructType>(name, fields);
 
         auto fieldsNativeMap = fields->unwrap();
 
@@ -17,17 +17,17 @@ namespace ionir {
         return result;
     }
 
-    Struct::Struct(std::string name, Fields fields) noexcept :
+    StructType::StructType(std::string name, Fields fields) noexcept :
         Type(TypeKind::Struct, std::move(name)),
         fields(std::move(fields)) {
         //
     }
 
-    void Struct::accept(Pass& visitor) {
-        visitor.visitStruct(this->dynamicCast<Struct>());
+    void StructType::accept(Pass& visitor) {
+        visitor.visitStructType(this->dynamicCast<StructType>());
     }
 
-    Ast Struct::getChildrenNodes() {
+    Ast StructType::getChildrenNodes() {
         Ast children = {};
         auto fieldsMap = this->fields->unwrap();
 

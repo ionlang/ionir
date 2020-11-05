@@ -42,7 +42,7 @@ namespace ionir {
     struct Type : Construct {
         const TypeKind typeKind;
 
-        const std::string name;
+        const std::string typeName;
 
         std::shared_ptr<TypeQualifiers> qualifiers;
 

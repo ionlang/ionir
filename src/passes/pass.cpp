@@ -129,7 +129,7 @@ namespace ionir {
         //
     }
 
-    void Pass::visitStruct(std::shared_ptr<Struct> construct) {
+    void Pass::visitStructType(std::shared_ptr<StructType> construct) {
         //
     }
 

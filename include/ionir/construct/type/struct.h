@@ -7,15 +7,15 @@ namespace ionir {
 
     typedef ionshared::PtrSymbolTable<Type> Fields;
 
-    struct Struct : Type {
-        static std::shared_ptr<Struct> make(
+    struct StructType : Type {
+        static std::shared_ptr<StructType> make(
             const std::string& name,
             const Fields& fields
         ) noexcept;
 
         Fields fields;
 
-        Struct(std::string name, Fields fields) noexcept;
+        StructType(std::string name, Fields fields) noexcept;
 
         void accept(Pass& visitor) override;
 

@@ -1,7 +1,7 @@
 ### ionir
 
 ionir is a collection of in-memory intermediate representation constructs used by the Ion compiler. Type-checking,
-borrow checking, optimization, and other important passes except for the macro expansion and name resolution passes
+borrow checking, optimization, and other important passes except for the macro expansion and typeName resolution passes
 are present and occur in ionir.
 
 The [ionlang project](https://github.com/ionlang/ionlang) (the Ion compiler) consumes
@@ -205,7 +205,7 @@ The `LLVM_INCLUDE_TESTS=OFF` option will instruct CMake to omit building tests, 
 
 **Second command (cmake --build ...)**
 
-The `--target install` option will instruct CMake to copy the resulting LLVM installation to the `C:/Program Files (x86)/LLVM` directory on Windows. This is what we're aiming for. Additionally, please note that the target name is case-sensitive, and should always be `install` (rather than `INSTALL`).
+The `--target install` option will instruct CMake to copy the resulting LLVM installation to the `C:/Program Files (x86)/LLVM` directory on Windows. This is what we're aiming for. Additionally, please note that the target typeName is case-sensitive, and should always be `install` (rather than `INSTALL`).
 
 The `CMAKE_BUILD_TYPE=Release` option will instruct CMake to build the project under the `Release` configuration, instead of `Debug`, since we're going to be installing this on our local machine.
 

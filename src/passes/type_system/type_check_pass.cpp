@@ -158,7 +158,7 @@ namespace ionir {
                 ->bootstrap(diagnostic::structWrongValueCount)
 
                 ->formatMessage(
-                    construct->type->name,
+                    construct->type->typeName,
                     construct->values.size(),
                     construct->type->fields->getSize()
                 )
@@ -175,7 +175,7 @@ namespace ionir {
                 if (!value->type->isSameAs(type)) {
                     this->context->diagnosticBuilder
                         ->bootstrap(diagnostic::structIncompatibleValueType)
-                        ->formatMessage(construct->type->name, "pending", index, "pending")
+                        ->formatMessage(construct->type->typeName, "pending", index, "pending")
                         ->finish();
                 }
 
@@ -219,8 +219,8 @@ namespace ionir {
 
                                 ->formatMessage(
                                     calleeFunction->prototype->name,
-                                    type.first->name,
-                                    callArgumentType->name
+                                    type.first->typeName,
+                                    callArgumentType->typeName
                                 )
 
                                 ->finish();
