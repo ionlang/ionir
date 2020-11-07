@@ -42,6 +42,10 @@ namespace ionir {
         llvm::IRBuilder<> makeBuilder();
     };
 
+    struct LocalBuffers {
+        ionshared::Stack<std::shared_ptr<Module>> modules{};
+    };
+
     class LlvmLoweringPass : public Pass {
     private:
         static llvm::Type* processTypeQualifiers(
@@ -185,6 +189,8 @@ namespace ionir {
         ionshared::PtrSymbolTable<llvm::Module> llvmModules;
 
         LlvmBuffers llvmBuffers;
+
+        LocalBuffers localBuffers;
 
         explicit LlvmLoweringPass(
             std::shared_ptr<ionshared::PassContext> context

@@ -3,6 +3,7 @@
 #include <llvm/IR/DerivedTypes.h>
 #include <ionir/construct/value.h>
 #include <ionir/diagnostics/diagnostic.h>
+#include <ionir/tracking/name_mangler.h>
 #include <ionir/passes/semantic/construct_verification_pass.h>
 #include <ionir/passes/lowering/llvm_lowering_pass.h>
 
@@ -69,14 +70,14 @@ namespace ionir {
     }
 
     void LlvmLoweringPass::visitPrototype(std::shared_ptr<Prototype> construct) {
-        auto argsMap = construct->args->items;
-        auto& argsNativeMap = argsMap->unwrapConst();
-        uint32_t argumentCount = argsMap->getSize();
+        auto& argsNativeMap = construct->args->items->unwrapConst();
+        uint32_t argumentCount = construct->args->items->getSize();
         std::vector<llvm::Type*> llvmArgumentTypes{};
 
         std::shared_ptr<llvm::Module> llvmModuleBuffer =
             this->llvmBuffers.modules.forceGetTopItem();
 
+        // TODO: Name mangling is being used. Verify through another method/way (or mangle the name).
         llvm::Function* llvmFunction = llvmModuleBuffer->getFunction(construct->name);
 
         // A function with a matching identifier already exists.
@@ -109,13 +110,21 @@ namespace ionir {
                 construct->args->isVariable
             );
 
+            std::string name = construct->isMain()
+                ? construct->name
+
+                : NameMangler::mangle(
+                    this->localBuffers.modules.forceGetTopItem(),
+                    construct->name
+                );
+
             /**
              * Cast the LLVM value to a LLVM function, since we know
              * getCallee() will return a function.
              */
             llvmFunction = llvm::dyn_cast<llvm::Function>(
                 llvmModuleBuffer->getOrInsertFunction(
-                    construct->name,
+                    name,
                     llvmFunctionType
                 ).getCallee()
             );
@@ -155,6 +164,7 @@ namespace ionir {
         std::shared_ptr<llvm::Module> llvmModuleBuffer =
             this->llvmBuffers.modules.forceGetTopItem();
 
+        // TODO: Name mangling is being used. Verify through another method/way (or mangle the name).
         if (llvmModuleBuffer->getFunction(construct->prototype->name) != nullptr) {
             throw std::runtime_error("A function with the same identifier has been already previously defined");
         }

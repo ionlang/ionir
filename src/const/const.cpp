@@ -4,26 +4,26 @@ namespace ionir {
     ionshared::Map<IntegerKind, LlvmIntTypeResolver> Const::integerTypeResolverMap =
         ionshared::Map<IntegerKind, LlvmIntTypeResolver>();
 
-    const std::string Const::basicBlockInternalPrefix = ".";
+    const std::string Const::nameManglerIonPrefix = "ionlang";
 
     const std::string Const::basicBlockEntryId = "entry";
 
     std::map<ConstructKind, std::string> Const::constructNames = {
-        {ConstructKind::Type, "Type"},
-        {ConstructKind::FunctionBody, "FunctionBody"},
-        {ConstructKind::Prototype, "Prototype"},
-        {ConstructKind::Function, "Function"},
-        {ConstructKind::Extern, "Extern"},
-        {ConstructKind::Inst, "Instruction"},
-        {ConstructKind::Global, "Global"},
-        {ConstructKind::BasicBlock, "BasicBlock"},
-        {ConstructKind::VariableRef, "VariableReference"},
-        {ConstructKind::VariableDecl, "VariableDeclaration"},
-        {ConstructKind::StructDecl, "StructDeclaration"},
-        {ConstructKind::Module, "Module"},
-        {ConstructKind::Ref, "Reference"},
-        {ConstructKind::Value, "Value"},
-        {ConstructKind::RegisterAssign, "RegisterAssign"}
+        {ConstructKind::Type, "type"},
+        {ConstructKind::FunctionBody, "function body"},
+        {ConstructKind::Prototype, "prototype"},
+        {ConstructKind::Function, "function"},
+        {ConstructKind::Extern, "extern"},
+        {ConstructKind::Inst, "instruction"},
+        {ConstructKind::Global, "global"},
+        {ConstructKind::BasicBlock, "basic block"},
+        {ConstructKind::VariableRef, "variable reference"},
+        {ConstructKind::VariableDecl, "variable declaration"},
+        {ConstructKind::StructDecl, "struct declaration"},
+        {ConstructKind::Module, "module"},
+        {ConstructKind::Ref, "reference"},
+        {ConstructKind::Value, "value"},
+        {ConstructKind::RegisterAssign, "register assign"}
     };
 
     // TODO: Refactor.

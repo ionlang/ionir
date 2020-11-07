@@ -16,10 +16,12 @@
 #include <ionir/construct/instruction/jump.h>
 #include <ionir/construct/instruction/compare.h>
 #include <ionir/construct/value/operation.h>
+#include <ionir/construct/value/struct_definition.h>
 #include <ionir/construct/type/integer_type.h>
 #include <ionir/construct/type/void_type.h>
 #include <ionir/construct/type/boolean_type.h>
 #include <ionir/construct/type/pointer_type.h>
+#include <ionir/construct/type/struct.h>
 #include <ionir/construct/pseudo/directive.h>
 #include <ionir/construct/pseudo/error_marker.h>
 #include <ionir/construct/function.h>
@@ -31,8 +33,7 @@
 #include <ionir/construct/value.h>
 #include <ionir/construct/instruction.h>
 #include <ionir/construct/identifier.h>
-#include <ionir/construct/type/struct.h>
-#include <ionir/construct/value/struct_definition.h>
+#include <ionir/construct/method.h>
 
 #define IONIR_PASS_INTERNAL_ASSERT(condition) \
     if (!this->context->diagnosticBuilder->internalAssert(condition)) { return; }
@@ -100,6 +101,8 @@ namespace ionir {
         virtual void visitStructType(std::shared_ptr<StructType> construct);
 
         virtual void visitStructDefinition(std::shared_ptr<StructDefinition> construct);
+
+        virtual void visitMethod(std::shared_ptr<Method> construct);
     };
 
     typedef ionshared::BasePassManager<Pass, Construct> PassManager;

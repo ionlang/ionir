@@ -4,28 +4,44 @@
 #include <vector>
 #include <ionshared/misc/named.h>
 #include <ionir/construct/pseudo/args.h>
-#include "ionir/construct/pseudo/child_construct.h"
+#include <ionir/construct/pseudo/child_construct.h>
+#include <ionir/construct/type/struct.h>
 #include "type.h"
-#include "ionir/construct/type/struct.h"
 #include "function.h"
 
 namespace ionir {
     struct Pass;
 
-    struct Method : ConstructWithParent<Struct> {
-        std::shared_ptr<Function> function;
+    enum MethodKind {
+        Normal,
+
+        Constructor,
+
+        Destructor,
+
+        OperatorOverload
+    };
+
+    // TODO: Shouldn't all this be on ionlang project?
+    struct Method : Function {
+        static std::shared_ptr<Method> make(
+            MethodKind kind,
+            const std::shared_ptr<StructType>& structType,
+            const std::shared_ptr<Prototype>& prototype,
+            const std::vector<std::shared_ptr<BasicBlock>>& basicBlocks
+        ) noexcept;
+
+        const MethodKind methodKind;
+
+        std::shared_ptr<StructType> structType;
 
         Method(
-            std::string id,
-            std::shared_ptr<Args> args,
-            std::shared_ptr<Type> returnType,
-            std::shared_ptr<Module> parent
+            MethodKind kind,
+            std::shared_ptr<StructType> structType,
+            std::shared_ptr<Prototype> prototype,
+            std::vector<std::shared_ptr<BasicBlock>> basicBlocks
         ) noexcept;
 
         void accept(Pass& visitor) override;
-
-        [[nodiscard]] Ast getChildrenNodes() override;
-
-        [[nodiscard]] bool verify() override;
     };
 }

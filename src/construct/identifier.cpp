@@ -12,7 +12,7 @@ namespace ionir {
     }
 
     Identifier::operator std::string() const {
-        std::stringstream stream;
+        std::stringstream stream{};
 
         for (const auto& scopePath : this->scopePath) {
             // TODO: Avoid having it hard-coded.

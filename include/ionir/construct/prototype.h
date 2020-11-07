@@ -33,5 +33,7 @@ namespace ionir {
         [[nodiscard]] Ast getChildrenNodes() override;
 
         [[nodiscard]] bool verify() override;
+
+        bool isMain() const noexcept;
     };
 }

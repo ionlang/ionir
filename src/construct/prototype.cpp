@@ -47,4 +47,8 @@ namespace ionir {
         // TODO: Verify args.
         return Construct::verify();
     }
+
+    bool Prototype::isMain() const noexcept {
+        return this->name == ConstName::main;
+    }
 }

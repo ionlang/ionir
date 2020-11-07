@@ -136,4 +136,8 @@ namespace ionir {
     void Pass::visitStructDefinition(std::shared_ptr<StructDefinition> construct) {
         //
     }
+
+    void Pass::visitMethod(std::shared_ptr<Method> construct) {
+        //
+    }
 }

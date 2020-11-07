@@ -16,7 +16,7 @@ namespace ionir {
         static ionshared::Map<IntegerKind, LlvmIntTypeResolver> integerTypeResolverMap;
 
     public:
-        static const std::string basicBlockInternalPrefix;
+        static const std::string nameManglerIonPrefix;
 
         static const std::string basicBlockEntryId;
 

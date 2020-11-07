@@ -8,6 +8,8 @@ namespace ionir {
     struct Identifiable {
         std::shared_ptr<Identifier> identifier;
 
-        explicit Identifiable(std::shared_ptr<Identifier> identifier) noexcept;
+        explicit Identifiable(
+            std::shared_ptr<Identifier> identifier
+        ) noexcept;
     };
 }

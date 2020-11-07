@@ -1,6 +1,7 @@
 #include <iostream>
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/BasicBlock.h>
+#include <ionir/tracking/name_mangler.h>
 #include <ionir/passes/lowering/llvm_lowering_pass.h>
 
 namespace ionir {
@@ -31,6 +32,7 @@ namespace ionir {
         Pass(std::move(context)),
         llvmModules(ionshared::util::makePtrSymbolTable<llvm::Module>()),
         llvmBuffers(),
+        localBuffers(),
         moduleSymbolTable(),
         valueSymbolTable(),
         typeSymbolTable() {
@@ -75,7 +77,14 @@ namespace ionir {
 
         auto* llvmGlobalVariable = llvm::dyn_cast<llvm::GlobalVariable>(
             this->llvmBuffers.modules.forceGetTopItem()
-                ->getOrInsertGlobal(construct->name, llvmType)
+                ->getOrInsertGlobal(
+                    NameMangler::mangle(
+                        this->localBuffers.modules.forceGetTopItem(),
+                        construct->name
+                    ),
+
+                    llvmType
+                )
         );
 
         // Initialize the global variable if applicable.
@@ -176,11 +185,12 @@ namespace ionir {
     void LlvmLoweringPass::visitModule(std::shared_ptr<Module> construct) {
         // TODO: Should the context be manually freed? Remember, whoever allocates must free.
         std::shared_ptr<llvm::Module> llvmModule = std::make_shared<llvm::Module>(
-            **construct->identifier,
+            NameMangler::mangle(**construct->identifier),
             *new llvm::LLVMContext()
         );
 
         this->llvmBuffers.modules.push(llvmModule);
+        this->localBuffers.modules.push(construct);
         this->moduleSymbolTable.set(construct, llvmModule);
         this->llvmModules->set(**construct->identifier, llvmModule);
 
@@ -193,6 +203,7 @@ namespace ionir {
         }
 
         this->llvmBuffers.modules.forcePop();
+        this->localBuffers.modules.forcePop();
     }
 
     void LlvmLoweringPass::visitStructType(std::shared_ptr<StructType> construct) {
@@ -208,7 +219,11 @@ namespace ionir {
         this->typeSymbolTable.set(construct, llvm::StructType::create(
             this->llvmBuffers.modules.forceGetTopItem()->getContext(),
             llvmFields,
-            construct->typeName
+
+            NameMangler::mangle(
+                this->localBuffers.modules.forceGetTopItem(),
+                construct->typeName
+            )
         ));
     }
 
