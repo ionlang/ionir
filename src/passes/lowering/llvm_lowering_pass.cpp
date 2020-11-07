@@ -249,4 +249,20 @@ namespace ionir {
 
         this->valueSymbolTable.set(construct, llvmAllocaInst);
     }
+
+    void LlvmLoweringPass::visitNameOfIntrinsic(std::shared_ptr<NameOfIntrinsic> construct) {
+        this->valueSymbolTable.set(
+            construct,
+
+            this->llvmBuffers.makeBuilder()
+                .CreateGlobalStringPtr(construct->type->typeName)
+        );
+    }
+
+    void LlvmLoweringPass::visitTypeOfIntrinsic(std::shared_ptr<TypeOfIntrinsic> construct) {
+        this->typeSymbolTable.set(
+            construct,
+            this->eagerVisitType(construct->value->type)
+        );
+    }
 }

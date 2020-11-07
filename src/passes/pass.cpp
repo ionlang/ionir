@@ -140,4 +140,12 @@ namespace ionir {
     void Pass::visitMethod(std::shared_ptr<Method> construct) {
         //
     }
+
+    void Pass::visitNameOfIntrinsic(std::shared_ptr<NameOfIntrinsic> construct) {
+        //
+    }
+
+    void Pass::visitTypeOfIntrinsic(std::shared_ptr<TypeOfIntrinsic> construct) {
+        //
+    }
 }

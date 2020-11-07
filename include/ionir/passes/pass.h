@@ -1,9 +1,9 @@
 #pragma once
 
-#include <ionshared/passes/base_pass.h>
 #include <ionshared/passes/base_pass_manager.h>
-#include <ionir/diagnostics/diagnostic.h>
-#include <ionir/construct/construct.h>
+#include <ionshared/passes/base_pass.h>
+#include <ionir/construct/intrinsic/reflection/name_of.h>
+#include <ionir/construct/intrinsic/reflection/type_of.h>
 #include <ionir/construct/value/integer_literal.h>
 #include <ionir/construct/value/char_literal.h>
 #include <ionir/construct/value/string_literal.h>
@@ -34,6 +34,8 @@
 #include <ionir/construct/instruction.h>
 #include <ionir/construct/identifier.h>
 #include <ionir/construct/method.h>
+#include <ionir/diagnostics/diagnostic.h>
+#include <ionir/construct/construct.h>
 
 #define IONIR_PASS_INTERNAL_ASSERT(condition) \
     if (!this->context->diagnosticBuilder->internalAssert(condition)) { return; }
@@ -103,6 +105,10 @@ namespace ionir {
         virtual void visitStructDefinition(std::shared_ptr<StructDefinition> construct);
 
         virtual void visitMethod(std::shared_ptr<Method> construct);
+
+        virtual void visitNameOfIntrinsic(std::shared_ptr<NameOfIntrinsic> construct);
+
+        virtual void visitTypeOfIntrinsic(std::shared_ptr<TypeOfIntrinsic> construct);
     };
 
     typedef ionshared::BasePassManager<Pass, Construct> PassManager;

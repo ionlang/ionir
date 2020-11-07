@@ -249,5 +249,9 @@ namespace ionir {
         void visitStructDefinition(
             std::shared_ptr<StructDefinition> construct
         ) override;
+
+        void visitNameOfIntrinsic(std::shared_ptr<NameOfIntrinsic> construct) override;
+
+        void visitTypeOfIntrinsic(std::shared_ptr<TypeOfIntrinsic> construct) override;
     };
 }

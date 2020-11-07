@@ -61,7 +61,11 @@ namespace ionir {
 
         ErrorMarker,
 
-        Identifier
+        Identifier,
+
+        NameOfIntrinsic,
+
+        TypeOfIntrinsic
     };
 
     struct Construct;
