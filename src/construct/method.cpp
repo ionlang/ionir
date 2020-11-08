@@ -8,7 +8,7 @@ namespace ionir {
         const std::vector<std::shared_ptr<BasicBlock>>& basicBlocks
     ) noexcept {
         std::shared_ptr<Method> result =
-            std::make_shared<Method>(kind, prototype, basicBlocks);
+            std::make_shared<Method>(kind, structType, prototype, basicBlocks);
 
         prototype->parent = result;
 

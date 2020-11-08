@@ -97,6 +97,7 @@ namespace ionir {
     }
 
     void LlvmLoweringPass::visitCastInst(std::shared_ptr<CastInst> construct) {
+        // TODO: Hard-coded here.
         std::vector<TypeKind> castableTypeKinds{
             TypeKind::Integer,
             TypeKind::Decimal,
@@ -130,9 +131,10 @@ namespace ionir {
 
         llvm::Instruction::CastOps llvmCastOperation;
         bool isSameTypeKind = construct->type->typeKind == construct->value->type->typeKind;
-        bool isDowncast = false;
 
         if (isSameTypeKind) {
+            bool isDowncast;
+
             switch (construct->type->typeKind) {
                 case TypeKind::Integer: {
                     std::shared_ptr<IntegerType> castIntegerType =
@@ -171,13 +173,19 @@ namespace ionir {
         else {
             switch (construct->type->typeKind) {
                 case TypeKind::Integer: {
-                    // TODO
-                    throw std::runtime_error("Not implemented");
+                    llvmCastOperation = construct->type->dynamicCast<IntegerType>()->isSigned
+                        ? llvm::Instruction::CastOps::FPToSI
+                        : llvm::Instruction::CastOps::FPToUI;
+
+                    break;
                 }
 
                 case TypeKind::Decimal: {
-                    // TODO
-                    throw std::runtime_error("Not implemented");
+                    llvmCastOperation = construct->type->dynamicCast<DecimalType>()->isSigned
+                        ? llvm::Instruction::CastOps::SIToFP
+                        : llvm::Instruction::CastOps::UIToFP;
+
+                    break;
                 }
 
                 case TypeKind::Pointer: {

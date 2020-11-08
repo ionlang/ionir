@@ -71,77 +71,81 @@ namespace ionir {
 
     void LlvmLoweringPass::visitPrototype(std::shared_ptr<Prototype> construct) {
         auto& argsNativeMap = construct->args->items->unwrapConst();
-        uint32_t argumentCount = construct->args->items->getSize();
         std::vector<llvm::Type*> llvmArgumentTypes{};
 
-        std::shared_ptr<llvm::Module> llvmModuleBuffer =
-            this->llvmBuffers.modules.forceGetTopItem();
+        llvmArgumentTypes.reserve(argsNativeMap.size());
 
-        // TODO: Name mangling is being used. Verify through another method/way (or mangle the name).
-        llvm::Function* llvmFunction = llvmModuleBuffer->getFunction(construct->name);
+        for (const auto& [id, arg] : argsNativeMap) {
+            llvmArgumentTypes.push_back(
+                this->eagerVisitType(arg.first)
+            );
+        }
 
+        llvm::FunctionType* llvmFunctionType = llvm::FunctionType::get(
+            this->eagerVisitType(construct->returnType),
+            llvmArgumentTypes,
+            construct->args->isVariable
+        );
+
+        this->typeSymbolTable.set(construct, llvmFunctionType);
+    }
+
+    void LlvmLoweringPass::visitFunction(std::shared_ptr<Function> construct) {
+        /**
+         * Special treatment for the main/entry point function, as
+         * it should not be mangled.
+         */
+        std::string name = construct->prototype->isMain()
+            ? construct->prototype->name
+
+            : NameMangler::mangle(
+                this->localBuffers.modules.forceGetTopItem(),
+                construct->prototype->name
+            );
+
+        // TODO: Should this be enforced when emitting, or should only be during type checking?
         // A function with a matching identifier already exists.
-        if (llvmFunction != nullptr) {
-            // Function already has a body, disallow re-definition.
-            if (llvmFunction->getBasicBlockList().empty()) {
-                throw std::runtime_error("Cannot re-define function");
-            }
-            // If the function takes a different number of arguments, reject.
-            else if (llvmFunction->arg_size() != argumentCount) {
-                this->context->diagnosticBuilder
-                    ->bootstrap(diagnostic::functionRedefinitionDiffArgs)
-                    ->finish();
+        if (this->llvmBuffers.modules.forceGetTopItem()->getFunction(name)
+            != nullptr) {
+            this->context->diagnosticBuilder
+                ->bootstrap(diagnostic::functionRedefinition)
+                ->formatMessage(construct->prototype->name)
+                ->finish();
 
-                // TODO
-                throw std::runtime_error("Awaiting new diagnostic buffer checking");
-            }
-        }
-        // Otherwise, function will be created.
-        else {
-            for (const auto& [id, arg] : argsNativeMap) {
-                llvmArgumentTypes.push_back(
-                    this->eagerVisitType(arg.first)
-                );
-            }
-
-            llvm::FunctionType* llvmFunctionType = llvm::FunctionType::get(
-                this->eagerVisitType(construct->returnType),
-                llvmArgumentTypes,
-                construct->args->isVariable
-            );
-
-            std::string name = construct->isMain()
-                ? construct->name
-
-                : NameMangler::mangle(
-                    this->localBuffers.modules.forceGetTopItem(),
-                    construct->name
-                );
-
-            /**
-             * Cast the LLVM value to a LLVM function, since we know
-             * getCallee() will return a function.
-             */
-            llvmFunction = llvm::dyn_cast<llvm::Function>(
-                llvmModuleBuffer->getOrInsertFunction(
-                    name,
-                    llvmFunctionType
-                ).getCallee()
-            );
-
-            // Set the function's linkage.
-            llvmFunction->setLinkage(llvm::GlobalValue::LinkageTypes::ExternalLinkage);
+            // TODO
+            throw std::runtime_error("Awaiting new diagnostic buffer checking");
         }
 
+        /**
+         * Cast the LLVM value to a LLVM function, since we know
+         * getCallee() will return a function.
+         */
+        auto* llvmFunction = llvm::dyn_cast<llvm::Function>(
+            this->llvmBuffers.modules.forceGetTopItem()->getOrInsertFunction(
+                name,
+                this->eagerVisitType<llvm::FunctionType>(construct->prototype)
+            ).getCallee()
+        );
+
+        this->llvmBuffers.functions.push(llvmFunction);
+        this->valueSymbolTable.set(construct, llvmFunction);
+
+        // TODO: Default to private linkage, but export if applicable (through export: module syntax).
+        llvmFunction->setLinkage(llvm::GlobalValue::LinkageTypes::ExternalLinkage);
+
+        // TODO: What about variadic functions?
         // Begin processing arguments. Argument count must be the same.
-        if (argumentCount != llvmFunction->arg_size()) {
+        if (construct->prototype->args->items->getSize()
+            != llvmFunction->arg_size()) {
+            // TODO: Use diagnostics API.
             throw std::runtime_error("Expected argument count to be the same as the function's argument count");
         }
 
+        auto& argsNativeMap = construct->prototype->args->items->unwrapConst();
         size_t argCounter = 0;
         size_t llvmArgCounter = 0;
 
-        // TODO: Simplify method of naming LLVM arguments, as this implementation is inefficient.
+        // TODO: Simplify method of naming LLVM arguments, as this implementation is (probably) inefficient.
         for (const auto& [id, arg] : argsNativeMap) {
             for (auto& llvmArgument : llvmFunction->args()) {
                 if (llvmArgCounter == argCounter) {
@@ -157,30 +161,14 @@ namespace ionir {
             argCounter++;
         }
 
-        this->valueSymbolTable.set(construct, llvmFunction);
-    }
-
-    void LlvmLoweringPass::visitFunction(std::shared_ptr<Function> construct) {
-        std::shared_ptr<llvm::Module> llvmModuleBuffer =
-            this->llvmBuffers.modules.forceGetTopItem();
-
-        // TODO: Name mangling is being used. Verify through another method/way (or mangle the name).
-        if (llvmModuleBuffer->getFunction(construct->prototype->name) != nullptr) {
-            throw std::runtime_error("A function with the same identifier has been already previously defined");
-        }
-
-        auto* llvmFunction =
-            this->eagerVisitValue<llvm::Function>(construct->prototype);
-
-        this->llvmBuffers.functions.push(llvmFunction);
-
         /**
          * Entry section must be set. Redundant check, since the verify should
          * function ensure that the block contains a single entry section, but
          * just to make sure.
          */
         if (construct->basicBlocks.empty()) {
-            throw std::runtime_error("No entry basic block exists for block");
+            // TODO: Use diagnostics API (internal error?).
+            throw std::runtime_error("Block must have at least a single basic block");
         }
 
         std::shared_ptr<BasicBlock> entryBasicBlock =
@@ -206,6 +194,12 @@ namespace ionir {
         // TODO: Verify the resulting LLVM function (through LLVM)?
 
         this->llvmBuffers.functions.forcePop();
-        this->valueSymbolTable.set(construct, llvmFunction);
+    }
+
+    void LlvmLoweringPass::visitMethod(std::shared_ptr<Method> construct) {
+        // TODO: Append (%StructTypeName* %this) to the prototype's args.
+//        this->llvmBuffers.modules.forceGetTopItem()->getOrInsertFunction(
+//            NameMangler::mangle(construct->structType->typeName),
+//        );
     }
 }

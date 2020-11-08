@@ -16,16 +16,30 @@ namespace ionir::diagnostic {
     static uint32_t errorCounter = 0;
 
     IONIR_NOTICE_DEFINE(
+        internalGeneric,
+        ionshared::DiagnosticKind::InternalError,
+        "An internal error occurred, there is no information associated with the problem",
+        std::nullopt
+    );
+
+    IONIR_NOTICE_DEFINE(
+        internalThreshold,
+        ionshared::DiagnosticKind::InternalError,
+        "A point was reached which would theoretically should not be reached under any circumstances",
+        std::nullopt
+    );
+
+    IONIR_NOTICE_DEFINE(
         externRedefinition,
         ionshared::DiagnosticKind::Error,
-        "Re-definition of extern not allowed",
+        "Extern '%s' had already been previously declared",
         std::nullopt
     );
 
     IONIR_NOTICE_DEFINE(
         entryPointRedefinition,
         ionshared::DiagnosticKind::Error,
-        "Entry point function had already previously been declared",
+        "Entry point function had already been previously declared",
         std::nullopt
     );
 
@@ -65,9 +79,9 @@ namespace ionir::diagnostic {
     );
 
     IONIR_NOTICE_DEFINE(
-        functionRedefinitionDiffArgs,
+        functionRedefinition,
         ionshared::DiagnosticKind::Error,
-        "Re-definition of function with a different amount arguments",
+        "Function '%s' had already been previously declared",
         std::nullopt
     );
 

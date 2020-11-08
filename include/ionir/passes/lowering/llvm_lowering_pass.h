@@ -255,5 +255,7 @@ namespace ionir {
         void visitNameOfIntrinsic(std::shared_ptr<NameOfIntrinsic> construct) override;
 
         void visitTypeOfIntrinsic(std::shared_ptr<TypeOfIntrinsic> construct) override;
+
+        void visitMethod(std::shared_ptr<Method> construct) override;
     };
 }
