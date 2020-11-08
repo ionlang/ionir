@@ -4,7 +4,7 @@ namespace ionir {
     JumpInst::JumpInst(
         std::shared_ptr<BasicBlock> basicBlockTarget
     ) noexcept :
-        Instruction(InstKind::Jump),
+        Instruction(InstructionKind::Jump),
         basicBlockTarget(std::move(basicBlockTarget)) {
         //
     }

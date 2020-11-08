@@ -8,6 +8,7 @@
 #include <string_view>
 #include <cmath>
 #include <ionir/construct/type/integer_type.h>
+#include <ionir/construct/type/decimal_type.h>
 #include <ionir/syntax/ast_result.h>
 #include <ionir/const/const_name.h>
 
@@ -20,6 +21,8 @@ namespace ionir::util {
     };
 
     [[nodiscard]] std::string resolveIntegerKindName(IntegerKind kind);
+
+    [[nodiscard]] std::string resolveDecimalKindName(DecimalKind kind);
 
     [[nodiscard]] TypeKind resolveTypeKind(const std::string& id);
 

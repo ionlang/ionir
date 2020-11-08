@@ -234,6 +234,8 @@ namespace ionir {
 
         void visitJumpInst(std::shared_ptr<JumpInst> node) override;
 
+        void visitCastInst(std::shared_ptr<CastInst> construct) override;
+
         void visitGlobal(std::shared_ptr<Global> construct) override;
 
         void visitIntegerType(std::shared_ptr<IntegerType> construct) override;

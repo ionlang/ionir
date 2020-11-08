@@ -17,7 +17,7 @@ namespace ionir {
     ReturnInst::ReturnInst(
         ionshared::OptPtr<Value<>> value
     ) noexcept :
-        Instruction(InstKind::Return),
+        Instruction(InstructionKind::Return),
         value(std::move(value)) {
         //
     }

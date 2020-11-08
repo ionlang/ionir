@@ -2,15 +2,15 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    Instruction::Instruction(InstKind kind) noexcept :
+    Instruction::Instruction(InstructionKind kind) noexcept :
         ConstructWithParent<BasicBlock>(ConstructKind::Inst),
         instKind(kind) {
         //
     }
 
     bool Instruction::isTerminal() const noexcept {
-        return this->instKind == InstKind::Return
-            || this->instKind == InstKind::Branch;
+        return this->instKind == InstructionKind::Return
+            || this->instKind == InstructionKind::Branch;
     }
 
     size_t Instruction::fetchOrder() {

@@ -15,9 +15,11 @@
 #include <ionir/construct/instruction/call.h>
 #include <ionir/construct/instruction/jump.h>
 #include <ionir/construct/instruction/compare.h>
+#include <ionir/construct/instruction/cast.h>
 #include <ionir/construct/value/operation.h>
 #include <ionir/construct/value/struct_definition.h>
 #include <ionir/construct/type/integer_type.h>
+#include <ionir/construct/type/decimal_type.h>
 #include <ionir/construct/type/void_type.h>
 #include <ionir/construct/type/boolean_type.h>
 #include <ionir/construct/type/pointer_type.h>
@@ -80,9 +82,13 @@ namespace ionir {
 
         virtual void visitCompareInst(std::shared_ptr<CompareInst> construct);
 
+        virtual void visitCastInst(std::shared_ptr<CastInst> construct);
+
         virtual void visitGlobal(std::shared_ptr<Global> construct);
 
         virtual void visitIntegerType(std::shared_ptr<IntegerType> construct);
+
+        virtual void visitDecimalType(std::shared_ptr<DecimalType> construct);
 
         virtual void visitVoidType(std::shared_ptr<VoidType> construct);
 

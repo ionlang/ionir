@@ -30,7 +30,7 @@ TEST(ConstructBasicBlockTest, Link) {
     basicBlockA->link(basicBlockB);
 
     ASSERT_FALSE(basicBlockA->instructions.empty());
-    EXPECT_EQ(basicBlockA->instructions.front()->instKind, InstKind::Jump);
+    EXPECT_EQ(basicBlockA->instructions.front()->instKind, InstructionKind::Jump);
 }
 
 TEST(ConstructBasicBlockTest, FindFirstInstruction) {

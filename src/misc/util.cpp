@@ -30,6 +30,30 @@ namespace ionir::util {
         }
     }
 
+    std::string resolveDecimalKindName(DecimalKind kind) {
+        switch (kind) {
+            case DecimalKind::BitSize8: {
+                return ConstName::typeInt8;
+            }
+
+            case DecimalKind::BitSize16: {
+                return ConstName::typeInt16;
+            }
+
+            case DecimalKind::BitSize32: {
+                return ConstName::typeInt32;
+            }
+
+            case DecimalKind::BitSize64: {
+                return ConstName::typeInt64;
+            }
+
+            default: {
+                throw std::runtime_error("Unknown integer kind");
+            }
+        }
+    }
+
     TypeKind resolveTypeKind(const std::string& id) {
         // TODO: CRITICAL: Add support new/missing types.
 

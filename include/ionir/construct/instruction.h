@@ -8,7 +8,7 @@ namespace ionir {
 
     struct BasicBlock;
 
-    enum struct InstKind {
+    enum struct InstructionKind {
         Alloca,
 
         Store,
@@ -23,13 +23,15 @@ namespace ionir {
 
         Compare,
 
-        Jump
+        Jump,
+
+        Cast
     };
 
     struct Instruction : ConstructWithParent<BasicBlock> {
-        const InstKind instKind;
+        const InstructionKind instKind;
 
-        explicit Instruction(InstKind kind) noexcept;
+        explicit Instruction(InstructionKind kind) noexcept;
 
         // TODO: Isn't this redundant?
         void accept(Pass& visitor) override = 0;

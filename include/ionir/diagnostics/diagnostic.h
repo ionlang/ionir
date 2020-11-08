@@ -112,6 +112,13 @@ namespace ionir::diagnostic {
         "Construct failed verification",
         std::nullopt
     );
+
+    IONIR_NOTICE_DEFINE(
+        castTypeInvalid,
+        ionshared::DiagnosticKind::Error,
+        "Cannot perform a cast on type '%s'",
+        std::nullopt
+    );
 }
 
 // Misc.

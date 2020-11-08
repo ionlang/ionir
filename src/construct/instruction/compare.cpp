@@ -2,7 +2,7 @@
 
 namespace ionir {
     CompareInst::CompareInst() noexcept :
-        Instruction(InstKind::Compare) {
+        Instruction(InstructionKind::Compare) {
         //
     }
 

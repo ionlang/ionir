@@ -28,7 +28,7 @@ namespace ionir {
              * is of kind return and it is not the last
              * item in the vector.
              */
-            else if (inst->instKind == InstKind::Return && ++iterator == insts.end()) {
+            else if (inst->instKind == InstructionKind::Return && ++iterator == insts.end()) {
                 /**
                  * If so, erase all following instructions,
                  * as they are considered dead code at this

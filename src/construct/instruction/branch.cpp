@@ -19,7 +19,7 @@ namespace ionir {
         std::shared_ptr<BasicBlock> consequentBasicBlock,
         std::shared_ptr<BasicBlock> alternativeBasicBlock
     ) noexcept :
-        Instruction(InstKind::Branch),
+        Instruction(InstructionKind::Branch),
         condition(std::move(condition)),
         consequentBasicBlock(std::move(consequentBasicBlock)),
         alternativeBasicBlock(std::move(alternativeBasicBlock)) {

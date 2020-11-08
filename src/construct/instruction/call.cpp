@@ -19,7 +19,7 @@ namespace ionir {
         std::shared_ptr<Construct> callee,
         std::vector<std::shared_ptr<Construct>> arguments
     ) noexcept :
-        Instruction(InstKind::Call),
+        Instruction(InstructionKind::Call),
         callee(std::move(callee)),
         arguments(std::move(arguments)) {
         //

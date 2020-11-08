@@ -17,7 +17,7 @@ namespace ionir {
         std::shared_ptr<Value<>> value,
         std::shared_ptr<AllocaInst> target
     ) noexcept :
-        Instruction(InstKind::Store),
+        Instruction(InstructionKind::Store),
         value(std::move(value)),
         target(std::move(target)) {
         //

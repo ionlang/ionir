@@ -14,7 +14,7 @@ namespace ionir {
 
     // TODO: Finish init. implementation.
     AllocaInst::AllocaInst(std::shared_ptr<Type> type) noexcept :
-        Instruction(InstKind::Alloca),
+        Instruction(InstructionKind::Alloca),
         type(std::move(type)) {
         //
     }

@@ -21,4 +21,8 @@ namespace ionir {
     void PointerType::accept(Pass& pass) {
         pass.visitPointerType(this->dynamicCast<PointerType>());
     }
+
+    Ast PointerType::getChildrenNodes() {
+        return {this->value};
+    }
 }

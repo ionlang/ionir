@@ -95,4 +95,111 @@ namespace ionir {
             )
         );
     }
+
+    void LlvmLoweringPass::visitCastInst(std::shared_ptr<CastInst> construct) {
+        std::vector<TypeKind> castableTypeKinds{
+            TypeKind::Integer,
+            TypeKind::Decimal,
+            TypeKind::Pointer
+        };
+
+        bool isCastTypeCastable =
+            ionshared::util::vectorContains(castableTypeKinds, construct->type->typeKind);
+
+        bool isValueTypeCastable =
+            ionshared::util::vectorContains(castableTypeKinds, construct->value->type->typeKind);
+
+        if (!isCastTypeCastable || !isValueTypeCastable) {
+            this->context->diagnosticBuilder
+                ->bootstrap(diagnostic::castTypeInvalid)
+
+                // TODO: Passing in optional source location. This might be OK, but need verification.
+                ->setSourceLocation(construct->sourceLocation)
+
+                ->formatMessage(
+                    isCastTypeCastable
+                        ? construct->value->type->typeName
+                        : construct->type->typeName
+                )
+
+                ->finish();
+
+            // TODO: Should return instead, but what about the other visitors?
+            throw std::runtime_error("Awaiting diagnostic API implementation");
+        }
+
+        llvm::Instruction::CastOps llvmCastOperation;
+        bool isSameTypeKind = construct->type->typeKind == construct->value->type->typeKind;
+        bool isDowncast = false;
+
+        if (isSameTypeKind) {
+            switch (construct->type->typeKind) {
+                case TypeKind::Integer: {
+                    std::shared_ptr<IntegerType> castIntegerType =
+                        construct->type->dynamicCast<IntegerType>();
+
+                    std::shared_ptr<IntegerType> valueIntegerType =
+                        construct->value->type->dynamicCast<IntegerType>();
+
+                    isDowncast = castIntegerType->integerKind < valueIntegerType->integerKind;
+
+                    break;
+                }
+
+                case TypeKind::Decimal: {
+                    std::shared_ptr<DecimalType> castDecimalType =
+                        construct->type->dynamicCast<DecimalType>();
+
+                    std::shared_ptr<DecimalType> valueDecimalType =
+                        construct->value->type->dynamicCast<DecimalType>();
+
+                    isDowncast = valueDecimalType->decimalKind < valueDecimalType->decimalKind;
+
+                    break;
+                }
+
+                default: {
+                    // TODO: Use diagnostics API (error).
+                    throw std::runtime_error("Only integer and decimal types can perform upcast/downcast");
+                }
+            }
+
+            llvmCastOperation = isDowncast
+                ? llvm::Instruction::CastOps::Trunc
+                : llvm::Instruction::CastOps::ZExt;
+        }
+        else {
+            switch (construct->type->typeKind) {
+                case TypeKind::Integer: {
+                    // TODO
+                    throw std::runtime_error("Not implemented");
+                }
+
+                case TypeKind::Decimal: {
+                    // TODO
+                    throw std::runtime_error("Not implemented");
+                }
+
+                case TypeKind::Pointer: {
+                    // TODO
+                    throw std::runtime_error("Not implemented");
+                }
+
+                default: {
+                    // TODO
+                    throw std::runtime_error("Not implemented");
+                }
+            }
+        }
+
+        this->valueSymbolTable.set(
+            construct,
+
+            this->llvmBuffers.makeBuilder().CreateCast(
+                llvmCastOperation,
+                this->eagerVisitValue(construct->value),
+                this->eagerVisitType(construct->type)
+            )
+        );
+    }
 }
