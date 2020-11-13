@@ -25,9 +25,7 @@ TEST(CodeGenTest, VisitExtern) {
     );
 
     externConstruct->parent = module;
-
     llvmLoweringPass->visitExtern(externConstruct);
-
     EXPECT_TRUE(test::comparison::ir(llvmLoweringPass, "extern_simple"));
 }
 
@@ -51,7 +49,6 @@ TEST(CodeGenTest, VisitEmptyFunction) {
 
     function->parent = module;
     llvmLoweringPass->visitFunction(function);
-
     EXPECT_TRUE(test::comparison::ir(llvmLoweringPass, "function_empty"));
 }
 
@@ -70,7 +67,6 @@ TEST(CodeGenTest, VisitEmptyGlobal) {
 
     globalVar->parent = module;
     llvmLoweringPass->visitGlobal(globalVar);
-
     EXPECT_TRUE(test::comparison::ir(llvmLoweringPass, "global_empty"));
 }
 
@@ -94,7 +90,6 @@ TEST(CodeGenTest, VisitGlobalWithValue) {
 
     globalVar->parent = module;
     llvmLoweringPass->visitGlobal(globalVar);
-
     EXPECT_TRUE(test::comparison::ir(llvmLoweringPass, "global_init"));
 }
 
@@ -114,7 +109,6 @@ TEST(CodeGenTest, VisitAllocaInst) {
 
     function->parent = module;
     llvmLoweringPass->visitFunction(function);
-
     EXPECT_TRUE(test::comparison::ir(llvmLoweringPass, "inst_alloca"));
 }
 
@@ -139,7 +133,6 @@ TEST(CodeGenTest, VisitReturnInst) {
 
     function->parent = module;
     llvmLoweringPass->visitFunction(function);
-
     EXPECT_TRUE(test::comparison::ir(llvmLoweringPass, "inst_return_i32"));
 }
 

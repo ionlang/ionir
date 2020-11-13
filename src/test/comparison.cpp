@@ -43,6 +43,8 @@ namespace ionir::test::comparison {
             throw std::runtime_error("Module buffer in LlvmCodegenPass is not set");
         }
 
+        std::cout << ionshared::LlvmModule(llvmModuleBuffer.get()).makeIr() << std::endl;
+
         return comparison::ir(
             ionshared::LlvmModule(llvmModuleBuffer.get()).makeIr(),
             fileName

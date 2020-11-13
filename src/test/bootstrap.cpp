@@ -5,7 +5,7 @@
 
 namespace ionir::test::bootstrap {
     std::shared_ptr<LlvmLoweringPass> llvmLoweringPass(
-        std::shared_ptr<Module> module
+        const std::shared_ptr<Module>& module
     ) {
         // TODO: PassContext isn't associated with the calling scope/function in any way.
         std::shared_ptr<LlvmLoweringPass> llvmLoweringPass =
@@ -13,11 +13,13 @@ namespace ionir::test::bootstrap {
                 std::make_shared<ionshared::PassContext>()
             );
 
-        llvmLoweringPass->visitModule(std::move(module));
+        llvmLoweringPass->visitModule(module);
 
         llvmLoweringPass->llvmBuffers.modules.push(
             llvmLoweringPass->llvmModules->unwrap().begin()->second
         );
+
+        llvmLoweringPass->localBuffers.modules.push(module);
 
         return llvmLoweringPass;
     }

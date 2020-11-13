@@ -1,4 +1,4 @@
-; ModuleID = 'bar'
-source_filename = "bar"
+; ModuleID = 'ionlang.bar'
+source_filename = "ionlang.bar"
 
-@foo = external global i32
+@ionlang.bar.foo = external global i32

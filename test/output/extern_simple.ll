@@ -1,4 +1,4 @@
-; ModuleID = 'bar'
-source_filename = "bar"
+; ModuleID = 'ionlang.bar'
+source_filename = "ionlang.bar"
 
-declare void @foo()
+declare void @ionlang.bar.foo()

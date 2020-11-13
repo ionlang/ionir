@@ -9,7 +9,7 @@
 
 namespace ionir::test::bootstrap {
     [[nodiscard]] std::shared_ptr<LlvmLoweringPass> llvmLoweringPass(
-        std::shared_ptr<Module> module =
+        const std::shared_ptr<Module>& module =
             std::make_shared<Module>(std::make_shared<Identifier>(test::constant::foo))
     );
 

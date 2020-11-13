@@ -43,7 +43,7 @@ namespace ionir {
             this->context->getGlobalScope()->lookup(std::move(name));
 
         if (ionshared::util::hasValue(functionConstruct)
-                && functionConstruct->get()->constructKind == ConstructKind::Function) {
+            && functionConstruct->get()->constructKind == ConstructKind::Function) {
             return functionConstruct->get()->dynamicCast<Function>();
         }
 

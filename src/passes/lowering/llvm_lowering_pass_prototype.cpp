@@ -53,20 +53,32 @@ namespace ionir {
     }
 
     void LlvmLoweringPass::visitExtern(std::shared_ptr<Extern> construct) {
+        std::shared_ptr<llvm::Module> llvmModuleBuffer =
+            this->llvmBuffers.modules.forceGetTopItem();
+
         // TODO: Should we be checking whether a function exists/has been emitted via name/id? Or using symbol table? Investigate.
-        if (this->llvmBuffers.modules.forceGetTopItem()
-            ->getFunction(construct->prototype->name) != nullptr) {
+        if (llvmModuleBuffer->getFunction(construct->prototype->name) != nullptr) {
             this->context->diagnosticBuilder
                 ->bootstrap(diagnostic::externRedefinition)
+                ->formatMessage(construct->prototype->name)
                 ->finish();
 
-            throw std::runtime_error("Awaiting new diagnostic buffer checking");
+            return;
         }
 
-        this->valueSymbolTable.set(
-            construct,
-            this->eagerVisitValue(construct->prototype)
+        auto* llvmFunction = llvm::dyn_cast<llvm::Function>(
+            llvmModuleBuffer->getOrInsertFunction(
+                NameMangler::mangle(
+                    this->localBuffers.modules.forceGetTopItem(),
+                    construct->prototype->name
+                ),
+
+                this->eagerVisitType<llvm::FunctionType>(construct->prototype)
+            ).getCallee()
         );
+
+        llvmFunction->setLinkage(llvm::GlobalValue::LinkageTypes::ExternalLinkage);
+        this->valueSymbolTable.set(construct, llvmFunction);
     }
 
     void LlvmLoweringPass::visitPrototype(std::shared_ptr<Prototype> construct) {
@@ -133,12 +145,13 @@ namespace ionir {
         // TODO: Default to private linkage, but export if applicable (through export: module syntax).
         llvmFunction->setLinkage(llvm::GlobalValue::LinkageTypes::ExternalLinkage);
 
-        // TODO: What about variadic functions?
-        // Begin processing arguments. Argument count must be the same.
-        if (construct->prototype->args->items->getSize()
-            != llvmFunction->arg_size()) {
-            // TODO: Use diagnostics API.
-            throw std::runtime_error("Expected argument count to be the same as the function's argument count");
+        // Ensure iteration of arguments can occur.
+        if (construct->prototype->args->items->getSize() != llvmFunction->arg_size()) {
+            this->context->diagnosticBuilder
+                ->bootstrap(diagnostic::internalAssertionFailed)
+                ->finish();
+
+            return;
         }
 
         auto& argsNativeMap = construct->prototype->args->items->unwrapConst();

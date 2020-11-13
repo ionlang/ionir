@@ -1,6 +1,6 @@
-; ModuleID = 'bar'
-source_filename = "bar"
+; ModuleID = 'ionlang.bar'
+source_filename = "ionlang.bar"
 
-define void @foo() {
+define void @ionlang.bar.foo() {
   ret i32 1
 }

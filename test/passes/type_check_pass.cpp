@@ -37,7 +37,6 @@ TEST(TypeCheckPassTest, Run) {
 //    EXPECT_THROW(passManager.run(ast), std::runtime_error);
 
     passManager.run(ast);
-
     ASSERT_EQ(passContext->diagnostics->getSize(), 1);
 
     ionshared::Diagnostic functionReturnValueMissingDiagnostic =
@@ -96,7 +95,6 @@ TEST(TypeCheckPassTest, FunctionReturnTypeValueMismatch) {
     );
 
     typeCheckPass->visitReturnInst(returnInst);
-
     EXPECT_EQ(passContext->diagnostics->getSize(), 1);
 
     ionshared::Diagnostic functionReturnValueTypeMismatchDiagnostic =

@@ -23,6 +23,13 @@ namespace ionir::diagnostic {
     );
 
     IONIR_NOTICE_DEFINE(
+        internalAssertionFailed,
+        ionshared::DiagnosticKind::InternalError,
+        "An internal assertion failed",
+        std::nullopt
+    );
+
+    IONIR_NOTICE_DEFINE(
         internalThreshold,
         ionshared::DiagnosticKind::InternalError,
         "A point was reached which would theoretically should not be reached under any circumstances",
