@@ -66,13 +66,10 @@ namespace ionir {
             return;
         }
 
+        // NOTE: Externs' names are not mangled.
         auto* llvmFunction = llvm::dyn_cast<llvm::Function>(
             llvmModuleBuffer->getOrInsertFunction(
-                NameMangler::mangle(
-                    this->localBuffers.modules.forceGetTopItem(),
-                    construct->prototype->name
-                ),
-
+                construct->prototype->name,
                 this->eagerVisitType<llvm::FunctionType>(construct->prototype)
             ).getCallee()
         );
