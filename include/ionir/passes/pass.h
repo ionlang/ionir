@@ -37,6 +37,7 @@
 #include <ionir/construct/instruction.h>
 #include <ionir/construct/identifier.h>
 #include <ionir/construct/method.h>
+#include <ionir/construct/constructor.h>
 #include <ionir/construct/destructor.h>
 #include <ionir/diagnostics/diagnostic.h>
 #include <ionir/construct/construct.h>
