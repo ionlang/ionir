@@ -18,7 +18,7 @@ namespace ionir {
         std::shared_ptr<T> appendInstruction(
             std::shared_ptr<T> instruction
         ) noexcept {
-            this->basicBlock->instructions.push_back(instruction);
+            this->basicBlock->appendInstruction(instruction);
 
             return instruction;
         }

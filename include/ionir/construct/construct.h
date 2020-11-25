@@ -82,6 +82,9 @@ namespace ionir {
 
     typedef ionshared::Ast<Construct> Ast;
 
+    /**
+     * A language construct.
+     */
     class Construct : public ionshared::BaseConstruct<Construct, ConstructKind> {
     private:
         std::optional<std::shared_ptr<Module>> module;
@@ -150,8 +153,16 @@ namespace ionir {
 
         virtual void setModule(std::optional<std::shared_ptr<Module>> module);
 
+        /**
+         * Determine whether a construct is equivalent to another,
+         * depending on its properties.
+         */
         [[nodiscard]] virtual bool equals(const std::shared_ptr<Construct>& other);
 
+        /**
+         * Attempt to retrieve the name of the construct from a constant
+         * map.
+         */
         [[nodiscard]] std::optional<std::string> findConstructKindName();
     };
 

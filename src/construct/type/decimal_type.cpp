@@ -3,7 +3,7 @@
 namespace ionir {
     TypeDecimal::TypeDecimal(DecimalKind kind, bool isSigned) noexcept :
         Type(TypeKind::Decimal, util::resolveDecimalKindName(kind)),
-        integerKind(kind),
+        decimalKind(kind),
         isSigned(isSigned) {
         //
     }

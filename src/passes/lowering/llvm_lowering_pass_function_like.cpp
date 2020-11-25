@@ -192,9 +192,7 @@ namespace ionir {
          */
         if (!entryBasicBlock->hasTerminalInst()
             && construct->prototype->returnType->typeKind == TypeKind::Void) {
-            entryBasicBlock->appendInstruction(Construct::makeChild<InstReturn>(
-                entryBasicBlock
-            ));
+            entryBasicBlock->appendInstruction(std::make_shared<InstReturn>());
         }
 
         for (const auto& basicBlock : construct->basicBlocks) {

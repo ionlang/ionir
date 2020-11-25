@@ -60,7 +60,8 @@ namespace ionir {
 
         this->llvmBuffers.basicBlocks.push(llvmBasicBlock);
 
-        std::vector<std::shared_ptr<Instruction>> instructions = construct->instructions;
+        std::vector<std::shared_ptr<Instruction>> instructions =
+            construct->getInstructions();
 
         // Emit the entity at this point so visiting children can access it.
         this->valueSymbolTable.set(construct, llvmBasicBlock);

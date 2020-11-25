@@ -69,14 +69,14 @@ namespace ionir {
         > typeSymbolTable;
 
         void eagerVisit(const std::shared_ptr<Construct>& construct) {
-            std::shared_ptr<Construct> rootConstruct = construct->fetchRootConstruct();
+            std::optional<std::shared_ptr<Module>> moduleResult = construct->getModule();
 
-            if (rootConstruct->constructKind != ConstructKind::Module) {
+            if (ionshared::util::hasValue(moduleResult)) {
                 // TODO: Use diagnostics API (internal error).
-                throw std::runtime_error("Expected root construct to be a module");
+                throw std::runtime_error("Module unset");
             }
 
-            std::shared_ptr<Module> rootModule = rootConstruct->dynamicCast<Module>();
+            std::shared_ptr<Module> module = *moduleResult;
 
             /**
              * If the root construct is verified to be a module, and
@@ -84,8 +84,8 @@ namespace ionir {
              * also conveniently means that the specified construct will
              * be visited, since it is a child of the module.
              */
-            if (!this->moduleSymbolTable.contains(rootModule)) {
-                this->visit(rootModule);
+            if (!this->moduleSymbolTable.contains(module)) {
+                this->visit(module);
             }
             /**
              * At this point we know that the root construct is verified
@@ -103,7 +103,7 @@ namespace ionir {
              * not been emitted already, it will be emitted during this visit.
              */
             else if (this->llvmBuffers.modules.forceGetTopItem()
-                == *this->moduleSymbolTable.lookup<llvm::Module>(rootModule)) {
+                == *this->moduleSymbolTable.lookup<llvm::Module>(module)) {
                 this->visit(construct);
             }
 

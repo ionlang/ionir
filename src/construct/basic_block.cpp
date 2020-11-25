@@ -2,6 +2,23 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
+    void BasicBlock::registerInstruction(
+        const std::shared_ptr<Instruction>& instruction
+    ) {
+        if (ionshared::util::hasValue(instruction->parent)) {
+            throw std::runtime_error("Instruction was already previously attached to a different block");
+        }
+
+        instruction->parent = this->dynamicCast<BasicBlock>();
+
+        std::optional<std::string> id = util::findInstId(instruction);
+
+        // Instruction is named. Register it in the symbol table.
+        if (id.has_value()) {
+            this->getSymbolTable()->set(*id, instruction);
+        }
+    }
+
     BasicBlock::BasicBlock(
         std::vector<std::shared_ptr<Instruction>> instructions,
         BasicBlockKind kind,
@@ -32,35 +49,27 @@ namespace ionir {
 //        );
     }
 
-    void BasicBlock::insertInstruction(uint32_t order, const std::shared_ptr<Instruction>& instruction) {
-        const uint32_t maxOrder = this->instructions.empty() ? 0 : this->instructions.size() - 1;
+    void BasicBlock::insertInstruction(
+        uint32_t order,
+        const std::shared_ptr<Instruction>& instruction
+    ) {
+        uint32_t maxOrder = this->instructions.empty()
+            ? 0
+            : this->instructions.size() - 1;
 
         if (order > maxOrder) {
             throw std::out_of_range("Order is larger than the size of elements in the vector");
         }
 
+        this->registerInstruction(instruction);
         this->instructions.insert(this->instructions.begin() + order, instruction);
-
-        // TODO: --- Repeated code below (appendInst). Simplify? Maybe create registerInst() function? ---
-
-        const std::optional<std::string> id = util::findInstId(instruction);
-
-        // Instruction is named. Register it in the symbol table.
-        if (id.has_value()) {
-            this->getSymbolTable()->set(*id, instruction);
-        }
-        // ----------------------------------------------------------
     }
 
-    void BasicBlock::appendInstruction(const std::shared_ptr<Instruction>& instruction) {
+    void BasicBlock::appendInstruction(
+        const std::shared_ptr<Instruction>& instruction
+    ) {
+        this->registerInstruction(instruction);
         this->instructions.push_back(instruction);
-
-        std::optional<std::string> id = util::findInstId(instruction);
-
-        // Instruction is named. Register it in the symbol table.
-        if (id.has_value()) {
-            this->getSymbolTable()->set(*id, instruction);
-        }
     }
 
     void BasicBlock::prependInstruction(const std::shared_ptr<Instruction>& instruction) {
@@ -71,7 +80,8 @@ namespace ionir {
         uint32_t count = 0;
 
         for (uint32_t i = from; i < this->instructions.size(); i++) {
-            target.instructions.push_back(this->instructions[i]);
+            this->instructions[i]->parent = std::nullopt;
+            target.appendInstruction(this->instructions[i]);
             this->instructions.erase(this->instructions.begin() + i - 1);
             count++;
         }

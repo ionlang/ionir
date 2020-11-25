@@ -47,6 +47,9 @@ namespace ionir {
 
     // TODO: Parent must be function like (to account for method and function)
     // TODO: Must be verified to contain a single terminal instruction at the end.
+    /**
+     * A linear collection of instructions.
+     */
     class BasicBlock :
         public Construct,
         public ScopeAnchor<Instruction>,
@@ -62,6 +65,8 @@ namespace ionir {
          * instruction methods.
          */
         std::vector<std::shared_ptr<Instruction>> instructions;
+
+        void registerInstruction(const std::shared_ptr<Instruction>& instruction);
 
     public:
         const BasicBlockKind basicBlockKind;

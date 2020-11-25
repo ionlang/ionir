@@ -7,6 +7,10 @@
 namespace ionir {
     struct Pass;
 
+    /**
+     * A definition to an external function. The prototype name
+     * of externs are not mangled in any way during lowering step.
+     */
     struct Extern : Construct, WithParent<Module> {
         std::shared_ptr<Prototype> prototype;
 

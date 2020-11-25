@@ -4,7 +4,7 @@
 #include <vector>
 #include <ionshared/misc/named.h>
 #include <ionir/construct/pseudo/args.h>
-#include <ionir/construct/type/struct.h>
+#include <ionir/construct/type/struct_type.h>
 #include "type.h"
 #include "function.h"
 #include "function_like.h"
@@ -13,6 +13,9 @@ namespace ionir {
     struct Pass;
 
     // TODO: Shouldn't all this be on ionlang project?
+    /**
+     * A function available to struct instances.
+     */
     struct Method : Construct, FunctionLike, WithParent<TypeStruct> {
         const bool isOperatorOverload;
 

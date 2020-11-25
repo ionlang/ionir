@@ -41,7 +41,7 @@ namespace ionir {
          */
         if (construct->prototype->returnType->typeKind != TypeKind::Void) {
             std::vector<std::shared_ptr<Instruction>> instructions =
-                entryBasicBlock->get()->instructions;
+                entryBasicBlock->get()->getInstructions();
 
             // TODO: CRITICAL! There may be more than a single terminal statement on basic blocks? Technically speaking LLVM does not allow that to EXECUTE, however, it can OCCUR.
             ionshared::OptPtr<Instruction> terminalInst =
@@ -57,15 +57,10 @@ namespace ionir {
     }
 
     void TypeCheckPass::visitReturnInst(std::shared_ptr<InstReturn> construct) {
-        std::shared_ptr<Construct> possibleFunctionParent =
-            construct->forceGetUnboxedParent()->forceGetUnboxedParent();
+        std::shared_ptr<FunctionLike> functionLikeParent =
+            construct->forceGetParent()->forceGetParent();
 
-        IONIR_PASS_INTERNAL_ASSERT(
-            possibleFunctionParent->constructKind == ConstructKind::Function
-        )
-
-        std::shared_ptr<Function> function = possibleFunctionParent->dynamicCast<Function>();
-        std::shared_ptr<Type> functionReturnType = function->prototype->returnType;
+        std::shared_ptr<Type> functionReturnType = functionLikeParent->prototype->returnType;
         ionshared::OptPtr<Construct> returnStatementValue = construct->value;
         bool returnStatementValueSet = ionshared::util::hasValue(returnStatementValue);
 
@@ -76,7 +71,7 @@ namespace ionir {
         if ((functionReturnType->typeKind != TypeKind::Void) && !returnStatementValueSet) {
             this->context->diagnosticBuilder
                 ->bootstrap(diagnostic::functionReturnValueMissing)
-                ->formatMessage(function->prototype->name)
+                ->formatMessage(functionLikeParent->prototype->name)
                 ->finish();
 
             // TODO: Can it be made optional/continue?
@@ -107,7 +102,7 @@ namespace ionir {
                             ->bootstrap(diagnostic::functionReturnValueTypeMismatch)
 
                             // TODO: Format-in return types.
-                            ->formatMessage(function->prototype->name, "pending", "pending")
+                            ->formatMessage(functionLikeParent->prototype->name, "pending", "pending")
 
                             ->finish();
                     }

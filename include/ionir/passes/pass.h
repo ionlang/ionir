@@ -23,7 +23,7 @@
 #include <ionir/construct/type/void_type.h>
 #include <ionir/construct/type/boolean_type.h>
 #include <ionir/construct/type/pointer_type.h>
-#include <ionir/construct/type/struct.h>
+#include <ionir/construct/type/struct_type.h>
 #include <ionir/construct/pseudo/directive.h>
 #include <ionir/construct/pseudo/error_marker.h>
 #include <ionir/construct/pseudo/comment.h>

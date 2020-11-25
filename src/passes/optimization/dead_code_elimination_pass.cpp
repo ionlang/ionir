@@ -8,10 +8,10 @@ namespace ionir {
     }
 
     void DeadCodeEliminationPass::visitBasicBlock(std::shared_ptr<BasicBlock> node) {
-        std::vector<std::shared_ptr<Instruction>> insts = node->instructions;
+        std::vector<std::shared_ptr<Instruction>> instructions = node->getInstructions();
         bool erase = false;
 
-        for (auto iterator = insts.begin(); iterator < insts.end(); ++iterator) {
+        for (auto iterator = instructions.begin(); iterator < instructions.end(); ++iterator) {
             std::shared_ptr<Instruction> inst = *iterator;
 
             /**
@@ -19,7 +19,7 @@ namespace ionir {
              * as they are considered dead code.
              */
             if (erase) {
-                insts.erase(iterator);
+                instructions.erase(iterator);
 
                 continue;
             }
@@ -28,7 +28,7 @@ namespace ionir {
              * is of kind return and it is not the last
              * item in the vector.
              */
-            else if (inst->instKind == InstructionKind::Return && ++iterator == insts.end()) {
+            else if (inst->instKind == InstructionKind::Return && ++iterator == instructions.end()) {
                 /**
                  * If so, erase all following instructions,
                  * as they are considered dead code at this

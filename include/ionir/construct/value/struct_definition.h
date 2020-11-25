@@ -5,7 +5,7 @@
 #include <ionir/construct/instruction/alloca.h>
 #include <ionir/construct/value.h>
 #include <ionir/construct/construct.h>
-#include <ionir/construct/type/struct.h>
+#include <ionir/construct/type/struct_type.h>
 
 namespace ionir {
     struct Pass;

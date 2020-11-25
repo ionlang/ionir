@@ -13,6 +13,10 @@ namespace ionir {
 
     struct Function;
 
+    /**
+     * The root construct. Contains top-level constructs, such as
+     * functions, global variables, struct types, among others.
+     */
     struct Module : Construct, Identifiable {
         std::shared_ptr<Context> context;
 

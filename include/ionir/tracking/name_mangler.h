@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <ionir/construct/type/struct.h>
+#include <ionir/construct/type/struct_type.h>
 #include <ionir/construct/module.h>
 #include <ionir/construct/identifier.h>
 

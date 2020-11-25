@@ -25,7 +25,7 @@ TEST(TypeCheckPassTest, Run) {
     std::shared_ptr<Function> function = *functionLookupResult;
 
     function->prototype->returnType =
-        Construct::makeChild<TypeInteger>(function->prototype, IntegerKind::Int32);
+        std::make_shared<TypeInteger>(IntegerKind::Int32);
 
     // TODO: For now it's throwing, but soon instead check for produced semantic error.
 
@@ -48,7 +48,7 @@ TEST(TypeCheckPassTest, Run) {
     );
 
     function->prototype->returnType =
-        Construct::makeChild<TypeVoid>(function->prototype);
+        std::make_shared<TypeVoid>();
 
     // TODO: Verify that the body has at least one basic block.
 
@@ -81,14 +81,14 @@ TEST(TypeCheckPassTest, FunctionReturnTypeValueMismatch) {
 
     std::shared_ptr<Prototype> prototype = function->get()->prototype;
 
-    prototype->returnType = Construct::makeChild<TypeInteger>(prototype, IntegerKind::Int32);
+    prototype->returnType = std::make_shared<TypeInteger>(IntegerKind::Int32);
 
     // TODO: Verify that the body has at least one basic block.
 
     std::shared_ptr<BasicBlock> entrySection{function->get()->basicBlocks.begin()->get()};
 
     std::shared_ptr<InstReturn> returnInst = InstBuilder(entrySection).makeReturn(
-        LiteralInteger::make(
+        std::make_shared<LiteralInteger>(
             std::make_shared<TypeInteger>(IntegerKind::Int8),
             2
         )->flatten()

@@ -10,6 +10,9 @@
 namespace ionir {
     struct Pass;
 
+    /**
+     * A global variable within a module.
+     */
     struct Global : Construct, ionshared::Named, WithParent<Module> {
         std::shared_ptr<Type> type;
 

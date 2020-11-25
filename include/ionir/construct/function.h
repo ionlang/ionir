@@ -10,6 +10,9 @@
 namespace ionir {
     struct Pass;
 
+    /**
+     * A global function within a module.
+     */
     struct Function : Construct, FunctionLike, WithParent<Module> {
         Function(
             std::shared_ptr<Prototype> prototype,

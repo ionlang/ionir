@@ -28,7 +28,12 @@ namespace ionir {
         Cast
     };
 
+    /**
+     * A single instruction within a basic block.
+     */
     struct Instruction : public Construct, public WithParent<BasicBlock> {
+        friend class BasicBlock;
+
         const InstructionKind instKind;
 
         explicit Instruction(InstructionKind kind) noexcept;

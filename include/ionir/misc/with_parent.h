@@ -6,6 +6,7 @@ namespace ionir {
     template<typename T>
     class WithParent {
     protected:
+        // TODO: Should be private or protected is OK?
         std::optional<std::shared_ptr<T>> parent;
 
     public:

@@ -161,7 +161,7 @@ namespace ionir {
         //
     }
 
-    void Pass::visitConstructor(std::shared_ptr<Construct> construct) {
+    void Pass::visitConstructor(std::shared_ptr<Constructor> construct) {
         //
     }
 

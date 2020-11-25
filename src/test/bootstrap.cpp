@@ -1,4 +1,3 @@
-#include <utility>
 #include <ionir/const/const.h>
 #include <ionir/test/const.h>
 #include <ionir/test/bootstrap.h>
@@ -29,16 +28,18 @@ namespace ionir::test::bootstrap {
     ) {
         // TODO: Consider support for module here.
 
-        std::shared_ptr<Function> function = Function::make(
-            Prototype::make(
+        std::shared_ptr<Function> function = std::make_shared<Function>(
+            std::make_shared<Prototype>(
                 test::constant::foo,
                 std::make_shared<Args>(),
                 std::make_shared<TypeVoid>()
             ),
 
-            std::vector<std::shared_ptr<BasicBlock>>{BasicBlock::make(
-                instructions
-            )}
+            std::vector<std::shared_ptr<BasicBlock>>{
+                std::make_shared<BasicBlock>(
+                    instructions
+                )
+            }
         );
 
         return function;
