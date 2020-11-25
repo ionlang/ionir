@@ -17,7 +17,7 @@ namespace ionir {
         visitor.visitBranchInst(this->dynamicCast<InstBranch>());
     }
 
-    Ast InstBranch::getChildrenNodes() {
+    Ast InstBranch::getChildren() {
         // TODO: What about condition?
 
         return {

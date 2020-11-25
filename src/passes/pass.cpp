@@ -13,7 +13,7 @@ namespace ionir {
 
     void Pass::visitChildren(std::shared_ptr<Construct> construct) {
         // TODO: Will it cause StackOverflow error with large ASTs?
-        Ast children = construct->getChildrenNodes();
+        Ast children = construct->getChildren();
 
         /**
          * After visiting the construct, attempt to
@@ -158,6 +158,14 @@ namespace ionir {
     }
 
     void Pass::visitComment(std::shared_ptr<Comment> construct) {
+        //
+    }
+
+    void Pass::visitConstructor(std::shared_ptr<Construct> construct) {
+        //
+    }
+
+    void Pass::visitDestructor(std::shared_ptr<Destructor> construct) {
         //
     }
 }

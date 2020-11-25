@@ -17,7 +17,7 @@ TEST(ConstructBasicBlockTest, FindTerminalInstruction) {
         std::vector<std::shared_ptr<Instruction>>{InstReturn::make()}
     );
 
-    EXPECT_TRUE(ionshared::util::hasValue(basicBlock->findTerminalInst()));
+    EXPECT_TRUE(ionshared::util::hasValue(basicBlock->findTerminalInstruction()));
 }
 
 TEST(ConstructBasicBlockTest, Link) {
@@ -27,7 +27,7 @@ TEST(ConstructBasicBlockTest, Link) {
     std::shared_ptr<BasicBlock> basicBlockB =
         BasicBlock::make();
 
-    basicBlockA->link(basicBlockB);
+    basicBlockA->linkTo(basicBlockB);
 
     ASSERT_FALSE(basicBlockA->instructions.empty());
     EXPECT_EQ(basicBlockA->instructions.front()->instKind, InstructionKind::Jump);
@@ -45,11 +45,11 @@ TEST(ConstructBasicBlockTest, FindFirstInstruction) {
 
     basicBlock->instructions.push_back(returnInstA);
 
-    EXPECT_EQ(basicBlock->findFirstInst(), returnInstA);
+    EXPECT_EQ(basicBlock->findFirstInstruction(), returnInstA);
 
     basicBlock->instructions.push_back(returnInstB);
 
-    EXPECT_EQ(basicBlock->findFirstInst(), returnInstA);
+    EXPECT_EQ(basicBlock->findFirstInstruction(), returnInstA);
 }
 
 TEST(ConstructBasicBlockTest, FindLastInstruction) {
@@ -64,9 +64,9 @@ TEST(ConstructBasicBlockTest, FindLastInstruction) {
 
     basicBlock->instructions.push_back(returnInstA);
 
-    EXPECT_EQ(basicBlock->findLastInst(), returnInstA);
+    EXPECT_EQ(basicBlock->findLastInstruction(), returnInstA);
 
     basicBlock->instructions.push_back(returnInstB);
 
-    EXPECT_EQ(basicBlock->findLastInst(), returnInstB);
+    EXPECT_EQ(basicBlock->findLastInstruction(), returnInstB);
 }

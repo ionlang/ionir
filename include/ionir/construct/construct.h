@@ -71,7 +71,11 @@ namespace ionir {
 
         Comment,
 
-        Method
+        Method,
+
+        Constructor,
+
+        Destructor
     };
 
     struct Construct;

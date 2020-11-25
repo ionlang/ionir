@@ -34,7 +34,7 @@ namespace ionir {
             //
         }
 
-        [[nodiscard]] Ast getChildrenNodes() override {
+        [[nodiscard]] Ast getChildren() override {
             return {
                 this->type
             };

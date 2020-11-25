@@ -2,13 +2,13 @@
 
 namespace ionir {
     Method::Method(
-        MethodKind kind,
+        bool isOperatorOverload,
         std::shared_ptr<Prototype> prototype,
         std::vector<std::shared_ptr<BasicBlock>> basicBlocks
     ) noexcept :
         Construct(ConstructKind::Method),
         FunctionLike(std::move(prototype), std::move(basicBlocks)),
-        methodKind(kind) {
+        isOperatorOverload(isOperatorOverload) {
         //
     }
 

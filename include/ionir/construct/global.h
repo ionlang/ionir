@@ -2,6 +2,7 @@
 
 #include <optional>
 #include <string>
+#include <ionir/misc/with_parent.h>
 #include "value.h"
 #include "construct.h"
 #include "type.h"
@@ -22,6 +23,6 @@ namespace ionir {
 
         void accept(Pass& visitor) override;
 
-        [[nodiscard]] Ast getChildrenNodes() override;
+        [[nodiscard]] Ast getChildren() override;
     };
 }

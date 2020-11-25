@@ -14,7 +14,7 @@ namespace ionir {
         visitor.visitFunction(this->dynamicCast<Function>());
     }
 
-    Ast Function::getChildrenNodes() {
+    Ast Function::getChildren() {
         Ast children = Construct::convertChildren(this->basicBlocks);
 
         children.push_back(this->prototype);

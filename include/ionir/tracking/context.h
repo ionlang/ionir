@@ -39,7 +39,7 @@ namespace ionir {
         void popScope();
 
         /**
-         * Attempt to locate the nearest (starting from most recent
+         * Attempt to locateInstruction the nearest (starting from most recent
          * scopes) construct by it's id in the scope symbol tables.
          */
         ionshared::OptPtr<Construct> findNearest(const std::string &id);

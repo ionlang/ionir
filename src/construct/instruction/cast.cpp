@@ -15,7 +15,7 @@ namespace ionir {
         visitor.visitCastInst(this->dynamicCast<InstCast>());
     }
 
-    Ast InstCast::getChildrenNodes() {
+    Ast InstCast::getChildren() {
         return {
             this->type,
             this->value

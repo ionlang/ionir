@@ -18,7 +18,7 @@ namespace ionir {
         visitor.visitStructDefinition(this->dynamicCast<StructDefinition>());
     }
 
-    Ast StructDefinition::getChildrenNodes() {
+    Ast StructDefinition::getChildren() {
         Ast children = Construct::convertChildren<Value<>>(this->values);
 
         children.push_back(this->type);

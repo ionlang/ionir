@@ -11,7 +11,7 @@ namespace ionir {
         visitor.visitStructType(this->dynamicCast<TypeStruct>());
     }
 
-    Ast TypeStruct::getChildrenNodes() {
+    Ast TypeStruct::getChildren() {
         Ast children = {};
         auto fieldsMap = this->fields->unwrap();
 

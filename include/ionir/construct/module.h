@@ -23,7 +23,7 @@ namespace ionir {
 
         void accept(Pass& visitor) override;
 
-        [[nodiscard]] Ast getChildrenNodes() override;
+        [[nodiscard]] Ast getChildren() override;
 
         // TODO: What about externs/globals/classes/structs? ------------
         bool insertFunction(const std::shared_ptr<Function>& function);

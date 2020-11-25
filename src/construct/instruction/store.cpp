@@ -15,7 +15,7 @@ namespace ionir {
         visitor.visitStoreInst(this->dynamicCast<InstStore>());
     }
 
-    Ast InstStore::getChildrenNodes() {
+    Ast InstStore::getChildren() {
         return {
             this->value,
             this->target

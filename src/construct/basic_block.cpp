@@ -20,46 +20,54 @@ namespace ionir {
         visitor.visitBasicBlock(this->dynamicCast<BasicBlock>());
     }
 
-    Ast BasicBlock::getChildrenNodes() {
+    Ast BasicBlock::getChildren() {
         return Construct::convertChildren(this->instructions);
     }
 
-    void BasicBlock::insertInst(uint32_t order, const std::shared_ptr<Instruction>& inst) {
+    std::vector<std::shared_ptr<Instruction>> BasicBlock::getInstructions() const noexcept {
+        return this->instructions;
+//        return std::vector<const std::shared_ptr<Instruction>>(
+//            this->instructions.cbegin(),
+//            this->instructions.cend()
+//        );
+    }
+
+    void BasicBlock::insertInstruction(uint32_t order, const std::shared_ptr<Instruction>& instruction) {
         const uint32_t maxOrder = this->instructions.empty() ? 0 : this->instructions.size() - 1;
 
         if (order > maxOrder) {
             throw std::out_of_range("Order is larger than the size of elements in the vector");
         }
 
-        this->instructions.insert(this->instructions.begin() + order, inst);
+        this->instructions.insert(this->instructions.begin() + order, instruction);
 
         // TODO: --- Repeated code below (appendInst). Simplify? Maybe create registerInst() function? ---
 
-        const std::optional<std::string> id = util::findInstId(inst);
+        const std::optional<std::string> id = util::findInstId(instruction);
 
         // Instruction is named. Register it in the symbol table.
         if (id.has_value()) {
-            this->getSymbolTable()->set(*id, inst);
+            this->getSymbolTable()->set(*id, instruction);
         }
         // ----------------------------------------------------------
     }
 
-    void BasicBlock::appendInst(const std::shared_ptr<Instruction>& inst) {
-        this->instructions.push_back(inst);
+    void BasicBlock::appendInstruction(const std::shared_ptr<Instruction>& instruction) {
+        this->instructions.push_back(instruction);
 
-        std::optional<std::string> id = util::findInstId(inst);
+        std::optional<std::string> id = util::findInstId(instruction);
 
         // Instruction is named. Register it in the symbol table.
         if (id.has_value()) {
-            this->getSymbolTable()->set(*id, inst);
+            this->getSymbolTable()->set(*id, instruction);
         }
     }
 
-    void BasicBlock::prependInst(const std::shared_ptr<Instruction>& inst) {
-        this->insertInst(0, inst);
+    void BasicBlock::prependInstruction(const std::shared_ptr<Instruction>& instruction) {
+        this->insertInstruction(0, instruction);
     }
 
-    uint32_t BasicBlock::relocateInsts(BasicBlock& target, const uint32_t from) {
+    uint32_t BasicBlock::relocateInstructions(BasicBlock& target, uint32_t from) {
         uint32_t count = 0;
 
         for (uint32_t i = from; i < this->instructions.size(); i++) {
@@ -71,7 +79,7 @@ namespace ionir {
         return count;
     }
 
-    std::shared_ptr<BasicBlock> BasicBlock::split(uint32_t atOrder) {
+    std::shared_ptr<BasicBlock> BasicBlock::splitAt(uint32_t atOrder) {
         // TODO: If insts are empty, atOrder parameter is ignored (useless). Address that.
         // TODO: Symbol table is not being relocated/split.
 
@@ -106,15 +114,15 @@ namespace ionir {
         return newBasicBlock;
     }
 
-    std::shared_ptr<InstJump> BasicBlock::link(const std::shared_ptr<BasicBlock>& basicBlock) {
+    std::shared_ptr<InstJump> BasicBlock::linkTo(const std::shared_ptr<BasicBlock>& basicBlock) {
         return this->createBuilder()->makeJump(basicBlock);
     }
 
-    std::optional<uint32_t> BasicBlock::locate(std::shared_ptr<Instruction> inst) const {
-        return ionshared::util::locateInVector(this->instructions, std::move(inst));
+    std::optional<uint32_t> BasicBlock::locateInstruction(std::shared_ptr<Instruction> instruction) const {
+        return ionshared::util::locateInVector(this->instructions, std::move(instruction));
     }
 
-    ionshared::OptPtr<Instruction> BasicBlock::findInstByOrder(uint32_t order) const noexcept {
+    ionshared::OptPtr<Instruction> BasicBlock::findInstructionByOrder(uint32_t order) const noexcept {
         /**
          * Provided order is larger than the amount of elements in the
          * insts vector. No need to continue, return std::nullopt.
@@ -130,7 +138,7 @@ namespace ionir {
         return std::make_shared<InstBuilder>(this->dynamicCast<BasicBlock>());
     }
 
-    ionshared::OptPtr<Instruction> BasicBlock::findTerminalInst() const noexcept {
+    ionshared::OptPtr<Instruction> BasicBlock::findTerminalInstruction() const noexcept {
         // TODO: There can only be a single return instruction.
         for (const auto& instruction : this->instructions) {
             if (instruction->isTerminal()) {
@@ -142,10 +150,10 @@ namespace ionir {
     }
 
     bool BasicBlock::hasTerminalInst() const noexcept {
-        return ionshared::util::hasValue(this->findTerminalInst());
+        return ionshared::util::hasValue(this->findTerminalInstruction());
     }
 
-    ionshared::OptPtr<Instruction> BasicBlock::findFirstInst() noexcept {
+    ionshared::OptPtr<Instruction> BasicBlock::findFirstInstruction() noexcept {
         if (!this->instructions.empty()) {
             return this->instructions.front();
         }
@@ -153,7 +161,7 @@ namespace ionir {
         return std::nullopt;
     }
 
-    ionshared::OptPtr<Instruction> BasicBlock::findLastInst() noexcept {
+    ionshared::OptPtr<Instruction> BasicBlock::findLastInstruction() noexcept {
         if (!this->instructions.empty()) {
             return this->instructions.back();
         }

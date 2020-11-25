@@ -239,7 +239,7 @@ For additional information on building LLVM with CMake, [view the LLVM docs on b
 
 #### Installing LLVM (Linux)
 
-Please refer to [this link](http://apt.llvm.org/) for instructions on installing LLVM on Linux systems. It is recommended to use the automatic installation script provided there.
+Please refer to [this linkTo](http://apt.llvm.org/) for instructions on installing LLVM on Linux systems. It is recommended to use the automatic installation script provided there.
 
 #### Installing LLVM (macOS)
 
@@ -316,7 +316,7 @@ $ sudo apt-get install -y libedit-dev
 
 * Linux: `Cannot open file 'optional.h'`:
 
-Upgrade your `g++` package to `g++-8`, then replace the symbolic link with the executable of the updated package (using `ln`):
+Upgrade your `g++` package to `g++-8`, then replace the symbolic linkTo with the executable of the updated package (using `ln`):
 
 ```bash
 sudo apt-get install -y g++-8

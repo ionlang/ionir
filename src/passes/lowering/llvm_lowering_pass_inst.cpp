@@ -104,17 +104,19 @@ namespace ionir {
             TypeKind::Pointer
         };
 
-        bool isCastTypeCastable =
-            ionshared::util::vectorContains(castableTypeKinds, construct->type->typeKind);
+        bool isCastTypeCastable = ionshared::util::vectorContains(
+            castableTypeKinds,
+            construct->type->typeKind
+        );
 
-        bool isValueTypeCastable =
-            ionshared::util::vectorContains(castableTypeKinds, construct->value->type->typeKind);
+        bool isValueTypeCastable = ionshared::util::vectorContains(
+            castableTypeKinds,
+            construct->value->type->typeKind
+        );
 
         if (!isCastTypeCastable || !isValueTypeCastable) {
             this->context->diagnosticBuilder
                 ->bootstrap(diagnostic::castTypeInvalid)
-
-                // TODO: Passing in optional source location. This might be OK, but need verification.
                 ->setSourceLocation(construct->sourceLocation)
 
                 ->formatMessage(

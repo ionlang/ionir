@@ -45,7 +45,7 @@ namespace ionir {
 
             // TODO: CRITICAL! There may be more than a single terminal statement on basic blocks? Technically speaking LLVM does not allow that to EXECUTE, however, it can OCCUR.
             ionshared::OptPtr<Instruction> terminalInst =
-                entryBasicBlock->get()->findTerminalInst();
+                entryBasicBlock->get()->findTerminalInstruction();
 
             if (instructions.empty() || !ionshared::util::hasValue(terminalInst)) {
                 this->context->diagnosticBuilder

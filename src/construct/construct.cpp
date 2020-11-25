@@ -20,7 +20,7 @@ namespace ionir {
 
         // TODO: Simplify.
         if (verified) {
-            Ast children = construct->getChildrenNodes();
+            Ast children = construct->getChildren();
 
             /**
              * Loop through the children and verify them. If the verification

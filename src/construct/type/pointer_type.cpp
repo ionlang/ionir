@@ -11,7 +11,7 @@ namespace ionir {
         pass.visitPointerType(this->dynamicCast<TypePointer>());
     }
 
-    Ast TypePointer::getChildrenNodes() {
+    Ast TypePointer::getChildren() {
         return {this->value};
     }
 }

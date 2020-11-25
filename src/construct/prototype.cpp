@@ -6,7 +6,7 @@ namespace ionir {
         std::shared_ptr<Args> args,
         std::shared_ptr<Type> returnType
     ) noexcept :
-        ConstructWithParent<Module>(ConstructKind::Prototype),
+        Construct(ConstructKind::Prototype),
         Named{std::move(name)},
         args(std::move(args)),
         returnType(std::move(returnType)) {
@@ -17,7 +17,7 @@ namespace ionir {
         visitor.visitPrototype(this->dynamicCast<Prototype>());
     }
 
-    Ast Prototype::getChildrenNodes() {
+    Ast Prototype::getChildren() {
         // TODO: What about 'args'?
         return {
             this->returnType

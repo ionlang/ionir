@@ -16,6 +16,6 @@ namespace ionir {
 
         void accept(Pass& visitor) override;
 
-        [[nodiscard]] Ast getChildrenNodes() override;
+        [[nodiscard]] Ast getChildren() override;
     };
 }

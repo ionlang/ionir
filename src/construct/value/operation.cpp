@@ -19,8 +19,8 @@ namespace ionir {
         visitor.visitOperationValue(this->dynamicCast<OperationValue>());
     }
 
-    Ast OperationValue::getChildrenNodes() {
-        Ast children = Value<>::getChildrenNodes();
+    Ast OperationValue::getChildren() {
+        Ast children = Value<>::getChildren();
 
         if (ionshared::util::hasValue(this->rightSideValue)) {
             children.push_back(*this->rightSideValue);

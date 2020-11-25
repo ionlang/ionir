@@ -8,6 +8,7 @@
 #include "pseudo/args.h"
 #include "instruction.h"
 #include "type.h"
+#include "function_like.h"
 
 namespace ionir {
     struct Pass;
@@ -46,9 +47,11 @@ namespace ionir {
 
     // TODO: Parent must be function like (to account for method and function)
     // TODO: Must be verified to contain a single terminal instruction at the end.
-    struct BasicBlock : Construct, ScopeAnchor<Instruction> {
-        const BasicBlockKind basicBlockKind;
-
+    class BasicBlock :
+        public Construct,
+        public ScopeAnchor<Instruction>,
+        public WithParent<FunctionLike> {
+    private:
         /**
          * The basic block's instructions. Note that when inserting
          * instructions into a basic block, it should not be done
@@ -60,6 +63,9 @@ namespace ionir {
          */
         std::vector<std::shared_ptr<Instruction>> instructions;
 
+    public:
+        const BasicBlockKind basicBlockKind;
+
         explicit BasicBlock(
             std::vector<std::shared_ptr<Instruction>> instructions = {},
             BasicBlockKind kind = BasicBlockKind::Intrinsic,
@@ -70,24 +76,30 @@ namespace ionir {
 
         void accept(Pass& visitor) override;
 
-        [[nodiscard]] Ast getChildrenNodes() override;
+        [[nodiscard]] Ast getChildren() override;
 
-        void insertInst(uint32_t order, const std::shared_ptr<Instruction>& inst);
+        // TODO: Must be const.
+        std::vector<std::shared_ptr<Instruction>> getInstructions() const noexcept;
+
+        void insertInstruction(
+            uint32_t order,
+            const std::shared_ptr<Instruction>& instruction
+        );
 
         // TODO: Redundant? No symbol table is used anymore?
         /**
          * Inserts an instruction at the end of the instructions
          * list.
          */
-        void appendInst(const std::shared_ptr<Instruction>& inst);
+        void appendInstruction(const std::shared_ptr<Instruction>& instruction);
 
         /**
          * Inserts an instruction at the beginning of the instructions
          * list.
          */
-        void prependInst(const std::shared_ptr<Instruction>& inst);
+        void prependInstruction(const std::shared_ptr<Instruction>& instruction);
 
-        uint32_t relocateInsts(BasicBlock& target, uint32_t from = 0);
+        uint32_t relocateInstructions(BasicBlock& target, uint32_t from = 0);
 
         /**
          * Splits the local basic block, relocating all instructions
@@ -95,31 +107,35 @@ namespace ionir {
          * the provided id, having the same parent as the local basic
          * block.
          */
-        [[nodiscard]] std::shared_ptr<BasicBlock> split(uint32_t atOrder);
+        [[nodiscard]] std::shared_ptr<BasicBlock> splitAt(uint32_t atOrder);
 
         /**
          * Create a jump instruction at the end of the local block
          * targeting the provided block using an instruction builder
          * instance. Returns the created jump instruction.
          */
-        std::shared_ptr<InstJump> link(const std::shared_ptr<BasicBlock>& basicBlock);
+        std::shared_ptr<InstJump> linkTo(const std::shared_ptr<BasicBlock>& basicBlock);
 
         /**
          * Attempt to find the index location of an instruction.
          * Returns std::nullopt if not found.
          */
-        [[nodiscard]] std::optional<uint32_t> locate(std::shared_ptr<Instruction> inst) const;
+        [[nodiscard]] std::optional<uint32_t> locateInstruction(
+            std::shared_ptr<Instruction> instruction
+        ) const;
 
-        [[nodiscard]] ionshared::OptPtr<Instruction> findInstByOrder(uint32_t order) const noexcept;
+        [[nodiscard]] ionshared::OptPtr<Instruction> findInstructionByOrder(
+            uint32_t order
+        ) const noexcept;
 
         [[nodiscard]] std::shared_ptr<InstBuilder> createBuilder();
 
-        [[nodiscard]] ionshared::OptPtr<Instruction> findTerminalInst() const noexcept;
+        [[nodiscard]] ionshared::OptPtr<Instruction> findTerminalInstruction() const noexcept;
 
         [[nodiscard]] bool hasTerminalInst() const noexcept;
 
-        [[nodiscard]] ionshared::OptPtr<Instruction> findFirstInst() noexcept;
+        [[nodiscard]] ionshared::OptPtr<Instruction> findFirstInstruction() noexcept;
 
-        [[nodiscard]] ionshared::OptPtr<Instruction> findLastInst() noexcept;
+        [[nodiscard]] ionshared::OptPtr<Instruction> findLastInstruction() noexcept;
     };
 }
