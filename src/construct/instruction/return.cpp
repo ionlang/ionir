@@ -1,20 +1,7 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    std::shared_ptr<ReturnInst> ReturnInst::make(
-        ionshared::OptPtr<Value<>> value
-    ) noexcept {
-        std::shared_ptr<ReturnInst> result =
-            std::make_shared<ReturnInst>(value);
-
-        if (ionshared::util::hasValue(value)) {
-            value->get()->parent = result;
-        }
-
-        return result;
-    }
-
-    ReturnInst::ReturnInst(
+    InstReturn::InstReturn(
         ionshared::OptPtr<Value<>> value
     ) noexcept :
         Instruction(InstructionKind::Return),
@@ -22,11 +9,11 @@ namespace ionir {
         //
     }
 
-    void ReturnInst::accept(Pass& visitor) {
-        visitor.visitReturnInst(this->dynamicCast<ReturnInst>());
+    void InstReturn::accept(Pass& visitor) {
+        visitor.visitReturnInst(this->dynamicCast<InstReturn>());
     }
 
-    Ast ReturnInst::getChildrenNodes() {
+    Ast InstReturn::getChildrenNodes() {
         if (!ionshared::util::hasValue(this->value)) {
             return Construct::getChildrenNodes();
         }

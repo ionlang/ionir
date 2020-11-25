@@ -23,7 +23,7 @@ namespace ionir {
     }
 
     std::string NameMangler::mangle(
-        const std::shared_ptr<StructType>& structType,
+        const std::shared_ptr<TypeStruct>& structType,
         const std::string& name
     ) noexcept {
         return NameMangler::mangle(

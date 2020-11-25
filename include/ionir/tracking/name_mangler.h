@@ -21,7 +21,7 @@ namespace ionir {
         ) noexcept;
 
         static std::string mangle(
-            const std::shared_ptr<StructType>& structType,
+            const std::shared_ptr<TypeStruct>& structType,
             const std::string& name
         ) noexcept;
     };

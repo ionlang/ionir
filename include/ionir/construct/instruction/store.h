@@ -2,24 +2,18 @@
 
 #include <ionir/construct/instruction.h>
 #include <ionir/construct/value.h>
-#include <ionir/construct/pseudo/child_construct.h>
 
 namespace ionir {
     struct Pass;
 
-    struct StoreInst : Instruction {
-        static std::shared_ptr<StoreInst> make(
-            const std::shared_ptr<Value<>>& value,
-            const std::shared_ptr<AllocaInst>& target
-        ) noexcept;
-
+    struct InstStore : Instruction {
         std::shared_ptr<Value<>> value;
 
-        std::shared_ptr<AllocaInst> target;
+        std::shared_ptr<InstAlloca> target;
 
-        explicit StoreInst(
+        explicit InstStore(
             std::shared_ptr<Value<>> value,
-            std::shared_ptr<AllocaInst> target
+            std::shared_ptr<InstAlloca> target
         ) noexcept;
 
         void accept(Pass& visitor) override;

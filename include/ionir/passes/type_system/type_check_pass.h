@@ -12,12 +12,12 @@ namespace ionir {
 
         void visitFunction(std::shared_ptr<Function> construct) override;
 
-        void visitReturnInst(std::shared_ptr<ReturnInst> construct) override;
+        void visitReturnInst(std::shared_ptr<InstReturn> construct) override;
 
-        void visitStoreInst(std::shared_ptr<StoreInst> construct) override;
+        void visitStoreInst(std::shared_ptr<InstStore> construct) override;
 
         void visitStructDefinition(std::shared_ptr<StructDefinition> construct) override;
 
-        void visitCallInst(std::shared_ptr<CallInst> construct) override;
+        void visitCallInst(std::shared_ptr<InstCall> construct) override;
     };
 }

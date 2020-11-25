@@ -212,41 +212,41 @@ namespace ionir {
 
         void visitPrototype(std::shared_ptr<Prototype> construct) override;
 
-        void visitIntegerLiteral(std::shared_ptr<IntegerLiteral> construct) override;
+        void visitIntegerLiteral(std::shared_ptr<LiteralInteger> construct) override;
 
-        void visitCharLiteral(std::shared_ptr<CharLiteral> construct) override;
+        void visitCharLiteral(std::shared_ptr<LiteralChar> construct) override;
 
         void visitStringLiteral(std::shared_ptr<StringLiteral> construct) override;
 
-        void visitBooleanLiteral(std::shared_ptr<BooleanLiteral> construct) override;
+        void visitBooleanLiteral(std::shared_ptr<LiteralBoolean> construct) override;
 
         void visitOperationValue(std::shared_ptr<OperationValue> construct) override;
 
-        void visitAllocaInst(std::shared_ptr<AllocaInst> construct) override;
+        void visitAllocaInst(std::shared_ptr<InstAlloca> construct) override;
 
-        void visitReturnInst(std::shared_ptr<ReturnInst> construct) override;
+        void visitReturnInst(std::shared_ptr<InstReturn> construct) override;
 
-        void visitBranchInst(std::shared_ptr<BranchInst> construct) override;
+        void visitBranchInst(std::shared_ptr<InstBranch> construct) override;
 
-        void visitCallInst(std::shared_ptr<CallInst> construct) override;
+        void visitCallInst(std::shared_ptr<InstCall> construct) override;
 
-        void visitStoreInst(std::shared_ptr<StoreInst> construct) override;
+        void visitStoreInst(std::shared_ptr<InstStore> construct) override;
 
-        void visitJumpInst(std::shared_ptr<JumpInst> node) override;
+        void visitJumpInst(std::shared_ptr<InstJump> node) override;
 
-        void visitCastInst(std::shared_ptr<CastInst> construct) override;
+        void visitCastInst(std::shared_ptr<InstCast> construct) override;
 
         void visitGlobal(std::shared_ptr<Global> construct) override;
 
-        void visitIntegerType(std::shared_ptr<IntegerType> construct) override;
+        void visitIntegerType(std::shared_ptr<TypeInteger> construct) override;
 
-        void visitBooleanType(std::shared_ptr<BooleanType> construct) override;
+        void visitBooleanType(std::shared_ptr<TypeBoolean> construct) override;
 
-        void visitVoidType(std::shared_ptr<VoidType> construct) override;
+        void visitVoidType(std::shared_ptr<TypeVoid> construct) override;
 
         void visitModule(std::shared_ptr<Module> construct) override;
 
-        void visitStructType(std::shared_ptr<StructType> construct) override;
+        void visitStructType(std::shared_ptr<TypeStruct> construct) override;
 
         void visitStructDefinition(
             std::shared_ptr<StructDefinition> construct

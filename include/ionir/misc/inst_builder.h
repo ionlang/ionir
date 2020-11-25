@@ -15,10 +15,9 @@ namespace ionir {
     private:
         template<typename T>
             requires std::derived_from<T, Instruction>
-        std::shared_ptr<T> setParentAndAppend(
+        std::shared_ptr<T> appendInstruction(
             std::shared_ptr<T> instruction
         ) noexcept {
-            instruction->parent = this->basicBlock;
             this->basicBlock->instructions.push_back(instruction);
 
             return instruction;
@@ -31,47 +30,32 @@ namespace ionir {
             std::shared_ptr<BasicBlock> basicBlock
         ) noexcept;
 
-        /**
-         * Construct a instruction, append it to the buffered basic,
-         * block and set its parent.
-         */
-        template<class TInst, typename... TArgs>
-            requires std::derived_from<TInst, Instruction>
-        std::shared_ptr<TInst> make(TArgs... args) {
-            std::shared_ptr<TInst> instruction =
-                Construct::makeChild<TInst>(this->basicBlock, args...);
-
-            this->basicBlock->instructions.push_back(instruction);
-
-            return instruction;
-        }
-
-        std::shared_ptr<AllocaInst> createAlloca(
+        std::shared_ptr<InstAlloca> makeAlloca(
             const std::string& id,
             const std::shared_ptr<Type>& type
         );
 
-        std::shared_ptr<StoreInst> createStore(
+        std::shared_ptr<InstStore> makeStore(
             const std::shared_ptr<Value<>>& value,
-            const std::shared_ptr<AllocaInst>& target
+            const std::shared_ptr<InstAlloca>& target
         );
 
-        std::shared_ptr<BranchInst> createBranch(
+        std::shared_ptr<InstBranch> makeBranch(
             const std::shared_ptr<Construct>& condition,
             const std::shared_ptr<BasicBlock>& consequentBasicBlock,
             const std::shared_ptr<BasicBlock>& alternativeBasicBlock
         );
 
-        std::shared_ptr<ReturnInst> createReturn(
+        std::shared_ptr<InstReturn> makeReturn(
             const ionshared::OptPtr<Value<>>& value = std::nullopt
         );
 
-        std::shared_ptr<CallInst> createCall(
+        std::shared_ptr<InstCall> makeCall(
             const std::shared_ptr<Construct>& callee,
             const std::vector<std::shared_ptr<Construct>>& args = {}
         );
 
-        std::shared_ptr<JumpInst> createJump(
+        std::shared_ptr<InstJump> makeJump(
             const std::shared_ptr<BasicBlock>& basicBlock
         );
     };

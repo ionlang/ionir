@@ -2,7 +2,7 @@
 
 namespace ionir {
     TypeOfIntrinsic::TypeOfIntrinsic(std::shared_ptr<Value<>> value) :
-        Construct(ConstructKind::TypeOfIntrinsic),
+        Construct(ConstructKind::IntrinsicTypeOf),
         value(std::move(value)) {
         //
     }

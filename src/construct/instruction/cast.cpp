@@ -1,19 +1,7 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    std::shared_ptr<CastInst> CastInst::make(
-        const std::shared_ptr<Type>& type,
-        const std::shared_ptr<Value<>>& value) noexcept {
-        std::shared_ptr<CastInst> result =
-            std::make_shared<CastInst>(type, value);
-
-        type->parent = result;
-        value->parent = result;
-
-        return result;
-    }
-
-    CastInst::CastInst(
+    InstCast::InstCast(
         std::shared_ptr<Type> type,
         std::shared_ptr<Value<>> value
     ) noexcept :
@@ -23,11 +11,11 @@ namespace ionir {
         //
     }
 
-    void CastInst::accept(Pass& visitor) {
-        visitor.visitCastInst(this->dynamicCast<CastInst>());
+    void InstCast::accept(Pass& visitor) {
+        visitor.visitCastInst(this->dynamicCast<InstCast>());
     }
 
-    Ast CastInst::getChildrenNodes() {
+    Ast InstCast::getChildrenNodes() {
         return {
             this->type,
             this->value

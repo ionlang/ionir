@@ -8,17 +8,12 @@ namespace ionir {
 
     struct Function;
 
-    struct CastInst : Instruction {
-        static std::shared_ptr<CastInst> make(
-            const std::shared_ptr<Type>& type,
-            const std::shared_ptr<Value<>>& value
-        ) noexcept;
-
+    struct InstCast : Instruction {
         std::shared_ptr<Type> type;
 
         std::shared_ptr<Value<>> value;
 
-        explicit CastInst(
+        explicit InstCast(
             std::shared_ptr<Type> type,
             std::shared_ptr<Value<>> value
         ) noexcept;

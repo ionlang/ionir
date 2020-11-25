@@ -17,12 +17,12 @@ namespace ionir {
         Int128 = 128
     };
 
-    struct IntegerType : Type {
+    struct TypeInteger : Type {
         const IntegerKind integerKind;
 
         bool isSigned;
 
-        explicit IntegerType(IntegerKind kind, bool isSigned = true) noexcept;
+        explicit TypeInteger(IntegerKind kind, bool isSigned = true) noexcept;
 
         void accept(Pass& pass) override;
     };

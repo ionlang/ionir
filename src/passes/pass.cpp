@@ -41,11 +41,11 @@ namespace ionir {
         //
     }
 
-    void Pass::visitIntegerLiteral(std::shared_ptr<IntegerLiteral> construct) {
+    void Pass::visitIntegerLiteral(std::shared_ptr<LiteralInteger> construct) {
         //
     }
 
-    void Pass::visitCharLiteral(std::shared_ptr<CharLiteral> construct) {
+    void Pass::visitCharLiteral(std::shared_ptr<LiteralChar> construct) {
         //
     }
 
@@ -53,39 +53,39 @@ namespace ionir {
         //
     }
 
-    void Pass::visitBooleanLiteral(std::shared_ptr<BooleanLiteral> construct) {
+    void Pass::visitBooleanLiteral(std::shared_ptr<LiteralBoolean> construct) {
         //
     }
 
-    void Pass::visitAllocaInst(std::shared_ptr<AllocaInst> construct) {
+    void Pass::visitAllocaInst(std::shared_ptr<InstAlloca> construct) {
         //
     }
 
-    void Pass::visitReturnInst(std::shared_ptr<ReturnInst> construct) {
+    void Pass::visitReturnInst(std::shared_ptr<InstReturn> construct) {
         //
     }
 
-    void Pass::visitBranchInst(std::shared_ptr<BranchInst> construct) {
+    void Pass::visitBranchInst(std::shared_ptr<InstBranch> construct) {
         //
     }
 
-    void Pass::visitCallInst(std::shared_ptr<CallInst> construct) {
+    void Pass::visitCallInst(std::shared_ptr<InstCall> construct) {
         //
     }
 
-    void Pass::visitStoreInst(std::shared_ptr<StoreInst> construct) {
+    void Pass::visitStoreInst(std::shared_ptr<InstStore> construct) {
         //
     }
 
-    void Pass::visitJumpInst(std::shared_ptr<JumpInst> construct) {
+    void Pass::visitJumpInst(std::shared_ptr<InstJump> construct) {
         //
     }
 
-    void Pass::visitCompareInst(std::shared_ptr<CompareInst> construct) {
+    void Pass::visitCompareInst(std::shared_ptr<InstCompare> construct) {
         //
     }
 
-    void Pass::visitCastInst(std::shared_ptr<CastInst> construct) {
+    void Pass::visitCastInst(std::shared_ptr<InstCast> construct) {
         //
     }
 
@@ -97,23 +97,23 @@ namespace ionir {
         //
     }
 
-    void Pass::visitIntegerType(std::shared_ptr<IntegerType> construct) {
+    void Pass::visitIntegerType(std::shared_ptr<TypeInteger> construct) {
         //
     }
 
-    void Pass::visitDecimalType(std::shared_ptr<DecimalType> construct) {
+    void Pass::visitDecimalType(std::shared_ptr<TypeDecimal> construct) {
         //
     }
 
-    void Pass::visitVoidType(std::shared_ptr<VoidType> construct) {
+    void Pass::visitVoidType(std::shared_ptr<TypeVoid> construct) {
         //
     }
 
-    void Pass::visitBooleanType(std::shared_ptr<BooleanType> construct) {
+    void Pass::visitBooleanType(std::shared_ptr<TypeBoolean> construct) {
         //
     }
 
-    void Pass::visitPointerType(std::shared_ptr<PointerType> construct) {
+    void Pass::visitPointerType(std::shared_ptr<TypePointer> construct) {
         //
     }
 
@@ -137,7 +137,7 @@ namespace ionir {
         //
     }
 
-    void Pass::visitStructType(std::shared_ptr<StructType> construct) {
+    void Pass::visitStructType(std::shared_ptr<TypeStruct> construct) {
         //
     }
 
@@ -154,6 +154,10 @@ namespace ionir {
     }
 
     void Pass::visitTypeOfIntrinsic(std::shared_ptr<TypeOfIntrinsic> construct) {
+        //
+    }
+
+    void Pass::visitComment(std::shared_ptr<Comment> construct) {
         //
     }
 }

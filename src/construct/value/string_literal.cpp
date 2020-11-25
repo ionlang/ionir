@@ -3,7 +3,7 @@
 namespace ionir {
     StringLiteral::StringLiteral(std::string value) noexcept :
         // TODO: Type has no parent. Type is wrong. Awaiting StringType.
-        Value(ValueKind::String, std::make_shared<BooleanType>()),
+        Value(ValueKind::String, std::make_shared<TypeBoolean>()),
         value(std::move(value)) {
         //
     }

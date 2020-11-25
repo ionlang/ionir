@@ -1,23 +1,6 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    std::shared_ptr<OperationValue> OperationValue::make(
-        OperatorKind operatorKind,
-        const std::shared_ptr<Value<>>& leftSideValue,
-        ionshared::OptPtr<Value<>> rightSideValue
-    ) noexcept {
-        std::shared_ptr<OperationValue> result =
-            std::make_shared<OperationValue>(operatorKind, leftSideValue, rightSideValue);
-
-        leftSideValue->parent = result;
-
-        if (ionshared::util::hasValue(rightSideValue)) {
-            rightSideValue->get()->parent = result;
-        }
-
-        return result;
-    }
-
     // TODO: Finish init. implementation.
     OperationValue::OperationValue(
         OperatorKind operatorKind,

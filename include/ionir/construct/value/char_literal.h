@@ -5,10 +5,10 @@
 namespace ionir {
     struct Pass;
 
-    struct CharLiteral : Value<> {
+    struct LiteralChar : Value<> {
         char value;
 
-        explicit CharLiteral(char value) noexcept;
+        explicit LiteralChar(char value) noexcept;
 
         void accept(Pass& visitor) override;
     };

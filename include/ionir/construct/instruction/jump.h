@@ -7,10 +7,10 @@ namespace ionir {
 
     struct BasicBlock;
 
-    struct JumpInst : Instruction {
+    struct InstJump : Instruction {
         std::shared_ptr<BasicBlock> basicBlockTarget;
 
-        explicit JumpInst(
+        explicit InstJump(
             std::shared_ptr<BasicBlock> basicBlockTarget
         ) noexcept;
 

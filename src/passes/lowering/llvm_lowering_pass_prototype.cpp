@@ -192,7 +192,7 @@ namespace ionir {
          */
         if (!entryBasicBlock->hasTerminalInst()
             && construct->prototype->returnType->typeKind == TypeKind::Void) {
-            entryBasicBlock->appendInst(Construct::makeChild<ReturnInst>(
+            entryBasicBlock->appendInst(Construct::makeChild<InstReturn>(
                 entryBasicBlock
             ));
         }

@@ -56,7 +56,7 @@ namespace ionir {
         }
     }
 
-    void TypeCheckPass::visitReturnInst(std::shared_ptr<ReturnInst> construct) {
+    void TypeCheckPass::visitReturnInst(std::shared_ptr<InstReturn> construct) {
         std::shared_ptr<Construct> possibleFunctionParent =
             construct->forceGetUnboxedParent()->forceGetUnboxedParent();
 
@@ -135,9 +135,9 @@ namespace ionir {
         }
     }
 
-    void TypeCheckPass::visitStoreInst(std::shared_ptr<StoreInst> construct) {
+    void TypeCheckPass::visitStoreInst(std::shared_ptr<InstStore> construct) {
         TypeKind storeInstValueTypeKind = construct->value->type->typeKind;
-        std::shared_ptr<AllocaInst> targetValue = construct->target;
+        std::shared_ptr<InstAlloca> targetValue = construct->target;
 
         // Attempting to store a value with a different type than what was allocated.
         if (storeInstValueTypeKind != targetValue->type->typeKind) {
@@ -184,7 +184,7 @@ namespace ionir {
         }
     }
 
-    void TypeCheckPass::visitCallInst(std::shared_ptr<CallInst> construct) {
+    void TypeCheckPass::visitCallInst(std::shared_ptr<InstCall> construct) {
         if (construct->callee->constructKind == ConstructKind::Function) {
             std::shared_ptr<Function> calleeFunction = construct->callee->dynamicCast<Function>();
             size_t expectedArgumentCount = calleeFunction->prototype->args->items->getSize();

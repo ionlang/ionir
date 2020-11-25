@@ -2,27 +2,12 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    std::shared_ptr<BasicBlock> BasicBlock::make(
-        const std::vector<std::shared_ptr<Instruction>>& instructions,
-        BasicBlockKind kind,
-        const PtrSymbolTable<Instruction>& symbolTable
-    ) noexcept {
-        std::shared_ptr<BasicBlock> result =
-            std::make_shared<BasicBlock>(instructions, kind, symbolTable);
-
-        for (const auto& instruction : instructions) {
-            instruction->parent = result;
-        }
-
-        return result;
-    }
-
     BasicBlock::BasicBlock(
         std::vector<std::shared_ptr<Instruction>> instructions,
         BasicBlockKind kind,
         PtrSymbolTable<Instruction> symbolTable
     ) noexcept :
-        ConstructWithParent<Function>(ConstructKind::BasicBlock),
+        Construct(ConstructKind::BasicBlock),
         ScopeAnchor<Instruction>(std::move(symbolTable)),
         basicBlockKind(kind),
         instructions(std::move(instructions)) {
@@ -37,11 +22,6 @@ namespace ionir {
 
     Ast BasicBlock::getChildrenNodes() {
         return Construct::convertChildren(this->instructions);
-    }
-
-    bool BasicBlock::verify() {
-        return this->hasTerminalInst()
-            && Construct::verify();
     }
 
     void BasicBlock::insertInst(uint32_t order, const std::shared_ptr<Instruction>& inst) {
@@ -111,26 +91,23 @@ namespace ionir {
             this->instructions.erase(from, to);
         }
 
-        std::shared_ptr<Function> parent = this->forceGetUnboxedParent();
-
-        std::shared_ptr<BasicBlock> newBasicBlock = Construct::makeChild<BasicBlock>(
-            parent,
+        std::shared_ptr<BasicBlock> newBasicBlock = std::make_shared<BasicBlock>(
             instructions,
             this->basicBlockKind
         );
 
-        // TODO: Changed. Review.
+        // TODO: Changed/commented out. Review.
         /**
          * Register the newly created basic block on the parent's
          * symbol table (parent is a function body).
          */
-        parent->basicBlocks.push_back(newBasicBlock);
+//        this->forceGetUnboxedParent()->basicBlocks.push_back(newBasicBlock);
 
         return newBasicBlock;
     }
 
-    std::shared_ptr<JumpInst> BasicBlock::link(const std::shared_ptr<BasicBlock>& basicBlock) {
-        return this->createBuilder()->createJump(basicBlock);
+    std::shared_ptr<InstJump> BasicBlock::link(const std::shared_ptr<BasicBlock>& basicBlock) {
+        return this->createBuilder()->makeJump(basicBlock);
     }
 
     std::optional<uint32_t> BasicBlock::locate(std::shared_ptr<Instruction> inst) const {

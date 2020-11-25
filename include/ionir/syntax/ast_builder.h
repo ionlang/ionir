@@ -20,13 +20,13 @@ namespace ionir {
 
         void setBasicBlockBuffer(const ionshared::OptPtr<BasicBlock>& basicBlockBuffer);
 
-        void require(const ionshared::OptPtr<Construct>& construct) const;
+        static std::shared_ptr<Construct> require(const ionshared::OptPtr<Construct>& construct) ;
 
-        void requireModule() const;
+        std::shared_ptr<Module> requireModule() const;
 
-        void requireFunction() const;
+        std::shared_ptr<Function> requireFunction() const;
 
-        void requireBasicBlock() const;
+        std::shared_ptr<BasicBlock> requireBasicBlock() const;
 
         void clearBuffers();
 
@@ -41,6 +41,6 @@ namespace ionir {
 
         AstBuilder& functionReturnType(std::shared_ptr<Type> returnType);
 
-        AstBuilder& instAlloca(const std::string& id, std::shared_ptr<Type> type);
+        AstBuilder& instAlloca(const std::string& id, const std::shared_ptr<Type>& type);
     };
 }

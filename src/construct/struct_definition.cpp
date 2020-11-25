@@ -1,27 +1,11 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    std::shared_ptr<StructDefinition> StructDefinition::make(
-        const std::shared_ptr<StructType>& type,
-        const std::vector<std::shared_ptr<Value<>>>& values
-    ) noexcept {
-        std::shared_ptr<StructDefinition> result =
-            std::make_shared<StructDefinition>(type, values);
-
-        type->parent = result;
-
-        for (const auto& value : values) {
-            value->parent = result;
-        }
-
-        return result;
-    }
-
     StructDefinition::StructDefinition(
-        const std::shared_ptr<StructType>& type,
+        const std::shared_ptr<TypeStruct>& type,
         std::vector<std::shared_ptr<Value<>>> values
     ) :
-        Value<StructType>(
+        Value<TypeStruct>(
             ValueKind::StructDefinition,
             type
         ),

@@ -1,34 +1,14 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    std::shared_ptr<Method> Method::make(
-        MethodKind kind,
-        const std::shared_ptr<StructType>& structType,
-        const std::shared_ptr<Prototype>& prototype,
-        const std::vector<std::shared_ptr<BasicBlock>>& basicBlocks
-    ) noexcept {
-        std::shared_ptr<Method> result =
-            std::make_shared<Method>(kind, structType, prototype, basicBlocks);
-
-        prototype->parent = result;
-
-        for (const auto& basicBlock : basicBlocks) {
-            basicBlock->parent = result;
-        }
-
-        return result;
-    }
-
     Method::Method(
         MethodKind kind,
-        std::shared_ptr<StructType> structType,
         std::shared_ptr<Prototype> prototype,
         std::vector<std::shared_ptr<BasicBlock>> basicBlocks
     ) noexcept :
-        // TODO: Construct kind is Function, should be Method.
-        Function(std::move(prototype), std::move(basicBlocks)),
-        methodKind(kind),
-        structType(std::move(structType)) {
+        Construct(ConstructKind::Method),
+        FunctionLike(std::move(prototype), std::move(basicBlocks)),
+        methodKind(kind) {
         //
     }
 

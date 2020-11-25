@@ -5,8 +5,8 @@
 namespace ionir {
     struct Pass;
 
-    struct VoidType : Type {
-        VoidType() noexcept;
+    struct TypeVoid : Type {
+        TypeVoid() noexcept;
 
         void accept(Pass& pass) override;
     };

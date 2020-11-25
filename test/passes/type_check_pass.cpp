@@ -8,7 +8,7 @@ using namespace ionir;
 
 // TODO: Separate into multiple tests.
 TEST(TypeCheckPassTest, Run) {
-    PassManager passManager = PassManager();
+    PassManager passManager{};
 
     std::shared_ptr<ionshared::PassContext> passContext =
         std::make_shared<ionshared::PassContext>();
@@ -25,7 +25,7 @@ TEST(TypeCheckPassTest, Run) {
     std::shared_ptr<Function> function = *functionLookupResult;
 
     function->prototype->returnType =
-        Construct::makeChild<IntegerType>(function->prototype, IntegerKind::Int32);
+        Construct::makeChild<TypeInteger>(function->prototype, IntegerKind::Int32);
 
     // TODO: For now it's throwing, but soon instead check for produced semantic error.
 
@@ -48,13 +48,13 @@ TEST(TypeCheckPassTest, Run) {
     );
 
     function->prototype->returnType =
-        Construct::makeChild<VoidType>(function->prototype);
+        Construct::makeChild<TypeVoid>(function->prototype);
 
     // TODO: Verify that the body has at least one basic block.
 
     std::shared_ptr<BasicBlock> entrySection = functionLookupResult->get()->basicBlocks.front();
 
-    InstBuilder(entrySection).createReturn();
+    InstBuilder(entrySection).makeReturn();
 
     // TODO: Compare diagnostics instead.
     /**
@@ -81,15 +81,15 @@ TEST(TypeCheckPassTest, FunctionReturnTypeValueMismatch) {
 
     std::shared_ptr<Prototype> prototype = function->get()->prototype;
 
-    prototype->returnType = Construct::makeChild<IntegerType>(prototype, IntegerKind::Int32);
+    prototype->returnType = Construct::makeChild<TypeInteger>(prototype, IntegerKind::Int32);
 
     // TODO: Verify that the body has at least one basic block.
 
     std::shared_ptr<BasicBlock> entrySection{function->get()->basicBlocks.begin()->get()};
 
-    std::shared_ptr<ReturnInst> returnInst = InstBuilder(entrySection).createReturn(
-        IntegerLiteral::make(
-            std::make_shared<IntegerType>(IntegerKind::Int8),
+    std::shared_ptr<InstReturn> returnInst = InstBuilder(entrySection).makeReturn(
+        LiteralInteger::make(
+            std::make_shared<TypeInteger>(IntegerKind::Int8),
             2
         )->flatten()
     );

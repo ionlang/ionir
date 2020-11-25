@@ -8,8 +8,8 @@ namespace ionir {
     struct Function;
 
     // TODO: Implement properly.
-    struct CompareInst : Instruction {
-        explicit CompareInst() noexcept;
+    struct InstCompare : Instruction {
+        explicit InstCompare() noexcept;
 
         void accept(Pass& visitor) override;
     };

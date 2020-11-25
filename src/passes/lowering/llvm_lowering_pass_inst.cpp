@@ -4,7 +4,7 @@
 #include <ionir/passes/lowering/llvm_lowering_pass.h>
 
 namespace ionir {
-    void LlvmLoweringPass::visitAllocaInst(std::shared_ptr<AllocaInst> construct) {
+    void LlvmLoweringPass::visitAllocaInst(std::shared_ptr<InstAlloca> construct) {
         // TODO: Option to create array here too?
         /**
          * Create the LLVM-equivalent alloca instruction
@@ -20,7 +20,7 @@ namespace ionir {
         );
     }
 
-    void LlvmLoweringPass::visitReturnInst(std::shared_ptr<ReturnInst> construct) {
+    void LlvmLoweringPass::visitReturnInst(std::shared_ptr<InstReturn> construct) {
         llvm::ReturnInst* llvmReturnInst = ionshared::util::hasValue(construct->value)
             ? this->llvmBuffers.makeBuilder()
                 .CreateRet(this->eagerVisitValue(*construct->value))
@@ -30,7 +30,7 @@ namespace ionir {
         this->valueSymbolTable.set(construct, llvmReturnInst);
     }
 
-    void LlvmLoweringPass::visitBranchInst(std::shared_ptr<BranchInst> construct) {
+    void LlvmLoweringPass::visitBranchInst(std::shared_ptr<InstBranch> construct) {
         this->valueSymbolTable.set(construct, this->llvmBuffers.makeBuilder().CreateCondBr(
             this->eagerVisitValue(construct->condition),
 
@@ -44,7 +44,7 @@ namespace ionir {
         ));
     }
 
-    void LlvmLoweringPass::visitCallInst(std::shared_ptr<CallInst> construct) {
+    void LlvmLoweringPass::visitCallInst(std::shared_ptr<InstCall> construct) {
         ConstructKind calleeConstructKind = construct->callee->constructKind;
 
         if (calleeConstructKind != ConstructKind::Function && calleeConstructKind != ConstructKind::Extern) {
@@ -79,14 +79,14 @@ namespace ionir {
         );
     }
 
-    void LlvmLoweringPass::visitStoreInst(std::shared_ptr<StoreInst> construct) {
+    void LlvmLoweringPass::visitStoreInst(std::shared_ptr<InstStore> construct) {
         this->valueSymbolTable.set(construct, this->llvmBuffers.makeBuilder().CreateStore(
             this->eagerVisitValue(construct->value),
             this->eagerVisitValue(construct->target)
         ));
     }
 
-    void LlvmLoweringPass::visitJumpInst(std::shared_ptr<JumpInst> node) {
+    void LlvmLoweringPass::visitJumpInst(std::shared_ptr<InstJump> node) {
         this->valueSymbolTable.set(
             node,
 
@@ -96,7 +96,7 @@ namespace ionir {
         );
     }
 
-    void LlvmLoweringPass::visitCastInst(std::shared_ptr<CastInst> construct) {
+    void LlvmLoweringPass::visitCastInst(std::shared_ptr<InstCast> construct) {
         // TODO: Hard-coded here.
         std::vector<TypeKind> castableTypeKinds{
             TypeKind::Integer,
@@ -137,11 +137,11 @@ namespace ionir {
 
             switch (construct->type->typeKind) {
                 case TypeKind::Integer: {
-                    std::shared_ptr<IntegerType> castIntegerType =
-                        construct->type->dynamicCast<IntegerType>();
+                    std::shared_ptr<TypeInteger> castIntegerType =
+                        construct->type->dynamicCast<TypeInteger>();
 
-                    std::shared_ptr<IntegerType> valueIntegerType =
-                        construct->value->type->dynamicCast<IntegerType>();
+                    std::shared_ptr<TypeInteger> valueIntegerType =
+                        construct->value->type->dynamicCast<TypeInteger>();
 
                     isDowncast = castIntegerType->integerKind < valueIntegerType->integerKind;
 
@@ -149,11 +149,11 @@ namespace ionir {
                 }
 
                 case TypeKind::Decimal: {
-                    std::shared_ptr<DecimalType> castDecimalType =
-                        construct->type->dynamicCast<DecimalType>();
+                    std::shared_ptr<TypeDecimal> castDecimalType =
+                        construct->type->dynamicCast<TypeDecimal>();
 
-                    std::shared_ptr<DecimalType> valueDecimalType =
-                        construct->value->type->dynamicCast<DecimalType>();
+                    std::shared_ptr<TypeDecimal> valueDecimalType =
+                        construct->value->type->dynamicCast<TypeDecimal>();
 
                     isDowncast = valueDecimalType->decimalKind < valueDecimalType->decimalKind;
 
@@ -173,7 +173,7 @@ namespace ionir {
         else {
             switch (construct->type->typeKind) {
                 case TypeKind::Integer: {
-                    llvmCastOperation = construct->type->dynamicCast<IntegerType>()->isSigned
+                    llvmCastOperation = construct->type->dynamicCast<TypeInteger>()->isSigned
                         ? llvm::Instruction::CastOps::FPToSI
                         : llvm::Instruction::CastOps::FPToUI;
 
@@ -181,7 +181,7 @@ namespace ionir {
                 }
 
                 case TypeKind::Decimal: {
-                    llvmCastOperation = construct->type->dynamicCast<DecimalType>()->isSigned
+                    llvmCastOperation = construct->type->dynamicCast<TypeDecimal>()->isSigned
                         ? llvm::Instruction::CastOps::SIToFP
                         : llvm::Instruction::CastOps::UIToFP;
 

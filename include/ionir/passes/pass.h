@@ -26,6 +26,7 @@
 #include <ionir/construct/type/struct.h>
 #include <ionir/construct/pseudo/directive.h>
 #include <ionir/construct/pseudo/error_marker.h>
+#include <ionir/construct/pseudo/comment.h>
 #include <ionir/construct/function.h>
 #include <ionir/construct/prototype.h>
 #include <ionir/construct/extern.h>
@@ -58,43 +59,43 @@ namespace ionir {
 
         virtual void visitPrototype(std::shared_ptr<Prototype> construct);
 
-        virtual void visitIntegerLiteral(std::shared_ptr<IntegerLiteral> construct);
+        virtual void visitIntegerLiteral(std::shared_ptr<LiteralInteger> construct);
 
-        virtual void visitCharLiteral(std::shared_ptr<CharLiteral> construct);
+        virtual void visitCharLiteral(std::shared_ptr<LiteralChar> construct);
 
         virtual void visitStringLiteral(std::shared_ptr<StringLiteral> construct);
 
-        virtual void visitBooleanLiteral(std::shared_ptr<BooleanLiteral> construct);
+        virtual void visitBooleanLiteral(std::shared_ptr<LiteralBoolean> construct);
 
         virtual void visitOperationValue(std::shared_ptr<OperationValue> construct);
 
-        virtual void visitAllocaInst(std::shared_ptr<AllocaInst> construct);
+        virtual void visitAllocaInst(std::shared_ptr<InstAlloca> construct);
 
-        virtual void visitReturnInst(std::shared_ptr<ReturnInst> construct);
+        virtual void visitReturnInst(std::shared_ptr<InstReturn> construct);
 
-        virtual void visitBranchInst(std::shared_ptr<BranchInst> construct);
+        virtual void visitBranchInst(std::shared_ptr<InstBranch> construct);
 
-        virtual void visitCallInst(std::shared_ptr<CallInst> construct);
+        virtual void visitCallInst(std::shared_ptr<InstCall> construct);
 
-        virtual void visitStoreInst(std::shared_ptr<StoreInst> construct);
+        virtual void visitStoreInst(std::shared_ptr<InstStore> construct);
 
-        virtual void visitJumpInst(std::shared_ptr<JumpInst> construct);
+        virtual void visitJumpInst(std::shared_ptr<InstJump> construct);
 
-        virtual void visitCompareInst(std::shared_ptr<CompareInst> construct);
+        virtual void visitCompareInst(std::shared_ptr<InstCompare> construct);
 
-        virtual void visitCastInst(std::shared_ptr<CastInst> construct);
+        virtual void visitCastInst(std::shared_ptr<InstCast> construct);
 
         virtual void visitGlobal(std::shared_ptr<Global> construct);
 
-        virtual void visitIntegerType(std::shared_ptr<IntegerType> construct);
+        virtual void visitIntegerType(std::shared_ptr<TypeInteger> construct);
 
-        virtual void visitDecimalType(std::shared_ptr<DecimalType> construct);
+        virtual void visitDecimalType(std::shared_ptr<TypeDecimal> construct);
 
-        virtual void visitVoidType(std::shared_ptr<VoidType> construct);
+        virtual void visitVoidType(std::shared_ptr<TypeVoid> construct);
 
-        virtual void visitBooleanType(std::shared_ptr<BooleanType> construct);
+        virtual void visitBooleanType(std::shared_ptr<TypeBoolean> construct);
 
-        virtual void visitPointerType(std::shared_ptr<PointerType> construct);
+        virtual void visitPointerType(std::shared_ptr<TypePointer> construct);
 
         virtual void visitModule(std::shared_ptr<Module> construct);
 
@@ -106,7 +107,7 @@ namespace ionir {
 
         virtual void visitIdentifier(std::shared_ptr<Identifier> construct);
 
-        virtual void visitStructType(std::shared_ptr<StructType> construct);
+        virtual void visitStructType(std::shared_ptr<TypeStruct> construct);
 
         virtual void visitStructDefinition(std::shared_ptr<StructDefinition> construct);
 
@@ -115,6 +116,8 @@ namespace ionir {
         virtual void visitNameOfIntrinsic(std::shared_ptr<NameOfIntrinsic> construct);
 
         virtual void visitTypeOfIntrinsic(std::shared_ptr<TypeOfIntrinsic> construct);
+
+        virtual void visitComment(std::shared_ptr<Comment> construct);
     };
 
     typedef ionshared::BasePassManager<Pass, Construct> PassManager;

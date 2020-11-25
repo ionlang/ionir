@@ -5,7 +5,6 @@
 #include <vector>
 #include <ionir/misc/util.h>
 #include <ionir/tracking/scope_anchor.h>
-#include <ionir/construct/pseudo/child_construct.h>
 #include "pseudo/args.h"
 #include "instruction.h"
 #include "type.h"
@@ -15,7 +14,7 @@ namespace ionir {
 
     struct InstBuilder;
 
-    struct JumpInst;
+    struct InstJump;
 
     // TODO: Use other basic block kinds (and emit their corresponding names).
     enum struct BasicBlockKind {
@@ -45,16 +44,9 @@ namespace ionir {
         Intrinsic
     };
 
+    // TODO: Parent must be function like (to account for method and function)
     // TODO: Must be verified to contain a single terminal instruction at the end.
-    struct BasicBlock : ConstructWithParent<Function>, ScopeAnchor<Instruction> {
-        static std::shared_ptr<BasicBlock> make(
-            const std::vector<std::shared_ptr<Instruction>>& instructions = {},
-            BasicBlockKind kind = BasicBlockKind::Intrinsic,
-
-            const PtrSymbolTable<Instruction>& symbolTable =
-            ionshared::util::makePtrSymbolTable<Instruction>()
-        ) noexcept;
-
+    struct BasicBlock : Construct, ScopeAnchor<Instruction> {
         const BasicBlockKind basicBlockKind;
 
         /**
@@ -79,8 +71,6 @@ namespace ionir {
         void accept(Pass& visitor) override;
 
         [[nodiscard]] Ast getChildrenNodes() override;
-
-        [[nodiscard]] bool verify() override;
 
         void insertInst(uint32_t order, const std::shared_ptr<Instruction>& inst);
 
@@ -112,7 +102,7 @@ namespace ionir {
          * targeting the provided block using an instruction builder
          * instance. Returns the created jump instruction.
          */
-        std::shared_ptr<JumpInst> link(const std::shared_ptr<BasicBlock>& basicBlock);
+        std::shared_ptr<InstJump> link(const std::shared_ptr<BasicBlock>& basicBlock);
 
         /**
          * Attempt to find the index location of an instruction.

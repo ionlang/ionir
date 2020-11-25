@@ -8,50 +8,52 @@ namespace ionir {
         //
     }
 
-    std::shared_ptr<AllocaInst> InstBuilder::createAlloca(
+    std::shared_ptr<InstAlloca> InstBuilder::makeAlloca(
         const std::string& id,
         const std::shared_ptr<Type>& type
     ) {
-        return this->setParentAndAppend(AllocaInst::make(type));
-    }
-
-    std::shared_ptr<StoreInst> InstBuilder::createStore(
-        const std::shared_ptr<Value<>>& value,
-        const std::shared_ptr<AllocaInst>& target
-    ) {
-        return this->setParentAndAppend(
-            StoreInst::make(value, target)
+        return this->appendInstruction(
+            std::make_shared<InstAlloca>(type)
         );
     }
 
-    std::shared_ptr<BranchInst> InstBuilder::createBranch(
+    std::shared_ptr<InstStore> InstBuilder::makeStore(
+        const std::shared_ptr<Value<>>& value,
+        const std::shared_ptr<InstAlloca>& target
+    ) {
+        return this->appendInstruction(
+            std::make_shared<InstStore>(value, target)
+        );
+    }
+
+    std::shared_ptr<InstBranch> InstBuilder::makeBranch(
         const std::shared_ptr<Construct>& condition,
         const std::shared_ptr<BasicBlock>& consequentBasicBlock,
         const std::shared_ptr<BasicBlock>& alternativeBasicBlock
     ) {
-        return this->setParentAndAppend(BranchInst::make(
+        return this->appendInstruction(std::make_shared<InstBranch>(
             condition,
             consequentBasicBlock,
             alternativeBasicBlock
         ));
     }
 
-    std::shared_ptr<ReturnInst> InstBuilder::createReturn(
+    std::shared_ptr<InstReturn> InstBuilder::makeReturn(
         const ionshared::OptPtr<Value<>>& value
     ) {
-        return this->setParentAndAppend(ReturnInst::make(value));
+        return this->appendInstruction(std::make_shared<InstReturn>(value));
     }
 
-    std::shared_ptr<CallInst> InstBuilder::createCall(
+    std::shared_ptr<InstCall> InstBuilder::makeCall(
         const std::shared_ptr<Construct>& callee,
         const std::vector<std::shared_ptr<Construct>>& args
     ) {
-        return this->setParentAndAppend(CallInst::make(callee, args));
+        return this->appendInstruction(std::make_shared<InstCall>(callee, args));
     }
 
-    std::shared_ptr<JumpInst> InstBuilder::createJump(
+    std::shared_ptr<InstJump> InstBuilder::makeJump(
         const std::shared_ptr<BasicBlock>& basicBlock
     ) {
-        return this->make<JumpInst>(basicBlock);
+        return this->appendInstruction(std::make_shared<InstJump>(basicBlock));
     }
 }

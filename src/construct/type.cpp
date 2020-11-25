@@ -33,11 +33,11 @@ namespace ionir {
 
         switch (this->typeKind) {
             case TypeKind::Integer: {
-                std::shared_ptr<IntegerType> localIntegerType =
-                    this->dynamicCast<IntegerType>();
+                std::shared_ptr<TypeInteger> localIntegerType =
+                    this->dynamicCast<TypeInteger>();
 
-                std::shared_ptr<IntegerType> otherIntegerType =
-                    other->dynamicCast<IntegerType>();
+                std::shared_ptr<TypeInteger> otherIntegerType =
+                    other->dynamicCast<TypeInteger>();
 
                 return localIntegerType->integerKind == otherIntegerType->integerKind;
             }
@@ -45,11 +45,11 @@ namespace ionir {
                 // TODO: Decimal types as well (copy integer code basically).
 
             case TypeKind::Struct: {
-                std::shared_ptr<StructType> localStructType =
-                    this->dynamicCast<StructType>();
+                std::shared_ptr<TypeStruct> localStructType =
+                    this->dynamicCast<TypeStruct>();
 
-                std::shared_ptr<StructType> otherStructType =
-                    other->dynamicCast<StructType>();
+                std::shared_ptr<TypeStruct> otherStructType =
+                    other->dynamicCast<TypeStruct>();
 
                 bool nameOrArgumentCountMismatch = localStructType->typeName != otherStructType->typeName
                     || localStructType->fields->getSize() != otherStructType->fields->getSize();

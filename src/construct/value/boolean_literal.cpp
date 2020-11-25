@@ -1,14 +1,14 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    BooleanLiteral::BooleanLiteral(bool value) noexcept :
+    LiteralBoolean::LiteralBoolean(bool value) noexcept :
         // TODO: Type has no parent.
-        Value(ValueKind::Boolean, std::shared_ptr<BooleanType>()),
+        Value(ValueKind::Boolean, std::shared_ptr<TypeBoolean>()),
         value(value) {
         //
     }
 
-    void BooleanLiteral::accept(Pass& visitor) {
-        visitor.visitBooleanLiteral(this->dynamicCast<BooleanLiteral>());
+    void LiteralBoolean::accept(Pass& visitor) {
+        visitor.visitBooleanLiteral(this->dynamicCast<LiteralBoolean>());
     }
 }

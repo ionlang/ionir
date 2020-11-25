@@ -1,7 +1,7 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    JumpInst::JumpInst(
+    InstJump::InstJump(
         std::shared_ptr<BasicBlock> basicBlockTarget
     ) noexcept :
         Instruction(InstructionKind::Jump),
@@ -9,7 +9,7 @@ namespace ionir {
         //
     }
 
-    void JumpInst::accept(Pass& visitor) {
-        visitor.visitJumpInst(this->dynamicCast<JumpInst>());
+    void InstJump::accept(Pass& visitor) {
+        visitor.visitJumpInst(this->dynamicCast<InstJump>());
     }
 }

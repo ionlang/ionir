@@ -5,10 +5,10 @@
 namespace ionir {
     struct Pass;
 
-    struct BooleanLiteral : Value<> {
+    struct LiteralBoolean : Value<> {
         bool value;
 
-        explicit BooleanLiteral(bool value) noexcept;
+        explicit LiteralBoolean(bool value) noexcept;
 
         void accept(Pass& visitor) override;
     };

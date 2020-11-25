@@ -1,16 +1,13 @@
 #pragma once
 
+#include <ionir/misc/with_parent.h>
 #include "construct.h"
 #include "prototype.h"
 
 namespace ionir {
     struct Pass;
 
-    struct Extern : ConstructWithParent<Module> {
-        static std::shared_ptr<Extern> make(
-            const std::shared_ptr<Prototype>& prototype
-        ) noexcept;
-
+    struct Extern : Construct, WithParent<Module> {
         std::shared_ptr<Prototype> prototype;
 
         explicit Extern(std::shared_ptr<Prototype> prototype) noexcept;

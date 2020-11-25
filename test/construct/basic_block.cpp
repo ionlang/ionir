@@ -6,7 +6,7 @@ using namespace ionir;
 
 TEST(ConstructBasicBlockTest, HasTerminalInstruction) {
     std::shared_ptr<BasicBlock> basicBlock = BasicBlock::make(
-        std::vector<std::shared_ptr<Instruction>>{ReturnInst::make()}
+        std::vector<std::shared_ptr<Instruction>>{InstReturn::make()}
     );
 
     EXPECT_TRUE(basicBlock->hasTerminalInst());
@@ -14,7 +14,7 @@ TEST(ConstructBasicBlockTest, HasTerminalInstruction) {
 
 TEST(ConstructBasicBlockTest, FindTerminalInstruction) {
     std::shared_ptr<BasicBlock> basicBlock = BasicBlock::make(
-        std::vector<std::shared_ptr<Instruction>>{ReturnInst::make()}
+        std::vector<std::shared_ptr<Instruction>>{InstReturn::make()}
     );
 
     EXPECT_TRUE(ionshared::util::hasValue(basicBlock->findTerminalInst()));
@@ -37,11 +37,11 @@ TEST(ConstructBasicBlockTest, FindFirstInstruction) {
     std::shared_ptr<BasicBlock> basicBlock =
         BasicBlock::make();
 
-    std::shared_ptr<ReturnInst> returnInstA =
-        ReturnInst::make();
+    std::shared_ptr<InstReturn> returnInstA =
+        InstReturn::make();
 
-    std::shared_ptr<ReturnInst> returnInstB =
-        ReturnInst::make();
+    std::shared_ptr<InstReturn> returnInstB =
+        InstReturn::make();
 
     basicBlock->instructions.push_back(returnInstA);
 
@@ -56,11 +56,11 @@ TEST(ConstructBasicBlockTest, FindLastInstruction) {
     std::shared_ptr<BasicBlock> basicBlock =
         BasicBlock::make();
 
-    std::shared_ptr<ReturnInst> returnInstA =
-        ReturnInst::make();
+    std::shared_ptr<InstReturn> returnInstA =
+        InstReturn::make();
 
-    std::shared_ptr<ReturnInst> returnInstB =
-        ReturnInst::make();
+    std::shared_ptr<InstReturn> returnInstB =
+        InstReturn::make();
 
     basicBlock->instructions.push_back(returnInstA);
 

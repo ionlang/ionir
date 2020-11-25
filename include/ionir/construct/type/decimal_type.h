@@ -17,12 +17,12 @@ namespace ionir {
         BitSize128 = 128
     };
 
-    struct DecimalType : Type {
+    struct TypeDecimal : Type {
         const DecimalKind decimalKind;
 
         bool isSigned;
 
-        explicit DecimalType(DecimalKind kind, bool isSigned = true) noexcept;
+        explicit TypeDecimal(DecimalKind kind, bool isSigned = true) noexcept;
 
         void accept(Pass& pass) override;
     };

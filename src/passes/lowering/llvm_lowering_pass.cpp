@@ -103,7 +103,7 @@ namespace ionir {
         // TODO: Apply LLVM entity to the node.
     }
 
-    void LlvmLoweringPass::visitIntegerType(std::shared_ptr<IntegerType> construct) {
+    void LlvmLoweringPass::visitIntegerType(std::shared_ptr<TypeInteger> construct) {
         std::optional<llvm::IntegerType*> llvmType{std::nullopt};
 
         llvm::LLVMContext& llvmContext =
@@ -162,7 +162,7 @@ namespace ionir {
         ));
     }
 
-    void LlvmLoweringPass::visitBooleanType(std::shared_ptr<BooleanType> construct) {
+    void LlvmLoweringPass::visitBooleanType(std::shared_ptr<TypeBoolean> construct) {
         this->typeSymbolTable.set(construct, this->processTypeQualifiers(
             construct->qualifiers,
 
@@ -172,7 +172,7 @@ namespace ionir {
         ));
     }
 
-    void LlvmLoweringPass::visitVoidType(std::shared_ptr<VoidType> construct) {
+    void LlvmLoweringPass::visitVoidType(std::shared_ptr<TypeVoid> construct) {
         this->typeSymbolTable.set(construct, this->processTypeQualifiers(
             construct->qualifiers,
 
@@ -206,7 +206,7 @@ namespace ionir {
         this->localBuffers.modules.forcePop();
     }
 
-    void LlvmLoweringPass::visitStructType(std::shared_ptr<StructType> construct) {
+    void LlvmLoweringPass::visitStructType(std::shared_ptr<TypeStruct> construct) {
         auto fieldsNativeMap = construct->fields->unwrap();
         std::vector<llvm::Type*> llvmFields{};
 

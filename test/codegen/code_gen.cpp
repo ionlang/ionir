@@ -20,11 +20,11 @@ TEST(CodeGenTest, VisitExtern) {
         Prototype::make(
             test::constant::foo,
             std::make_shared<Args>(),
-            std::make_shared<VoidType>()
+            std::make_shared<TypeVoid>()
         )
     );
 
-    externConstruct->parent = module;
+    externConstruct->setParent(module);
     llvmLoweringPass->visitExtern(externConstruct);
     EXPECT_TRUE(test::comparison::ir(llvmLoweringPass, "extern_simple"));
 }
@@ -41,13 +41,13 @@ TEST(CodeGenTest, VisitEmptyFunction) {
         Prototype::make(
             test::constant::foo,
             std::make_shared<Args>(),
-            std::make_shared<VoidType>()
+            std::make_shared<TypeVoid>()
         ),
 
         std::vector<std::shared_ptr<BasicBlock>>{BasicBlock::make()}
     );
 
-    function->parent = module;
+    function->setParent(module);
     llvmLoweringPass->visitFunction(function);
     EXPECT_TRUE(test::comparison::ir(llvmLoweringPass, "function_empty"));
 }
@@ -61,11 +61,11 @@ TEST(CodeGenTest, VisitEmptyGlobal) {
         test::bootstrap::llvmLoweringPass(module);
 
     std::shared_ptr<Global> globalVar = Global::make(
-        std::make_shared<IntegerType>(IntegerKind::Int32),
+        std::make_shared<TypeInteger>(IntegerKind::Int32),
         test::constant::foo
     );
 
-    globalVar->parent = module;
+    globalVar->setParent(module);
     llvmLoweringPass->visitGlobal(globalVar);
     EXPECT_TRUE(test::comparison::ir(llvmLoweringPass, "global_empty"));
 }
@@ -79,16 +79,16 @@ TEST(CodeGenTest, VisitGlobalWithValue) {
         test::bootstrap::llvmLoweringPass(module);
 
     std::shared_ptr<Global> globalVar = Global::make(
-        std::make_shared<IntegerType>(IntegerKind::Int32),
+        std::make_shared<TypeInteger>(IntegerKind::Int32),
         test::constant::foo,
 
-        IntegerLiteral::make(
-            std::make_shared<IntegerType>(IntegerKind::Int32),
+        LiteralInteger::make(
+            std::make_shared<TypeInteger>(IntegerKind::Int32),
             123
         )->staticCast<Value<>>()
     );
 
-    globalVar->parent = module;
+    globalVar->setParent(module);
     llvmLoweringPass->visitGlobal(globalVar);
     EXPECT_TRUE(test::comparison::ir(llvmLoweringPass, "global_init"));
 }
@@ -102,12 +102,12 @@ TEST(CodeGenTest, VisitAllocaInst) {
         test::bootstrap::llvmLoweringPass(module);
 
     std::vector<std::shared_ptr<Instruction>> insts{
-        AllocaInst::make(std::make_shared<IntegerType>(IntegerKind::Int32))
+        InstAlloca::make(std::make_shared<TypeInteger>(IntegerKind::Int32))
     };
 
     std::shared_ptr<Function> function = test::bootstrap::emptyFunction(insts);
 
-    function->parent = module;
+    function->setParent(module);
     llvmLoweringPass->visitFunction(function);
     EXPECT_TRUE(test::comparison::ir(llvmLoweringPass, "inst_alloca"));
 }
@@ -121,9 +121,9 @@ TEST(CodeGenTest, VisitReturnInst) {
         test::bootstrap::llvmLoweringPass(module);
 
     std::vector<std::shared_ptr<Instruction>> insts{
-        ReturnInst::make(
-            IntegerLiteral::make(
-                std::make_shared<IntegerType>(IntegerKind::Int32),
+        InstReturn::make(
+            LiteralInteger::make(
+                std::make_shared<TypeInteger>(IntegerKind::Int32),
                 1
             )->flatten()
         )
@@ -131,7 +131,7 @@ TEST(CodeGenTest, VisitReturnInst) {
 
     std::shared_ptr<Function> function = test::bootstrap::emptyFunction(insts);
 
-    function->parent = module;
+    function->setParent(module);
     llvmLoweringPass->visitFunction(function);
     EXPECT_TRUE(test::comparison::ir(llvmLoweringPass, "inst_return_i32"));
 }

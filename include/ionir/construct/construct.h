@@ -13,6 +13,8 @@ namespace ionir {
 
     struct Instruction;
 
+    struct Module;
+
     struct Type;
 
     template<typename T>
@@ -63,16 +65,24 @@ namespace ionir {
 
         Identifier,
 
-        NameOfIntrinsic,
+        IntrinsicNameOf,
 
-        TypeOfIntrinsic
+        IntrinsicTypeOf,
+
+        Comment,
+
+        Method
     };
 
     struct Construct;
 
     typedef ionshared::Ast<Construct> Ast;
 
-    struct Construct : ionshared::BaseConstruct<Construct, ConstructKind> {
+    class Construct : public ionshared::BaseConstruct<Construct, ConstructKind> {
+    private:
+        std::optional<std::shared_ptr<Module>> module;
+
+    public:
         /**
          * Map children from a vector to an ast.
          */
@@ -118,28 +128,6 @@ namespace ionir {
         }
 
         /**
-         * Create a shared pointer to a construct, while setting its
-         * parent. Should be preferred instead of creating the shared
-         * pointer and then setting its parent manually for consistency
-         * and error-preventing measures.
-         */
-        template<typename TConstruct, typename ...TArgs>
-            requires std::derived_from<TConstruct, Construct>
-        static std::shared_ptr<TConstruct> makeChild(
-            const std::shared_ptr<Construct>& parent,
-            TArgs&&... args
-        ) {
-            std::shared_ptr<TConstruct> construct =
-                std::make_shared<TConstruct>(std::forward<TArgs>(args)...);
-
-            construct->parent = parent;
-
-            // TODO: Consider having a virtual default-empty 'acceptChild(<ConstructTypeHere> child)' which inserts it into a corresponding list (if any)
-
-            return construct;
-        }
-
-        /**
          * Serves as a proxy to safely invoke the verification method
          * of a possibly nullptr construct.
          */
@@ -149,29 +137,18 @@ namespace ionir {
 
         explicit Construct(
             ConstructKind kind,
-            std::optional<ionshared::SourceLocation> sourceLocation = std::nullopt,
-            ionshared::OptPtr<Construct> parent = std::nullopt
+            std::optional<ionshared::SourceLocation> sourceLocation = std::nullopt
         ) noexcept;
 
         virtual void accept(Pass& visitor) = 0;
 
+        [[nodiscard]] virtual std::optional<std::shared_ptr<Module>> getModule();
+
+        virtual void setModule(std::optional<std::shared_ptr<Module>> module);
+
         [[nodiscard]] virtual bool equals(const std::shared_ptr<Construct>& other);
 
-        // TODO: Move to BaseConstruct<> in ionshared.
-        /**
-         * Verify the members and properties of the node, and it's children to
-         * ensure that this construct is well-formed. Without an implementation
-         * by the derived class (or without being called by it), this will return
-         * true if all the child nodes are successfully verified. If there are no
-         * child nodes, the result will be true by default. Verification should
-         * not be delegated to the parent (if any), to avoid circular, endless
-         * calls.
-         */
-        [[nodiscard]] virtual bool verify();
-
         [[nodiscard]] std::optional<std::string> findConstructKindName();
-
-        [[nodiscard]] std::shared_ptr<Construct> fetchRootConstruct();
     };
 
     template<typename T>

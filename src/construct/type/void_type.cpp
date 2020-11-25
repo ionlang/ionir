@@ -1,12 +1,12 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    VoidType::VoidType() noexcept :
+    TypeVoid::TypeVoid() noexcept :
         Type(TypeKind::Void, ConstName::typeVoid) {
         //
     }
 
-    void VoidType::accept(Pass& pass) {
-        return pass.visitVoidType(this->dynamicCast<VoidType>());
+    void TypeVoid::accept(Pass& pass) {
+        return pass.visitVoidType(this->dynamicCast<TypeVoid>());
     }
 }

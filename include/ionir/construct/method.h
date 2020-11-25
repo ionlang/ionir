@@ -4,15 +4,15 @@
 #include <vector>
 #include <ionshared/misc/named.h>
 #include <ionir/construct/pseudo/args.h>
-#include <ionir/construct/pseudo/child_construct.h>
 #include <ionir/construct/type/struct.h>
 #include "type.h"
 #include "function.h"
+#include "function_like.h"
 
 namespace ionir {
     struct Pass;
 
-    enum MethodKind {
+    enum struct MethodKind {
         Normal,
 
         Constructor,
@@ -23,21 +23,11 @@ namespace ionir {
     };
 
     // TODO: Shouldn't all this be on ionlang project?
-    struct Method : Function {
-        static std::shared_ptr<Method> make(
-            MethodKind kind,
-            const std::shared_ptr<StructType>& structType,
-            const std::shared_ptr<Prototype>& prototype,
-            const std::vector<std::shared_ptr<BasicBlock>>& basicBlocks
-        ) noexcept;
-
+    struct Method : Construct, FunctionLike, WithParent<TypeStruct> {
         const MethodKind methodKind;
-
-        std::shared_ptr<StructType> structType;
 
         Method(
             MethodKind kind,
-            std::shared_ptr<StructType> structType,
             std::shared_ptr<Prototype> prototype,
             std::vector<std::shared_ptr<BasicBlock>> basicBlocks
         ) noexcept;

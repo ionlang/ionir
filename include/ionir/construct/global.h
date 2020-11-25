@@ -9,13 +9,7 @@
 namespace ionir {
     struct Pass;
 
-    struct Global : Construct, ionshared::Named {
-        static std::shared_ptr<Global> make(
-            const std::shared_ptr<Type>& type,
-            const std::string& id,
-            ionshared::OptPtr<Value<>> value = std::nullopt
-        ) noexcept;
-
+    struct Global : Construct, ionshared::Named, WithParent<Module> {
         std::shared_ptr<Type> type;
 
         ionshared::OptPtr<Value<>> value;

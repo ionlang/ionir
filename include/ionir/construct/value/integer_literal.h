@@ -6,16 +6,11 @@
 namespace ionir {
     struct Pass;
 
-    struct IntegerLiteral : Value<IntegerType> {
-        static std::shared_ptr<IntegerLiteral> make(
-            const std::shared_ptr<IntegerType>& type,
-            int64_t value
-        ) noexcept;
-
+    struct LiteralInteger : Value<TypeInteger> {
         uint64_t value;
 
-        IntegerLiteral(
-            std::shared_ptr<IntegerType> type,
+        LiteralInteger(
+            std::shared_ptr<TypeInteger> type,
             int64_t value
         ) noexcept;
 

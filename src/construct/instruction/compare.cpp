@@ -1,12 +1,12 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    CompareInst::CompareInst() noexcept :
+    InstCompare::InstCompare() noexcept :
         Instruction(InstructionKind::Compare) {
         //
     }
 
-    void CompareInst::accept(Pass& visitor) {
-        visitor.visitCompareInst(this->dynamicCast<CompareInst>());
+    void InstCompare::accept(Pass& visitor) {
+        visitor.visitCompareInst(this->dynamicCast<InstCompare>());
     }
 }

@@ -16,23 +16,31 @@ namespace ionir {
         this->instBuilder = std::make_shared<InstBuilder>(*this->basicBlockBuffer);
     }
 
-    void AstBuilder::require(const ionshared::OptPtr<Construct>& construct) const {
+    std::shared_ptr<Construct> AstBuilder::require(const ionshared::OptPtr<Construct>& construct) {
         if (!construct.has_value()) {
             throw std::runtime_error("Required construct is null");
         }
+
+        return *construct;
     }
 
-    void AstBuilder::requireModule() const {
-        this->require(this->moduleBuffer);
+    std::shared_ptr<Module> AstBuilder::requireModule() const {
+        AstBuilder::require(this->moduleBuffer);
+
+        return *this->moduleBuffer;
     }
 
-    void AstBuilder::requireFunction() const {
+    std::shared_ptr<Function> AstBuilder::requireFunction() const {
         this->requireModule();
-        this->require(this->functionBuffer);
+        AstBuilder::require(this->functionBuffer);
+
+        return *this->functionBuffer;
     }
 
-    void AstBuilder::requireBasicBlock() const {
-        this->require(this->basicBlockBuffer);
+    std::shared_ptr<BasicBlock> AstBuilder::requireBasicBlock() const {
+        AstBuilder::require(this->basicBlockBuffer);
+
+        return *this->basicBlockBuffer;
     }
 
     void AstBuilder::clearBuffers() {
@@ -64,27 +72,28 @@ namespace ionir {
     AstBuilder& AstBuilder::function(const std::string& id) {
         this->requireModule();
 
-        std::shared_ptr<Type> returnType = std::make_shared<VoidType>();
+        std::shared_ptr<Type> returnType = std::make_shared<TypeVoid>();
 
-        std::shared_ptr<Prototype> prototype = Construct::makeChild<Prototype>(
-            *this->moduleBuffer,
+        std::shared_ptr<Prototype> prototype = std::make_shared<Prototype>(
             id,
             std::make_shared<Args>(),
             returnType
         );
 
-        returnType->parent = prototype;
+        prototype->setModule(this->requireModule());
 
-        std::shared_ptr<BasicBlock> entryBasicBlock = BasicBlock::make();
+        std::shared_ptr<BasicBlock> entryBasicBlock = std::make_shared<BasicBlock>();
 
         std::shared_ptr<Function> function =
-            Construct::makeChild<Function>(
-                *this->moduleBuffer,
+            std::make_shared<Function>(
                 prototype,
                 std::vector<std::shared_ptr<BasicBlock>>{entryBasicBlock}
             );
 
-        entryBasicBlock->parent = function;
+        function->setModule(*this->moduleBuffer);
+
+        // TODO: CRITICAL: Assign module.
+
         this->setBasicBlockBuffer(entryBasicBlock);
         this->functionBuffer = function;
 
@@ -100,10 +109,10 @@ namespace ionir {
 
     AstBuilder& AstBuilder::instAlloca(
         const std::string& id,
-        std::shared_ptr<Type> type
+        const std::shared_ptr<Type>& type
     ) {
         this->requireBasicBlock();
-        this->instBuilder->get()->createAlloca(id, std::move(type));
+        this->instBuilder->get()->makeAlloca(id, type);
 
         return *this;
     }

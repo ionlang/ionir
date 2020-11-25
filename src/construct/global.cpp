@@ -1,23 +1,6 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
-    std::shared_ptr<Global> Global::make(
-        const std::shared_ptr<Type>& type,
-        const std::string& id,
-        ionshared::OptPtr<Value<>> value
-    ) noexcept {
-        std::shared_ptr<Global> result =
-            std::make_shared<Global>(type, id, value);
-
-        type->parent = result;
-
-        if (ionshared::util::hasValue(value)) {
-            value->get()->parent = result;
-        }
-
-        return result;
-    }
-
     Global::Global(
         std::shared_ptr<Type> type,
         std::string id,

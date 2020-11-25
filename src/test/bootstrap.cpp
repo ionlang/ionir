@@ -33,7 +33,7 @@ namespace ionir::test::bootstrap {
             Prototype::make(
                 test::constant::foo,
                 std::make_shared<Args>(),
-                std::make_shared<VoidType>()
+                std::make_shared<TypeVoid>()
             ),
 
             std::vector<std::shared_ptr<BasicBlock>>{BasicBlock::make(

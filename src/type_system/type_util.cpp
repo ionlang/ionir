@@ -28,6 +28,6 @@ namespace ionir::type_util {
             return false;
         }
 
-        return type->dynamicCast<IntegerType>()->integerKind == integerKind;
+        return type->dynamicCast<TypeInteger>()->integerKind == integerKind;
     }
 }

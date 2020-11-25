@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ionir/construct/value.h>
-#include <ionir/construct/pseudo/child_construct.h>
+#include <ionir/misc/with_parent.h>
 
 namespace ionir {
     struct Pass;
@@ -28,7 +28,7 @@ namespace ionir {
         Cast
     };
 
-    struct Instruction : ConstructWithParent<BasicBlock> {
+    struct Instruction : public Construct, public WithParent<BasicBlock> {
         const InstructionKind instKind;
 
         explicit Instruction(InstructionKind kind) noexcept;
@@ -37,7 +37,5 @@ namespace ionir {
         void accept(Pass& visitor) override = 0;
 
         [[nodiscard]] bool isTerminal() const noexcept;
-
-        [[nodiscard]] size_t fetchOrder();
     };
 }

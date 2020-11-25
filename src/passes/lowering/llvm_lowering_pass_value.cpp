@@ -5,7 +5,7 @@
 #include <ionir/passes/lowering/llvm_lowering_pass.h>
 
 namespace ionir {
-    void LlvmLoweringPass::visitIntegerLiteral(std::shared_ptr<IntegerLiteral> construct) {
+    void LlvmLoweringPass::visitIntegerLiteral(std::shared_ptr<LiteralInteger> construct) {
         /**
          * Create the APInt (Arbitrary-precision integer) to provide.
          * Acts sort of an LLVM integer value wrapper.
@@ -28,7 +28,7 @@ namespace ionir {
 //        this->addToScope(node, value);
     }
 
-    void LlvmLoweringPass::visitCharLiteral(std::shared_ptr<CharLiteral> construct) {
+    void LlvmLoweringPass::visitCharLiteral(std::shared_ptr<LiteralChar> construct) {
         this->valueSymbolTable.set(
             construct,
 
@@ -54,7 +54,7 @@ namespace ionir {
 //        this->addToScope(node, value);
     }
 
-    void LlvmLoweringPass::visitBooleanLiteral(std::shared_ptr<BooleanLiteral> construct) {
+    void LlvmLoweringPass::visitBooleanLiteral(std::shared_ptr<LiteralBoolean> construct) {
         // Create the boolean type along with the LLVM value.
         this->valueSymbolTable.set(construct, llvm::ConstantInt::get(
             llvm::Type::getInt1Ty(
