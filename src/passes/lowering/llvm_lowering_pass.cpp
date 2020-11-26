@@ -1,6 +1,7 @@
 #include <iostream>
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/BasicBlock.h>
+#include <llvm/IR/Verifier.h>
 #include <ionir/tracking/name_mangler.h>
 #include <ionir/passes/lowering/llvm_lowering_pass.h>
 
@@ -202,6 +203,12 @@ namespace ionir {
         for (const auto& [id, topLevelConstruct] : moduleNativeSymbolTable) {
             this->visit(topLevelConstruct);
         }
+
+        IONIR_PASS_INTERNAL_ASSERT(
+            llvm::verifyModule(
+                *this->llvmBuffers.modules.forceGetTopItem()
+            )
+        )
 
         this->llvmBuffers.modules.forcePop();
         this->localBuffers.modules.forcePop();

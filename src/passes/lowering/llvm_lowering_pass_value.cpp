@@ -16,16 +16,14 @@ namespace ionir {
             construct->type->isSigned
         };
 
-        if (construct->type->typeKind != TypeKind::Integer) {
-            throw std::runtime_error("Integer value's type must be integer type");
-        }
+        IONIR_PASS_INTERNAL_ASSERT(
+            construct->type->typeKind == TypeKind::Integer
+        )
 
         this->valueSymbolTable.set(construct, llvm::ConstantInt::get(
             this->eagerVisitType(construct->type),
             llvmApInt
         ));
-
-//        this->addToScope(node, value);
     }
 
     void LlvmLoweringPass::visitCharLiteral(std::shared_ptr<LiteralChar> construct) {
@@ -41,7 +39,6 @@ namespace ionir {
                 construct->value
             )
         );
-//        this->addToScope(node, value);
     }
 
     void LlvmLoweringPass::visitStringLiteral(std::shared_ptr<StringLiteral> construct) {
@@ -51,7 +48,6 @@ namespace ionir {
             this->llvmBuffers.makeBuilder()
                 .CreateGlobalStringPtr(construct->value)
         );
-//        this->addToScope(node, value);
     }
 
     void LlvmLoweringPass::visitBooleanLiteral(std::shared_ptr<LiteralBoolean> construct) {
@@ -64,7 +60,6 @@ namespace ionir {
 
             llvm::APInt(1, construct->value, false)
         ));
-//        this->addToScope(node, value);
     }
 
     void LlvmLoweringPass::visitOperationValue(std::shared_ptr<OperationValue> construct) {

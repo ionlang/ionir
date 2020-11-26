@@ -32,33 +32,35 @@ namespace ionir {
     void EntryPointCheckPass::visitFunction(std::shared_ptr<Function> node) {
         Pass::visitFunction(node);
 
-        if (node->prototype->name == ConstName::main) {
-            /**
-             * Make sure there was not an entry point function
-             * previously encountered.
-             */
-            if (ionshared::util::hasValue(this->entryFunction)) {
-                this->context->diagnosticBuilder
-                    ->bootstrap(diagnostic::entryPointRedefinition)
-                    ->setSourceLocation(node->sourceLocation)
-                    ->finish();
+        if (node->prototype->name != ConstName::main) {
+            return;
+        }
 
-                return;
-            }
+        /**
+         * Make sure there was not an entry point function
+         * previously encountered.
+         */
+        if (ionshared::util::hasValue(this->entryFunction)) {
+            this->context->diagnosticBuilder
+                ->bootstrap(diagnostic::entryPointRedefinition)
+                ->setSourceLocation(node->sourceLocation)
+                ->finish();
 
-            this->entryFunction = node;
+            return;
+        }
 
-            bool correctReturnType = type_util::isIntegerType(
-                node->prototype->returnType,
-                IntegerKind::Int32
-            );
+        this->entryFunction = node;
 
-            if (!correctReturnType) {
-                this->context->diagnosticBuilder
-                    ->bootstrap(diagnostic::entryPointInvalidSignature)
-                    ->setSourceLocation(node->sourceLocation)
-                    ->finish();
-            }
+        bool correctReturnType = type_util::isIntegerType(
+            node->prototype->returnType,
+            IntegerKind::Int32
+        );
+
+        if (!correctReturnType) {
+            this->context->diagnosticBuilder
+                ->bootstrap(diagnostic::entryPointInvalidSignature)
+                ->setSourceLocation(node->sourceLocation)
+                ->finish();
         }
     }
 }

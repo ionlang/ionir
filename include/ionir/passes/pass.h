@@ -42,6 +42,7 @@
 #include <ionir/diagnostics/diagnostic.h>
 #include <ionir/construct/construct.h>
 
+// TODO: Pass in "condition".
 #define IONIR_PASS_INTERNAL_ASSERT(condition) \
     if (!this->context->diagnosticBuilder->internalAssert(condition)) { return; }
 

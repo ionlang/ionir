@@ -1,6 +1,7 @@
 #include <iostream>
 #include <llvm/ADT/APInt.h>
 #include <llvm/IR/DerivedTypes.h>
+#include <llvm/IR/Verifier.h>
 #include <ionir/construct/value.h>
 #include <ionir/diagnostics/diagnostic.h>
 #include <ionir/tracking/name_mangler.h>
@@ -104,7 +105,7 @@ namespace ionir {
          * Special treatment for the main/entry point function, as
          * it should not be mangled.
          */
-        std::string name = construct->prototype->isMain()
+        std::string finalName = construct->prototype->isMain()
             ? construct->prototype->name
 
             : NameMangler::mangle(
@@ -113,17 +114,12 @@ namespace ionir {
             );
 
         // TODO: Should this be enforced when emitting, or should only be during type checking?
-        // A function with a matching identifier already exists.
-        if (this->llvmBuffers.modules.forceGetTopItem()->getFunction(name)
-            != nullptr) {
-            this->context->diagnosticBuilder
-                ->bootstrap(diagnostic::functionRedefinition)
-                ->formatMessage(construct->prototype->name)
-                ->finish();
-
-            // TODO
-            throw std::runtime_error("Awaiting new diagnostic buffer checking");
-        }
+        // TODO: At this point the error should be different, since it's not type checking.
+        // Function should not have been already previously defined.
+        IONIR_PASS_INTERNAL_ASSERT(
+            this->llvmBuffers.modules.forceGetTopItem()->getFunction(finalName)
+                != nullptr
+        );
 
         /**
          * Cast the LLVM value to a LLVM function, since we know
@@ -131,7 +127,7 @@ namespace ionir {
          */
         auto* llvmFunction = llvm::dyn_cast<llvm::Function>(
             this->llvmBuffers.modules.forceGetTopItem()->getOrInsertFunction(
-                name,
+                finalName,
                 this->eagerVisitType<llvm::FunctionType>(construct->prototype)
             ).getCallee()
         );
@@ -143,13 +139,10 @@ namespace ionir {
         llvmFunction->setLinkage(llvm::GlobalValue::LinkageTypes::ExternalLinkage);
 
         // Ensure iteration of arguments can occur.
-        if (construct->prototype->args->items->getSize() != llvmFunction->arg_size()) {
-            this->context->diagnosticBuilder
-                ->bootstrap(diagnostic::internalAssertionFailed)
-                ->finish();
-
-            return;
-        }
+        IONIR_PASS_INTERNAL_ASSERT(
+            construct->prototype->args->items->getSize()
+                == llvmFunction->arg_size()
+        )
 
         auto& argsNativeMap = construct->prototype->args->items->unwrapConst();
         size_t argCounter = 0;
@@ -176,10 +169,7 @@ namespace ionir {
          * function ensure that the block contains a single entry section, but
          * just to make sure.
          */
-        if (construct->basicBlocks.empty()) {
-            // TODO: Use diagnostics API (internal error?).
-            throw std::runtime_error("Block must have at least a single basic block");
-        }
+        IONIR_PASS_INTERNAL_ASSERT(!construct->basicBlocks.empty())
 
         std::shared_ptr<BasicBlock> entryBasicBlock =
             construct->basicBlocks.front();
@@ -199,7 +189,9 @@ namespace ionir {
             this->visit(basicBlock);
         }
 
-        // TODO: Verify the resulting LLVM function (through LLVM)?
+        IONIR_PASS_INTERNAL_ASSERT(
+            llvm::verifyFunction(*this->llvmBuffers.functions.forceGetTopItem())
+        )
 
         this->llvmBuffers.functions.forcePop();
     }

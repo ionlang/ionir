@@ -127,8 +127,7 @@ namespace ionir {
 
                 ->finish();
 
-            // TODO: Should return instead, but what about the other visitors?
-            throw std::runtime_error("Awaiting diagnostic API implementation");
+            return;
         }
 
         llvm::Instruction::CastOps llvmCastOperation;

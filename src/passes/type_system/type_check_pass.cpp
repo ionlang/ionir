@@ -8,13 +8,6 @@ namespace ionir {
         //
     }
 
-    bool TypeCheckPass::initialize(ionshared::PassInfo& info) {
-        // TODO: Technically, we don't NEED to check for an entry point during type-check.
-//        info.addRequirement<EntryPointCheckPass>();
-
-        return true;
-    }
-
     void TypeCheckPass::visitFunction(std::shared_ptr<Function> construct) {
         ionshared::OptPtr<BasicBlock> entryBasicBlock = std::nullopt;
 
@@ -159,23 +152,24 @@ namespace ionir {
                 )
 
                 ->finish();
+
+            return;
         }
-        else {
-            auto declarationNativeFieldsMap = construct->type->fields->unwrap();
-            size_t index = 0;
 
-            for (const auto& [name, type] : declarationNativeFieldsMap) {
-                auto value = construct->values[index];
+        auto declarationNativeFieldsMap = construct->type->fields->unwrap();
+        size_t index = 0;
 
-                if (!value->type->isSameAs(type)) {
-                    this->context->diagnosticBuilder
-                        ->bootstrap(diagnostic::structIncompatibleValueType)
-                        ->formatMessage(construct->type->typeName, "pending", index, "pending")
-                        ->finish();
-                }
+        for (const auto& [name, type] : declarationNativeFieldsMap) {
+            auto value = construct->values[index];
 
-                index++;
+            if (!value->type->isSameAs(type)) {
+                this->context->diagnosticBuilder
+                    ->bootstrap(diagnostic::structIncompatibleValueType)
+                    ->formatMessage(construct->type->typeName, "pending", index, "pending")
+                    ->finish();
             }
+
+            index++;
         }
     }
 
@@ -196,36 +190,37 @@ namespace ionir {
                     )
 
                     ->finish();
+
+                return;
             }
-            else {
-                size_t index = 0;
 
-                auto functionDeclarationArgumentsNativeMap =
-                    calleeFunction->prototype->args->items->unwrap();
+            size_t index = 0;
 
-                for (const auto& [name, type] : functionDeclarationArgumentsNativeMap) {
-                    if (construct->arguments[index]->constructKind == ConstructKind::Type) {
-                        std::shared_ptr<Type> callArgumentType =
-                            construct->arguments[index]->dynamicCast<Type>();
+            auto functionDeclarationArgumentsNativeMap =
+                calleeFunction->prototype->args->items->unwrap();
 
-                        if (!callArgumentType->isSameAs(type.first)) {
-                            this->context->diagnosticBuilder
-                                ->bootstrap(diagnostic::instCallIncompatibleArg)
+            for (const auto& [name, type] : functionDeclarationArgumentsNativeMap) {
+                if (construct->arguments[index]->constructKind == ConstructKind::Type) {
+                    std::shared_ptr<Type> callArgumentType =
+                        construct->arguments[index]->dynamicCast<Type>();
 
-                                ->formatMessage(
-                                    calleeFunction->prototype->name,
-                                    type.first->typeName,
-                                    callArgumentType->typeName
-                                )
+                    if (!callArgumentType->isSameAs(type.first)) {
+                        this->context->diagnosticBuilder
+                            ->bootstrap(diagnostic::instCallIncompatibleArg)
 
-                                ->finish();
-                        }
+                            ->formatMessage(
+                                calleeFunction->prototype->name,
+                                type.first->typeName,
+                                callArgumentType->typeName
+                            )
+
+                            ->finish();
                     }
-
-                    // TODO: Other construct types?
-
-                    index++;
                 }
+
+                // TODO: Other construct types?
+
+                index++;
             }
         }
 
