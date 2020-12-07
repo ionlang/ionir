@@ -22,5 +22,7 @@ namespace ionir {
         void accept(Pass& visitor) override;
 
         [[nodiscard]] Ast getChildren() override;
+
+        [[nodiscard]] std::optional<std::string> getName() override;
     };
 }

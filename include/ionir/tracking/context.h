@@ -8,8 +8,7 @@
 namespace ionir {
     typedef ionshared::PtrSymbolTable<Construct> Scope;
 
-    class Context {
-    private:
+    struct Context {
         std::vector<Scope> scopes;
 
         Scope globalScope;
@@ -19,18 +18,6 @@ namespace ionir {
             Scope globalScope = ionshared::util::makePtrSymbolTable<Construct>(),
             std::vector<Scope> scopes = {}
         );
-
-        [[nodiscard]] std::vector<Scope> getScopes() const noexcept;
-
-        void setScopes(std::vector<Scope> scopes) noexcept;
-
-        [[nodiscard]] Scope getGlobalScope() const noexcept;
-
-        void setGlobalScope(Scope globalScope) noexcept;
-
-        void appendScope(const Scope &scope) noexcept;
-
-        void appendScope(const std::shared_ptr<ScopeAnchor<>>& scopeAnchor) noexcept;
 
         /**
          * Removes the lastly added scope from the scopes list.
@@ -42,6 +29,6 @@ namespace ionir {
          * Attempt to locateInstruction the nearest (starting from most recent
          * scopes) construct by it's id in the scope symbol tables.
          */
-        ionshared::OptPtr<Construct> findNearest(const std::string &id);
+        ionshared::OptPtr<Construct> findNearest(const std::string& id);
     };
 }

@@ -6,47 +6,13 @@ namespace ionir {
         //
     }
 
-    Scope Context::getGlobalScope() const noexcept {
-        return this->globalScope;
-    }
-
-    void Context::setGlobalScope(Scope globalScope) noexcept {
-        this->globalScope = std::move(globalScope);
-    }
-
-    std::vector<Scope> Context::getScopes() const noexcept {
-        return this->scopes;
-    }
-
-    void Context::setScopes(std::vector<Scope> scopes) noexcept {
-        this->scopes = std::move(scopes);
-    }
-
-    void Context::appendScope(const Scope &scope) noexcept {
-        // Scope is already on the scopes vector.
-        if (ionshared::util::locateInVector(this->scopes, scope) != std::nullopt) {
-            return;
-        }
-
-        /**
-         * Otherwise, push the scope onto the front of the vector.
-         * This will allow vector traversal starting from the last
-         * added scope, to the first added one.
-         */
-        this->scopes.insert(this->scopes.begin(), scope);
-    }
-
-    void Context::appendScope(const std::shared_ptr<ScopeAnchor<>>& scopeAnchor) noexcept {
-        this->appendScope(scopeAnchor->getSymbolTable());
-    }
-
     void Context::popScope() {
         if (!this->scopes.empty()) {
             this->scopes.erase(this->scopes.begin());
         }
     }
 
-    ionshared::OptPtr<Construct> Context::findNearest(const std::string &id) {
+    ionshared::OptPtr<Construct> Context::findNearest(const std::string& id) {
         /**
          * Scopes vector is already in the correct order because
          * whenever a new scope is pushed, it is added at the beginning

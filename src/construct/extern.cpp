@@ -18,4 +18,8 @@ namespace ionir {
             this->prototype->nativeCast()
         };
     }
+
+    std::optional<std::string> Extern::getName() {
+        return this->prototype->name;
+    }
 }

@@ -1,6 +1,26 @@
 #include <ionir/passes/pass.h>
 
 namespace ionir {
+    bool Module::insertChild(
+        const std::string& name,
+        const std::shared_ptr<Construct>& childConstruct
+    ) noexcept {
+        Scope globalScope = this->context->getGlobalScope();
+
+        if (globalScope->contains(name)) {
+            return false;
+        }
+
+        childConstruct->setModule(this->dynamicCast<Module>());
+
+        globalScope->set(
+            name,
+            childConstruct
+        );
+
+        return true;
+    }
+
     Module::Module(
         std::shared_ptr<Identifier> identifier,
         std::shared_ptr<Context> context
@@ -22,20 +42,20 @@ namespace ionir {
         );
     }
 
-    bool Module::insertFunction(const std::shared_ptr<Function>& function) {
-        Scope globalScope = this->context->getGlobalScope();
-        std::string functionName = function->prototype->name;
+    bool Module::insert(const std::shared_ptr<Function>& function) {
+        return this->insertChild(function->prototype->name, function);
+    }
 
-        if (!globalScope->contains(functionName)) {
-            globalScope->set(
-                functionName,
-                function
-            );
+    bool Module::insert(const std::shared_ptr<Extern>& externConstruct) {
+        return this->insertChild(externConstruct->prototype->name, externConstruct);
+    }
 
-            return true;
-        }
+    bool Module::insert(const std::shared_ptr<Global>& global) {
+        return this->insertChild(global->name, global);
+    }
 
-        return false;
+    bool Module::insert(const std::shared_ptr<TypeStruct>& structType) {
+        return this->insertChild(structType->typeName, structType);
     }
 
     ionshared::OptPtr<Function> Module::lookupFunction(std::string name) {
@@ -51,12 +71,11 @@ namespace ionir {
     }
 
     bool Module::mergeInto(const std::shared_ptr<Module>& module) {
+        // TODO: What about global scopes? Does this even work properly?
+
         auto localGlobalScopeMap = this->context->getGlobalScope()->unwrap();
-        std::vector<Scope> localScopes = this->context->getScopes();
-        std::vector<Scope> targetScopes = module->context->getScopes();
         Scope targetGlobalScope = module->context->getGlobalScope();
         Scope newGlobalScope = ionshared::util::makePtrSymbolTable<Construct>();
-        std::shared_ptr<Context> newContext = std::make_shared<Context>(newGlobalScope);
 
         // Attempt to merge global scope.
         for (const auto& [key, construct] : localGlobalScopeMap) {
@@ -64,6 +83,10 @@ namespace ionir {
                 return false;
             }
         }
+
+        std::shared_ptr<Context> newContext = std::make_shared<Context>(newGlobalScope);
+        std::vector<Scope> targetScopes = module->context->getScopes();
+        std::vector<Scope> localScopes = this->context->getScopes();
 
         // Attempt to merge scopes.
         for (const auto& scope : localScopes) {

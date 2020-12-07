@@ -30,4 +30,8 @@ namespace ionir {
 
         return children;
     }
+
+    std::optional<std::string> Global::getName() {
+        return this->name;
+    }
 }

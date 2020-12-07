@@ -13,13 +13,26 @@ namespace ionir {
 
     struct Function;
 
+    struct Extern;
+
+    struct TypeStruct;
+
+    struct Global;
+
     /**
      * The root construct. Contains top-level constructs, such as
      * functions, global variables, struct types, among others.
      */
-    struct Module : Construct, Identifiable {
+    class Module : public Construct, public Identifiable {
+    private:
         std::shared_ptr<Context> context;
 
+        bool insertChild(
+            const std::string& name,
+            const std::shared_ptr<Construct>& childConstruct
+        ) noexcept;
+
+    public:
         explicit Module(
             std::shared_ptr<Identifier> identifier,
             std::shared_ptr<Context> context = std::make_shared<Context>()
@@ -29,8 +42,13 @@ namespace ionir {
 
         [[nodiscard]] Ast getChildren() override;
 
-        // TODO: What about externs/globals/classes/structs? ------------
-        bool insertFunction(const std::shared_ptr<Function>& function);
+        bool insert(const std::shared_ptr<Function>& function);
+
+        bool insert(const std::shared_ptr<Extern>& externConstruct);
+
+        bool insert(const std::shared_ptr<Global>& global);
+
+        bool insert(const std::shared_ptr<TypeStruct>& structType);
 
         [[nodiscard]] ionshared::OptPtr<Function> lookupFunction(std::string name);
         // --------------------------------------------------------------

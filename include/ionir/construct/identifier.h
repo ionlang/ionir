@@ -21,5 +21,7 @@ namespace ionir {
         [[nodiscard]] std::string operator*() const;
 
         void accept(Pass& visitor) override;
+
+        [[nodiscard]] std::optional<std::string> getName() override;
     };
 }

@@ -31,4 +31,8 @@ namespace ionir {
     void Identifier::accept(Pass& visitor) {
         visitor.visitIdentifier(this->dynamicCast<Identifier>());
     }
+
+    std::optional<std::string> Identifier::getName() {
+        return this->operator std::string();
+    }
 }

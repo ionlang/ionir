@@ -21,4 +21,8 @@ namespace ionir {
 
         return children;
     }
+
+    std::optional<std::string> Function::getName() {
+        return this->prototype->name;
+    }
 }

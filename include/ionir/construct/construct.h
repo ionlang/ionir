@@ -13,7 +13,7 @@ namespace ionir {
 
     struct Instruction;
 
-    struct Module;
+    class Module;
 
     struct Type;
 
@@ -78,7 +78,7 @@ namespace ionir {
         Destructor
     };
 
-    struct Construct;
+    class Construct;
 
     typedef ionshared::Ast<Construct> Ast;
 

@@ -25,6 +25,8 @@ namespace ionir {
 
         [[nodiscard]] Ast getChildren() override;
 
+        [[nodiscard]] std::optional<std::string> getName() override;
+
         bool isMain() const noexcept;
     };
 }

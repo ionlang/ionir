@@ -24,6 +24,10 @@ namespace ionir {
         };
     }
 
+    std::optional<std::string> Prototype::getName() {
+        return this->name;
+    }
+
     bool Prototype::isMain() const noexcept {
         return this->name == ConstName::main;
     }
