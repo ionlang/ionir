@@ -10,7 +10,7 @@ namespace ionir {
         );
 
         [[nodiscard]] static std::shared_ptr<Function> function(
-            const std::string& id = ConstName::anonymous
+            const std::string& name = ConstName::anonymous
         );
 
         // TODO: Redundant.

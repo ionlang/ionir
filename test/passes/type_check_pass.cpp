@@ -17,8 +17,8 @@ TEST(TypeCheckPassTest, Run) {
 
     Ast ast = Bootstrap::functionAst(test::constant::foobar);
 
-    ionshared::OptPtr<Function> functionLookupResult =
-        ast.front()->dynamicCast<Module>()->lookupFunction(test::constant::foobar);
+    std::optional<std::shared_ptr<Function>> functionLookupResult =
+        ast.front()->dynamicCast<Module>()->lookup<Function>(test::constant::foobar);
 
     ASSERT_TRUE(ionshared::util::hasValue(functionLookupResult));
 
@@ -74,8 +74,8 @@ TEST(TypeCheckPassTest, FunctionReturnTypeValueMismatch) {
 
     Ast ast = Bootstrap::functionAst(test::constant::foobar);
 
-    ionshared::OptPtr<Function> function =
-        ast[0]->dynamicCast<Module>()->lookupFunction(test::constant::foobar);
+    std::optional<std::shared_ptr<Function>> function =
+        ast[0]->dynamicCast<Module>()->lookup<Function>(test::constant::foobar);
 
     ASSERT_TRUE(function.has_value());
 

@@ -1,8 +1,8 @@
 #include <ionir/tracking/context.h>
 
 namespace ionir {
-    Context::Context(Scope globalScope, std::vector<Scope> scopes)
-        : globalScope(std::move(globalScope)), scopes(std::move(scopes)) {
+    Context::Context(Scope globalScope, std::vector<Scope> scopes) :
+        globalScope(std::move(globalScope)), scopes(std::move(scopes)) {
         //
     }
 

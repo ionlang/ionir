@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <utility>
 #include <ionshared/misc/util.h>
 #include <ionir/tracking/scope_anchor.h>
 #include <ionir/tracking/context.h>
@@ -33,6 +34,8 @@ namespace ionir {
         ) noexcept;
 
     public:
+        friend class LlvmLoweringPass;
+
         explicit Module(
             std::shared_ptr<Identifier> identifier,
             std::shared_ptr<Context> context = std::make_shared<Context>()
@@ -50,8 +53,18 @@ namespace ionir {
 
         bool insert(const std::shared_ptr<TypeStruct>& structType);
 
-        [[nodiscard]] ionshared::OptPtr<Function> lookupFunction(std::string name);
-        // --------------------------------------------------------------
+        template<typename T = Construct>
+            requires std::derived_from<T, Construct>
+        std::optional<std::shared_ptr<T>> lookup(std::string name) {
+            std::optional<std::shared_ptr<Construct>> lookupResult =
+                this->context->globalScope->lookup(std::move(name));
+
+            if (!ionshared::util::hasValue(lookupResult)) {
+                return std::nullopt;
+            }
+
+            return lookupResult->get()->dynamicCast<T>();
+        }
 
         /**
          * Attempt to move context scopes (including global scope) from

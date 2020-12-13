@@ -5,15 +5,13 @@ namespace ionir {
         const std::string& name,
         const std::shared_ptr<Construct>& childConstruct
     ) noexcept {
-        Scope globalScope = this->context->getGlobalScope();
-
-        if (globalScope->contains(name)) {
+        if (this->context->globalScope->contains(name)) {
             return false;
         }
 
         childConstruct->setModule(this->dynamicCast<Module>());
 
-        globalScope->set(
+        this->context->globalScope->set(
             name,
             childConstruct
         );
@@ -38,7 +36,7 @@ namespace ionir {
     Ast Module::getChildren() {
         return Construct::convertChildren(
             // TODO: What about normal scopes? Merge that with global scope. Or actually, module just uses global context, right?
-            this->context->getGlobalScope()
+            this->context->globalScope
         );
     }
 
@@ -58,23 +56,11 @@ namespace ionir {
         return this->insertChild(structType->typeName, structType);
     }
 
-    ionshared::OptPtr<Function> Module::lookupFunction(std::string name) {
-        ionshared::OptPtr<Construct> functionConstruct =
-            this->context->getGlobalScope()->lookup(std::move(name));
-
-        if (ionshared::util::hasValue(functionConstruct)
-            && functionConstruct->get()->constructKind == ConstructKind::Function) {
-            return functionConstruct->get()->dynamicCast<Function>();
-        }
-
-        return std::nullopt;
-    }
-
     bool Module::mergeInto(const std::shared_ptr<Module>& module) {
         // TODO: What about global scopes? Does this even work properly?
 
-        auto localGlobalScopeMap = this->context->getGlobalScope()->unwrap();
-        Scope targetGlobalScope = module->context->getGlobalScope();
+        auto localGlobalScopeMap = this->context->globalScope->unwrap();
+        Scope targetGlobalScope = module->context->globalScope;
         Scope newGlobalScope = ionshared::util::makePtrSymbolTable<Construct>();
 
         // Attempt to merge global scope.
@@ -85,8 +71,8 @@ namespace ionir {
         }
 
         std::shared_ptr<Context> newContext = std::make_shared<Context>(newGlobalScope);
-        std::vector<Scope> targetScopes = module->context->getScopes();
-        std::vector<Scope> localScopes = this->context->getScopes();
+        std::vector<Scope> targetScopes = module->context->scopes;
+        std::vector<Scope> localScopes = this->context->scopes;
 
         // Attempt to merge scopes.
         for (const auto& scope : localScopes) {
@@ -95,7 +81,7 @@ namespace ionir {
                 return false;
             }
 
-            newContext->appendScope(scope);
+            newContext->scopes.push_back(scope);
         }
 
         // Update the target module's context.

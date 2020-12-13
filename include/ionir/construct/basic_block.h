@@ -24,7 +24,7 @@ namespace ionir {
          * compiler to keep track of the return value, among others.
          * Cannot be directly accessed by the user.
          */
-        Declarations,
+        Header,
 
         /**
          * The first body basic block executed after declarations
@@ -83,11 +83,11 @@ namespace ionir {
 
         [[nodiscard]] Ast getChildren() override;
 
-        // TODO: Must be const.
-        std::vector<std::shared_ptr<Instruction>> getInstructions() const noexcept;
+        // TODO: Must be const. At current point, elements can be modified (they're non-const smart pointers).
+        const std::vector<std::shared_ptr<Instruction>>& getInstructions() const noexcept;
 
         void insertInstruction(
-            uint32_t order,
+            uint32_t position,
             const std::shared_ptr<Instruction>& instruction
         );
 

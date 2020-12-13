@@ -41,28 +41,24 @@ namespace ionir {
         return Construct::convertChildren(this->instructions);
     }
 
-    std::vector<std::shared_ptr<Instruction>> BasicBlock::getInstructions() const noexcept {
+    const std::vector<std::shared_ptr<Instruction>>& BasicBlock::getInstructions() const noexcept {
         return this->instructions;
-//        return std::vector<const std::shared_ptr<Instruction>>(
-//            this->instructions.cbegin(),
-//            this->instructions.cend()
-//        );
     }
 
     void BasicBlock::insertInstruction(
-        uint32_t order,
+        uint32_t position,
         const std::shared_ptr<Instruction>& instruction
     ) {
         uint32_t maxOrder = this->instructions.empty()
             ? 0
             : this->instructions.size() - 1;
 
-        if (order > maxOrder) {
+        if (position > maxOrder) {
             throw std::out_of_range("Order is larger than the size of elements in the vector");
         }
 
         this->registerInstruction(instruction);
-        this->instructions.insert(this->instructions.begin() + order, instruction);
+        this->instructions.insert(this->instructions.begin() + position, instruction);
     }
 
     void BasicBlock::appendInstruction(

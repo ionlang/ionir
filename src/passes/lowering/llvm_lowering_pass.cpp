@@ -198,7 +198,7 @@ namespace ionir {
 
         // Proceed to visit all the module's children (top-level constructs).
         std::map<std::string, std::shared_ptr<Construct>> moduleNativeSymbolTable =
-            construct->context->getGlobalScope()->unwrap();
+            construct->context->globalScope->unwrap();
 
         for (const auto& [id, topLevelConstruct] : moduleNativeSymbolTable) {
             this->visit(topLevelConstruct);
